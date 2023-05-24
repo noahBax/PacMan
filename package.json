@@ -1,0 +1,16 @@
+{
+  "name": "pacman",
+  "version": "1.0.0",
+  "description": "My implementation of Pac-Man",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "pacman",
+    "pac-man"
+  ],
+  "author": "Noah Baxley",
+  "license": "ISC",
+  "type": "module"
+}
