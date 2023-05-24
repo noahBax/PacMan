@@ -12,7 +12,7 @@
   },
   "lib": ["ES2021"],
   "include": ["packages/*", "ts/*", "ts/**/*"],
-  // "exclude": ["packages/rollup.config.js"]
+  "exclude": ["./ts/demo/*"]
 }
 
 // {
