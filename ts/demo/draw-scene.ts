@@ -21,7 +21,7 @@ function setPositionAttribute(gl: WebGLRenderingContext, buffers, programInfo: P
 	gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
 }
 
-type ProgramInfo = { uniformLocations: { projectionMatrix: WebGLUniformLocation; modelViewMatrix: WebGLUniformLocation; }; attribLocations: { vertexPosition: number}};
+type ProgramInfo = { program: WebGLProgram; attribLocations: { vertexPosition: number; }; uniformLocations: { projectionMatrix: WebGLUniformLocation | null; modelViewMatrix: WebGLUniformLocation | null; }; };
 
 function drawScene(gl: WebGLRenderingContext, programInfo: ProgramInfo, buffers: any) {
 
