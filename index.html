@@ -7,9 +7,23 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Pac-Man</title>
 	<!-- <script src="js/gl-matrix.js"></script> -->
+	<style>
+		#boardHolder {
+			display: grid;
+		}
+		#backdrop, #renderBox {
+			grid-column: 1;
+			grid-row: 1;
+		}
+	</style>
 </head>
 <body>
-	<canvas id="renderBox" width="640" height="480"></canvas>
-	<script type="module" src="js/ts/demo/webgl-demo.js"></script>
+	<div id="boardHolder">
+		<canvas id="backdrop" width="448" height="576"></canvas>
+		<canvas id="renderBox" width="448" height="576"></canvas>
+	</div>
+	<img src="weirddog.jpg" alt="weird" id="buddy" style="display: none;">
+	<img src="spritesheet.png" alt="Sprite sheet" id="spriteSheet">
+	<script type="module" src="js/index.js"></script>
 </body>
 </html>

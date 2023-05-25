@@ -1,4 +1,4 @@
-import * as mat4 from "../../packages/toji-gl-matrix-bc1bbf4/dist/esm/mat4.js";
+import * as mat4 from "../packages/toji-gl-matrix-bc1bbf4/dist/esm/mat4.js";
 
 // Tell WebGL how to pull out the positions from the position buffer into the vertex position attribute
 function setPositionAttribute(gl: WebGLRenderingContext, buffers, programInfo: ProgramInfo) {
