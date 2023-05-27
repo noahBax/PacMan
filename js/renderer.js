@@ -23,7 +23,7 @@ class Renderer {
         this.foreground_ctx.clearRect(0, 0, this.width, this.height);
         // Next draw what is in the queue
         this.foregroundDrawQueue.forEach(item => {
-            this.foreground_ctx.drawImage(this.spriteSheet, item.sheetCoords.x, item.sheetCoords.y, 16, 16, item.placementCoords.x, item.placementCoords.y, 16, 16);
+            this.foreground_ctx.drawImage(this.spriteSheet, item.sheetCoords.cx, item.sheetCoords.cy, 16, 16, item.placementCoords.cx, item.placementCoords.cy, 16, 16);
         });
         this.foregroundDrawQueue = [];
     }
@@ -35,12 +35,12 @@ class Renderer {
         this.background_ctx.clearRect(0, 0, this.width, this.height);
         // Next draw what is in the queue
         this.backgroundDrawQueue.forEach(item => {
-            this.background_ctx.drawImage(this.spriteSheet, item.sheetCoords.x, item.sheetCoords.y, 16, 16, item.placementCoords.x, item.placementCoords.y, 16, 16);
+            this.background_ctx.drawImage(this.spriteSheet, item.sheetCoords.cx, item.sheetCoords.cy, 16, 16, item.placementCoords.cx, item.placementCoords.cy, 16, 16);
         });
         this.backgroundDrawQueue = [];
     }
     paintBackground(renderObj) {
-        this.background_ctx.drawImage(this.spriteSheet, renderObj.sheetCoords.x, renderObj.sheetCoords.y, 16, 16, renderObj.placementCoords.x, renderObj.placementCoords.y, 16, 16);
+        this.background_ctx.drawImage(this.spriteSheet, renderObj.sheetCoords.cx, renderObj.sheetCoords.cy, 16, 16, renderObj.placementCoords.cx, renderObj.placementCoords.cy, 16, 16);
     }
 }
 export { Renderer as Renderer };

@@ -5,22 +5,37 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Pac-Man</title>
-	<!-- <script src="js/gl-matrix.js"></script> -->
+	<title>Pac-Man, An Attempt</title>
+	<link rel="icon" href="favicon.png" type="image/x-icon">
 	<style>
-		#boardHolder {
+		@font-face { font-family: "Minecraft"; src: url('Minecraft.ttf'); }
+		#easel {
 			display: grid;
 		}
-		#backdrop, #renderBox {
+		#backdrop, #renderBox, #devBox {
 			grid-column: 1;
 			grid-row: 1;
+			height: 128.57vw;
+			width: 100vw;
+			max-height: 100vh;
+			max-width: 77.78vh;
+		}
+		body {
+			background-color: black;
+			display: flex;
+			justify-content: center;
+		}
+		#spriteSheet {
+			display: none;
+
 		}
 	</style>
 </head>
 <body>
-	<div id="boardHolder">
+	<div id="easel">
 		<canvas id="backdrop" width="448" height="576"></canvas>
 		<canvas id="renderBox" width="448" height="576"></canvas>
+		<canvas id="devBox" width="448" height="576"></canvas>
 	</div>
 	<img src="weirddog.jpg" alt="weird" id="buddy" style="display: none;">
 	<img src="spritesheet.png" alt="Sprite sheet" id="spriteSheet">

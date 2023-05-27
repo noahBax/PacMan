@@ -14,16 +14,19 @@ class Animator {
         this.entityList.push(entity);
     }
     handleFrame(timestamp) {
-        if (timestamp - this.prevFrameTime < 1000 / 60) {
+        // * Do time business logic yadayada
+        if (timestamp - this.prevFrameTime < 1000 / 10) {
             window.requestAnimationFrame(this.handleFrame.bind(this));
             return;
         }
         Animator.CURRENT_FRAME_NO++;
         this.prevFrameTime = timestamp;
+        // * Draw maze at the beginning
         if (!this.mazeFinishedDrawing)
-            this.mazeFinishedDrawing = this.gameBoard.drawMaze(Animator.CURRENT_FRAME_NO);
+            this.mazeFinishedDrawing = this.gameBoard.drawMaze(5000); //Animator.CURRENT_FRAME_NO);
         if (!this.dotsFinishedDrawing)
-            this.dotsFinishedDrawing = this.gameBoard.drawDots(Animator.CURRENT_FRAME_NO);
+            this.dotsFinishedDrawing = this.gameBoard.drawDots(5000); //Animator.CURRENT_FRAME_NO);
+        // * Draw each entity and cause them to update
         this.entityList.forEach(entity => {
             const renderObj = entity.updateFrame(Animator.CURRENT_FRAME_NO);
             this.renderer.drawForeground(renderObj);

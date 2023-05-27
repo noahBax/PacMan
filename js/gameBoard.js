@@ -43,14 +43,54 @@ class GameBoard {
     setRenderer(renderer) {
         this.renderer = renderer;
     }
-    getEntityPosition(coords) {
+    /**
+     * Calculate the grid square coordinate on the gameboard
+     * @param coords The coordinates with respect to the canvas, not the board
+     * @returns The coordinate with respect to the gameboard
+     */
+    static getPositionOnBoardGrid(coords) {
         // Get center coordinates
-        coords.x += 8;
-        coords.y += 8;
+        let ret = { ...coords };
+        ret.cx += 8;
+        ret.cy += 8;
         return {
-            x: Math.floor((coords.x) / GameBoard.actualWidth * GameBoard.width),
-            y: Math.floor((coords.y) / GameBoard.actualHeight * GameBoard.height),
+            bx: Math.floor((ret.cx) / GameBoard.actualWidth * GameBoard.width),
+            by: Math.floor((ret.cy) / GameBoard.actualHeight * GameBoard.height),
         };
+    }
+    /**
+     * Get legal spaces that are around the coordinate in question
+     * @param coords Coordinates with respect to the gameboard
+     * @returns A list of coordinates which describe legal spaces around the target
+     */
+    static getLegalMoves(coords) {
+        let ret = [];
+        // Check left and right first (because we like the cache like that)
+        if (coords.bx > 0 && GameBoard.legalSpaces[coords.by][coords.bx - 1] === 1) {
+            ret.push({
+                coord: { by: coords.by, bx: coords.bx - 1 },
+                direction: "left"
+            });
+        }
+        if (coords.bx < GameBoard.width && GameBoard.legalSpaces[coords.by][coords.bx + 1] === 1) {
+            ret.push({
+                coord: { by: coords.by, bx: coords.bx + 1 },
+                direction: "right"
+            });
+        }
+        if (coords.by > 0 && GameBoard.legalSpaces[coords.by - 1][coords.bx] === 1) {
+            ret.push({
+                coord: { by: (coords.by - 1), bx: coords.bx },
+                direction: "up"
+            });
+        }
+        if (coords.by < GameBoard.height && GameBoard.legalSpaces[coords.by + 1][coords.bx] === 1) {
+            ret.push({
+                coord: { by: coords.by + 1, bx: coords.bx },
+                direction: "down"
+            });
+        }
+        return ret;
     }
     drawMaze(frameNo) {
         for (let i = 0; i < GameBoard.height; i++) {
@@ -62,8 +102,8 @@ class GameBoard {
                     case 1:
                         this.renderer.paintBackground({
                             placementCoords: {
-                                x: j * 16,
-                                y: i * 16
+                                cx: j * 16,
+                                cy: i * 16
                             },
                             sheetCoords: spriteManager["quad1Corner"][0]
                         });
@@ -71,8 +111,8 @@ class GameBoard {
                     case 2:
                         this.renderer.paintBackground({
                             placementCoords: {
-                                x: j * 16,
-                                y: i * 16
+                                cx: j * 16,
+                                cy: i * 16
                             },
                             sheetCoords: spriteManager["quad2Corner"][0]
                         });
@@ -80,8 +120,8 @@ class GameBoard {
                     case 3:
                         this.renderer.paintBackground({
                             placementCoords: {
-                                x: j * 16,
-                                y: i * 16
+                                cx: j * 16,
+                                cy: i * 16
                             },
                             sheetCoords: spriteManager["quad3Corner"][0]
                         });
@@ -89,8 +129,8 @@ class GameBoard {
                     case 4:
                         this.renderer.paintBackground({
                             placementCoords: {
-                                x: j * 16,
-                                y: i * 16
+                                cx: j * 16,
+                                cy: i * 16
                             },
                             sheetCoords: spriteManager["quad4Corner"][0]
                         });
@@ -98,8 +138,8 @@ class GameBoard {
                     case 5:
                         this.renderer.paintBackground({
                             placementCoords: {
-                                x: j * 16,
-                                y: i * 16
+                                cx: j * 16,
+                                cy: i * 16
                             },
                             sheetCoords: spriteManager["verticalBar"][0]
                         });
@@ -107,8 +147,8 @@ class GameBoard {
                     case 6:
                         this.renderer.paintBackground({
                             placementCoords: {
-                                x: j * 16,
-                                y: i * 16
+                                cx: j * 16,
+                                cy: i * 16
                             },
                             sheetCoords: spriteManager["horizontalBar"][0]
                         });
@@ -133,8 +173,8 @@ class GameBoard {
                 if (num == 1) {
                     this.renderer.paintBackground({
                         placementCoords: {
-                            x: j * 16,
-                            y: i * 16
+                            cx: j * 16,
+                            cy: i * 16
                         },
                         sheetCoords: spriteManager["dot"][0]
                     });
@@ -142,8 +182,8 @@ class GameBoard {
                 else if (num == 2) {
                     this.renderer.paintBackground({
                         placementCoords: {
-                            x: j * 16,
-                            y: i * 16
+                            cx: j * 16,
+                            cy: i * 16
                         },
                         sheetCoords: spriteManager["energizer"][0]
                     });
