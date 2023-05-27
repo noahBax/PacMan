@@ -8,6 +8,8 @@ class Animator {
         this.renderer = new Renderer(foreground_ctx, background_ctx, spriteSheet);
         this.gameBoard = gameBoard;
         this.gameBoard.setRenderer(this.renderer);
+    }
+    startRendering() {
         window.requestAnimationFrame(this.handleFrame.bind(this));
     }
     registerEntity(entity) {

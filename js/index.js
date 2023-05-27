@@ -43,5 +43,7 @@ function main() {
     devmode.renderGridNumbers();
     clyde.scareMe(600, 0);
     controller = new Controller(pacman);
+    // And finally
+    animator.startRendering();
 }
 document.addEventListener('DOMContentLoaded', main);

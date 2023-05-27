@@ -17,6 +17,9 @@ class Animator {
 		this.renderer = new Renderer(foreground_ctx, background_ctx, spriteSheet);
 		this.gameBoard = gameBoard;
 		this.gameBoard.setRenderer(this.renderer);
+	}
+
+	startRendering() {
 		window.requestAnimationFrame(this.handleFrame.bind(this));
 	}
 
@@ -24,7 +27,7 @@ class Animator {
 		this.entityList.push(entity);
 	}
 
-	handleFrame(timestamp: number) {
+	private handleFrame(timestamp: number) {
 
 		// * Do time business logic yadayada
 		if (timestamp - this.prevFrameTime < 1000/10) {
