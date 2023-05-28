@@ -1,17 +1,17 @@
 import { GameBoard } from "../gameBoard.js";
-import { animationInfo, canvasCoordinate, Direction, RenderObject, vector } from "../types.js";
+import { animationInfo, boardCoordinate, canvasCoordinate, Direction, RenderObject, vector } from "../types.js";
 import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
 class Blinky extends Ghost {
 	
-	protected __startPosition: canvasCoordinate = {cx: 216, cy: 225}
+	protected __startPositionForVector: canvasCoordinate = {cy: 16*14, cx: 13*16}
+	protected __currentLocation: boardCoordinate = {by: 14, bx: 13};
 	direction: Direction = "left";
 	protected __currentVector: vector = Ghost.getVectorFromDirection("left");
 	
 	constructor(pacmanRef: PacMan) {
 		super(pacmanRef);
-		this.__lastRecordedLocation = {bx: 0, by: 0};
 	}
 	
 	protected __animationInfo: animationInfo = {

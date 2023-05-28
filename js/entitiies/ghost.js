@@ -8,16 +8,30 @@ class Ghost extends Entity {
         this.state = "chase";
         this._frightTimer = 0;
         this._frightStart = 0;
-        this.__lastRecordedLocation = { bx: 0, by: 0 };
+        this.knownPreviousLocation = { by: 0, bx: 0 };
+        this.knownCurrentLocation = { by: 0, bx: 0 };
+        this.knownTargetLocation = { by: 0, bx: 0 };
         // Direction that won't be applied until we reach the center of the cell
         this._latentDirection = "right";
         this._moveProcessed = true;
         this.__pacmanReference = pacmanRef;
     }
+    initializeGhost() {
+        /**
+         * What do we know at this point
+         * - We know the start of our vector
+         * - Our board position
+         * - Our direction
+         * - by extension or vector
+         */
+        // So first let's do finding the path to the target
+        this._moveProcessed = false;
+        this.knownPreviousLocation = { ...this.__currentLocation };
+        const bestPosition = this._targetLogic(0);
+    }
     updateFrame(frameNo) {
         var _a;
         const progress = frameNo - this.__startTime;
-        console.log("Progress", progress);
         // * Update frightened timer
         if (this.state == "frightened") {
             if (frameNo - this._frightStart >= this._frightTimer) {
@@ -25,22 +39,24 @@ class Ghost extends Entity {
             }
         }
         // Get current position on gameboard
-        const currBoardPos = GameBoard.getPositionOnBoardGrid(this.getCurrentPosition(frameNo));
-        console.log("Board Position", currBoardPos);
+        const currentBoardPos = { ...this.__currentLocation };
         // Check to see if we have moved a tile
-        if (this.__lastRecordedLocation.bx !== currBoardPos.bx || this.__lastRecordedLocation.by !== currBoardPos.by) {
-            console.log("Moved", true);
+        if (!this._moveProcessed && this.__currentLocation.bx !== currentBoardPos.bx || this.__currentLocation.by !== currentBoardPos.by) {
+            console.log("We have moved");
             // Update the record so we can perform the check next time
-            this.__lastRecordedLocation = { ...currBoardPos };
+            this.knownPreviousLocation = { ...this.__currentLocation };
+            this.__currentLocation = { ...currentBoardPos };
+            this.knownCurrentLocation = { ...currentBoardPos };
+            console.log("Location Previously", this.knownPreviousLocation, "Current Location", this.knownCurrentLocation);
             // Do target stuff
             const bestPos = this._targetLogic(frameNo);
-            console.log("Target block", bestPos);
+            console.log("Target block", this.knownTargetLocation, "Move to", bestPos);
             this._latentDirection = (_a = bestPos === null || bestPos === void 0 ? void 0 : bestPos.direction) !== null && _a !== void 0 ? _a : "none";
             this._moveProcessed = false;
         }
-        // Actually move, what we will do 99% of the time
         // Check to see if we are at the turning point
-        if (!this._moveProcessed) {
+        if (!this._moveProcessed && (currentBoardPos.bx !== this.__turningLocation.bx || currentBoardPos.by !== this.__turningLocation.by)) {
+            console.log("Processing direction change");
             const currCanvasPos = this.getCurrentPosition(frameNo);
             let canProcessNow = false;
             switch (this.direction) {
@@ -51,19 +67,20 @@ class Ghost extends Entity {
                     canProcessNow = currCanvasPos.cy % 16 > 8;
                     break;
                 case "left":
-                    canProcessNow = currCanvasPos.cy % 16 <= 8;
+                    canProcessNow = currCanvasPos.cx % 16 <= 8;
                     break;
                 case "right":
-                    canProcessNow = currCanvasPos.cy % 16 > 8;
+                    canProcessNow = currCanvasPos.cx % 16 > 8;
                 case "none":
                     canProcessNow = true;
                     // Idk when this'll happen so I want to know
                     break;
             }
             if (canProcessNow) {
+                console.log("processing now");
                 this._moveProcessed = true;
                 // Set startpos to current (rounded obviously)
-                this.__startPosition = {
+                this.__startPositionForVector = {
                     cx: Math.round(currCanvasPos.cx / 16) * 16,
                     cy: Math.round(currCanvasPos.cy / 16) * 16
                 };
@@ -77,8 +94,8 @@ class Ghost extends Entity {
         // * Return coordinates with respect to canvas
         return {
             placementCoords: {
-                cx: this.__startPosition.cx + this.__currentVector.x * progress,
-                cy: this.__startPosition.cy + this.__currentVector.y * progress,
+                cx: this.__startPositionForVector.cx + this.__currentVector.x * progress,
+                cy: this.__startPositionForVector.cy + this.__currentVector.y * progress,
             },
             sheetCoords: this._imageDeterminer(frameNo)
         };
@@ -87,8 +104,9 @@ class Ghost extends Entity {
         let currBoardPos = GameBoard.getPositionOnBoardGrid(this.getCurrentPosition(frameNo));
         // Do target Logic
         const currTarget = this.getTarget();
+        this.knownTargetLocation = { ...currTarget };
         const forwardPosition = this.__getForwardBoardCoordinate(frameNo);
-        console.log(forwardPosition);
+        console.log("Position moving forward", forwardPosition);
         const legalMoves = GameBoard.getLegalMoves(forwardPosition);
         // Loop through to find which path we should take
         // Literally an implementation of greedy best first search
@@ -135,31 +153,25 @@ class Ghost extends Entity {
         }
     }
     __getForwardBoardCoordinate(frameNo) {
-        let currentHeading = { ...this.__currentVector };
-        console.log("__getForwardBoard", currentHeading);
-        let currentPos = GameBoard.getPositionOnBoardGrid(this.getCurrentPosition(frameNo));
-        if (currentHeading.x != 0) {
-            if (currentHeading.x < 0) {
-                currentPos.bx -= 1;
-                return currentPos;
-            }
-            else {
-                currentPos.bx += 1;
-                return currentPos;
-            }
+        console.log("Current direction", this.direction);
+        let currentBoardPos = GameBoard.getPositionOnBoardGrid(this.getCurrentPosition(frameNo));
+        switch (this.direction) {
+            case "left":
+                currentBoardPos.bx -= 1;
+                return currentBoardPos;
+            case "right":
+                currentBoardPos.bx += 1;
+                return currentBoardPos;
+            case "down":
+                currentBoardPos.by += 1;
+                return currentBoardPos;
+            case "up":
+                currentBoardPos.by -= 1;
+                return currentBoardPos;
+            default:
+                // If for whatever reason we ain't moving, set to right
+                return { bx: 0, by: 0 };
         }
-        if (currentHeading.y != 0) {
-            if (currentHeading.y < 0) {
-                currentPos.by -= 1;
-                return currentPos;
-            }
-            else {
-                currentPos.by += 1;
-                return currentPos;
-            }
-        }
-        // If for whatever reason we ain't moving, set to right
-        return { bx: 0, by: 0 };
     }
     static getVectorFromDirection(direction) {
         switch (direction) {

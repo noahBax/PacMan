@@ -4,8 +4,9 @@ import { spriteManager } from "../spriteManager.js";
 class PacMan extends Entity {
     constructor() {
         super(...arguments);
-        this.__startPosition = { cx: 216, cy: 320 };
+        this.__startPositionForVector = { cx: 216, cy: 320 };
         this._animationState = "normal";
+        this.currentBoardPosition = { bx: 13, by: 20 };
         this.__animationInfo = {
             down: "pacDown",
             up: "pacUp",
@@ -20,8 +21,8 @@ class PacMan extends Entity {
         this.currentBoardPosition = GameBoard.getPositionOnBoardGrid(this.getCurrentPosition(frameNo));
         return {
             placementCoords: {
-                cx: this.__startPosition.cx + this.__currentVector.x * progress,
-                cy: this.__startPosition.cy + this.__currentVector.y * progress,
+                cx: this.__startPositionForVector.cx + this.__currentVector.x * progress,
+                cy: this.__startPositionForVector.cy + this.__currentVector.y * progress,
             },
             sheetCoords: this._imageDeterminer(frameNo)
         };

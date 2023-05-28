@@ -6,10 +6,10 @@ import { Direction, canvasCoordinate, vector, RenderObject, animationInfo, board
 class PacMan extends Entity{
 	static SPEED = 1;
 
-	protected __startPosition: canvasCoordinate = {cx: 216, cy: 320}
+	protected __startPositionForVector: canvasCoordinate = {cx: 216, cy: 320}
 	private _animationState: ("normal" | "dying") = "normal";
 
-	currentBoardPosition: boardCoordinate;
+	currentBoardPosition: boardCoordinate = {bx: 13, by: 20};
 
 	protected __animationInfo: animationInfo = {
 		down: "pacDown",
@@ -28,8 +28,8 @@ class PacMan extends Entity{
 
 		return {
 			placementCoords: {
-				cx: this.__startPosition.cx + this.__currentVector.x * progress,
-				cy: this.__startPosition.cy + this.__currentVector.y * progress,
+				cx: this.__startPositionForVector.cx + this.__currentVector.x * progress,
+				cy: this.__startPositionForVector.cy + this.__currentVector.y * progress,
 			},
 			sheetCoords: this._imageDeterminer(frameNo)
 		};

@@ -19,25 +19,92 @@
 			width: 100vw;
 			max-height: 100vh;
 			max-width: 77.78vh;
+			margin: 0px;
+			padding: 0px;
 		}
-		#numberBox>p {
+		#numberBox>div {
 			color: white;
 			position: absolute;
 			padding: 0px;
 			margin: 0px;
+			/* padding-top: 2px;
+			padding-left: 2px; */
+			background-color: white;
+			/* border: 1px solid white; */
+			display: block;
+			opacity: 0;
+			font-size: 9.5px;
+			font-family: monospace;
+			/* cursor: none */
+		}
+		#numberBox>div:hover {
+			opacity: 1;
+			/* border: 1px solid white; */
+			/* width: calc(100% - 2px);
+			height: calc(100% - 2px); */
 		}
 		body {
+			margin: 0px;
+			padding: 0px;
 			background-color: black;
 			display: flex;
 			justify-content: center;
+			overflow: hidden;
 		}
 		#spriteSheet {
 			display: none;
 
 		}
+		#dev_display {
+			color: white;
+			position: fixed;
+			left: 2px;
+			top: 2px;
+			border: 2px solid white;
+			min-width: 50px;
+			min-height: 50px;
+		}
+		#dev_display p {
+			margin: 0px;
+			padding: 0px;
+			font-family: monospace;
+		}
+		#dev_controlPanel {
+			color: white;
+			position: fixed;
+			right: 2px;
+			top: 2px;
+			border: 2px solid white;
+			min-width: 50px;
+			min-height: 50px;
+		}
+		#cellInfoSection {
+			padding-left: 10px;
+		}
+		.targetTile {
+			background-image: repeating-linear-gradient(-214deg, rgba(255,255,255, 0.25), rgba(255,255,255, 0.25) 1px, transparent 0px, transparent 13px);
+			background-size: 9px;
+		}
+		/* Use this in the GridTile*/
+		.targetTileCover {
+			background-blend-mode: multiply;
+			background-color: pink;
+		}
 	</style>
 </head>
 <body>
+	<div id="dev_display">
+		<p style="font-weight: bold;">Dev Panel</p>
+		<p>Cell Info:</p>
+		<div id="cellInfoSection">
+			<p id="tileLocation">
+				Location: None
+			</p>
+		</div>
+	</div>
+	<div id="dev_controlPanel">
+
+	</div>
 	<div id="easel">
 		<canvas id="backdrop" width="448" height="576"></canvas>
 		<canvas id="renderBox" width="448" height="576"></canvas>

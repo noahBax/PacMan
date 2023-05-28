@@ -54,8 +54,8 @@ class GameBoard {
         ret.cx += 8;
         ret.cy += 8;
         return {
-            bx: Math.floor((ret.cx) / GameBoard.actualWidth * GameBoard.width),
             by: Math.floor((ret.cy) / GameBoard.actualHeight * GameBoard.height),
+            bx: Math.floor((ret.cx) / GameBoard.actualWidth * GameBoard.width),
         };
     }
     /**
@@ -64,6 +64,7 @@ class GameBoard {
      * @returns A list of coordinates which describe legal spaces around the target
      */
     static getLegalMoves(coords) {
+        console.log("Leval Moves starting with coord", coords);
         let ret = [];
         // Check left and right first (because we like the cache like that)
         if (coords.bx > 0 && GameBoard.legalSpaces[coords.by][coords.bx - 1] === 1) {

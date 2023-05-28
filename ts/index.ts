@@ -12,6 +12,8 @@ import { DevMode } from "./devmode.js";
 let animator: Animator;
 let controller: Controller;
 
+let devMode: DevMode;
+
 function main() {
 	const img = document.getElementById("buddy") as HTMLImageElement;
 	const foregroundCanvas = document.getElementById("renderBox") as HTMLCanvasElement;
@@ -50,15 +52,20 @@ function main() {
 	window.animator = animator;
 	window.Animator = Animator;
 
-	const devmode = new DevMode(devCanvas.getContext("2d"), pacman, blinky, inky, pinky, clyde, animator, spriteSheet, gameBoard);
-	window.developer = devmode;
-	devmode.renderGridNumbers();
+	
+	devCanvas.style.display = "none";
+	devMode = new DevMode(devCanvas.getContext("2d"), pacman, blinky, inky, pinky, clyde, animator, spriteSheet, gameBoard);
+	window.developer = devMode;
+	devMode.renderGridTiles();
 	clyde.scareMe(600, 0);
-
+	devCanvas.style.display = "block";
+	
 	controller = new Controller(pacman);
+	animator.startRendering();
 
 	// And finally
-	animator.startRendering();
 }
 
 document.addEventListener('DOMContentLoaded', main);
+
+export { devMode }

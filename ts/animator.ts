@@ -1,5 +1,7 @@
+import { DevMode } from "./devmode.js";
 import { Entity } from "./entity.js";
 import { GameBoard } from "./gameBoard.js";
+import { devMode } from "./index.js";
 import { Renderer } from "./renderer.js";
 
 class Animator {
@@ -47,12 +49,18 @@ class Animator {
 			this.renderer.drawForeground(renderObj);
 		});
 
+		if (DevMode.IN_DEV_MODE) {
+			devMode.updateTargets(Animator.CURRENT_FRAME_NO);
+		}
+
 		this.renderer.renderForeground(Animator.CURRENT_FRAME_NO);
 
 
 		window.requestAnimationFrame(this.handleFrame.bind(this));
 
 	}
+
+
 
 }
 

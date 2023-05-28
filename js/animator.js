@@ -1,3 +1,5 @@
+import { DevMode } from "./devmode.js";
+import { devMode } from "./index.js";
 import { Renderer } from "./renderer.js";
 class Animator {
     constructor(foreground_ctx, background_ctx, spriteSheet, gameBoard) {
@@ -33,6 +35,9 @@ class Animator {
             const renderObj = entity.updateFrame(Animator.CURRENT_FRAME_NO);
             this.renderer.drawForeground(renderObj);
         });
+        if (DevMode.IN_DEV_MODE) {
+            devMode.updateTargets(Animator.CURRENT_FRAME_NO);
+        }
         this.renderer.renderForeground(Animator.CURRENT_FRAME_NO);
         window.requestAnimationFrame(this.handleFrame.bind(this));
     }

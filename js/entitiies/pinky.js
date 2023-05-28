@@ -2,7 +2,8 @@ import { Ghost } from "./ghost.js";
 class Pinky extends Ghost {
     constructor(pacmanRef) {
         super(pacmanRef);
-        this.__startPosition = { cx: 16, cy: 64 };
+        this.__currentLocation = { by: 4, bx: 1 };
+        this.__startPositionForVector = { cy: 64, cx: 16 };
         this.direction = "right";
         this.__currentVector = Ghost.getVectorFromDirection("right");
         this.__animationInfo = {
@@ -11,7 +12,7 @@ class Pinky extends Ghost {
             right: "pinkyRight",
             up: "pinkyUp"
         };
-        this.__lastRecordedLocation = { bx: 0, by: 0 };
+        this.__currentLocation = { bx: 0, by: 0 };
     }
     getTarget() {
         return { bx: 0, by: 0 };

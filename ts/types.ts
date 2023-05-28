@@ -47,3 +47,12 @@ declare global {
 		developer: DevMode
 	}
 }
+
+export interface GridCell extends HTMLDivElement {
+	dataset: {
+		boardX?: string
+		boardY?: string
+		canvasX?: string
+		canvasY?: string
+	}
+}

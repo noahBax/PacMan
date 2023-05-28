@@ -4,14 +4,15 @@ import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
 class Clyde extends Ghost {
-
-	protected __startPosition: canvasCoordinate = {cx: 16, cy: 528}
+	
+	protected __currentLocation: boardCoordinate = {by: 32, bx: 1};
+	protected __startPositionForVector: canvasCoordinate = {cy: 32*16, cx: 16, }
 	direction: Direction = "right"; 
 	protected __currentVector = Ghost.getVectorFromDirection("right");
 	
 	constructor(pacmanRef: PacMan) {
 		super(pacmanRef);
-		this.__lastRecordedLocation = {bx: 0, by: 0}
+		this.__currentLocation = {bx: 0, by: 0}
 		
 	}
 	

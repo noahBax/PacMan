@@ -4,14 +4,14 @@ import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
 class Inky extends Ghost {
-
-	protected __startPosition: canvasCoordinate = {cx: 416, cy: 512};
+	
+	protected __currentLocation: boardCoordinate = {by: 32, bx: 25};
+	protected __startPositionForVector: canvasCoordinate = {cy: 512, cx: 416};
 	direction: Direction = "left";
 	protected __currentVector = Ghost.getVectorFromDirection("left");
 	
 	constructor(pacmanRef: PacMan) {
 		super(pacmanRef);
-		this.__lastRecordedLocation = {bx: 0, by: 0};
 		
 	}
 	

@@ -2,7 +2,8 @@ import { Ghost } from "./ghost.js";
 class Blinky extends Ghost {
     constructor(pacmanRef) {
         super(pacmanRef);
-        this.__startPosition = { cx: 216, cy: 225 };
+        this.__startPositionForVector = { cy: 16 * 14, cx: 13 * 16 };
+        this.__currentLocation = { by: 14, bx: 13 };
         this.direction = "left";
         this.__currentVector = Ghost.getVectorFromDirection("left");
         this.__animationInfo = {
@@ -11,7 +12,6 @@ class Blinky extends Ghost {
             right: "blinkyRight",
             up: "blinkyUp"
         };
-        this.__lastRecordedLocation = { bx: 0, by: 0 };
     }
     getTarget() {
         return this.__pacmanReference.currentBoardPosition;

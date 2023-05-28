@@ -197,8 +197,8 @@ class GameBoard {
 		ret.cx += 8;
 		ret.cy += 8;
 		return {
-			bx: Math.floor((ret.cx) / GameBoard.actualWidth * GameBoard.width),
 			by: Math.floor((ret.cy) / GameBoard.actualHeight * GameBoard.height),
+			bx: Math.floor((ret.cx) / GameBoard.actualWidth * GameBoard.width),
 		}
 	}
 	/**
@@ -207,6 +207,7 @@ class GameBoard {
 	 * @returns A list of coordinates which describe legal spaces around the target
 	 */
 	static getLegalMoves(coords: boardCoordinate): moveInfo[] {
+		console.log("Leval Moves starting with coord", coords);
 
 		let ret: moveInfo[] = [];
 		
