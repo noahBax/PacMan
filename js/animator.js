@@ -11,13 +11,17 @@ class Animator {
         this.gameBoard = gameBoard;
         this.gameBoard.setRenderer(this.renderer);
     }
-    startRendering() {
-        window.requestAnimationFrame(this.handleFrame.bind(this));
-    }
     registerEntity(entity) {
         this.entityList.push(entity);
     }
+    startUpAnimation() {
+        if (Animator.ACTIVE)
+            window.requestAnimationFrame(this.handleFrame.bind(this));
+        // Animator.ACTIVE = true;
+    }
     handleFrame(timestamp) {
+        if (!Animator.ACTIVE)
+            return;
         // * Do time business logic yadayada
         if (timestamp - this.prevFrameTime < 1000 / 60) {
             window.requestAnimationFrame(this.handleFrame.bind(this));
@@ -37,10 +41,13 @@ class Animator {
         });
         if (DevMode.IN_DEV_MODE) {
             devMode.updateTargets();
+            devMode.updatePanelLocs();
         }
         this.renderer.renderForeground(Animator.CURRENT_FRAME_NO);
+        this.gameBoard.purgatoryCheck(Animator.CURRENT_FRAME_NO);
         window.requestAnimationFrame(this.handleFrame.bind(this));
     }
 }
 Animator.CURRENT_FRAME_NO = 0;
+Animator.ACTIVE = true;
 export { Animator };

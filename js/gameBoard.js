@@ -1,6 +1,7 @@
+import { Ghost } from "./entitiies/ghost.js";
 import { spriteManager } from "./spriteManager.js";
 class GameBoard {
-    constructor(blinky, inky, pinky, clyde) {
+    constructor() {
         this.currentDotSpaces = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -39,13 +40,15 @@ class GameBoard {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ];
+    }
+    setRenderer(renderer) {
+        this.renderer = renderer;
+    }
+    setGhosts(blinky, inky, pinky, clyde) {
         this.blinky = blinky;
         this.inky = inky;
         this.pinky = pinky;
         this.clyde = clyde;
-    }
-    setRenderer(renderer) {
-        this.renderer = renderer;
     }
     /**
      * Calculate the grid square coordinate on the gameboard
@@ -103,12 +106,12 @@ class GameBoard {
                     direction: directionFacing
                 }];
         }
-        if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
+        else if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
             if (directionFacing === "left") {
                 return [{
                         coord: {
                             by: 17,
-                            bx: 0
+                            bx: 27
                         },
                         direction: "left"
                     }];
@@ -117,30 +120,40 @@ class GameBoard {
                 return [{
                         coord: {
                             by: 17,
-                            bx: 27
+                            bx: 0
                         },
                         direction: "right"
                     }];
             }
+        }
+        if (directionFacing === "left" && coords.by === GameBoard.PURGATORY[0].by && coords.bx === GameBoard.PURGATORY[0].bx) {
+            // Bring you over to right purgatory
         }
         return ret;
     }
     purgatoryCheck(frameNo) {
         // Todo: Add pacman to this list
         const list = [this.blinky, this.inky, this.pinky, this.clyde];
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < list.length; i++) {
             const entity = list[i];
             const coords = entity.knownCurrentBoardLocation;
             if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
                 if (entity.direction === "left") {
                     // Put them on the right side, one offset from the edge
                     entity.setInitial({ cy: 17, cx: GameBoard.width * 16 }, false, frameNo);
+                    console.log(entity.PET_NAME, "was in left purgatory");
                 }
                 else if (entity.direction === "right") {
                     // Left side, -16
                     entity.setInitial({ cy: 17, cx: -16 }, false, frameNo);
+                    console.log(entity.PET_NAME, "was in right purgatory");
                 }
             }
+        }
+    }
+    static isInPurgatory(entity) {
+        if (entity instanceof Ghost) {
+            return (entity.knownCurrentBoardLocation.by === GameBoard.PURGATORY.by && entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY.bx);
         }
     }
     drawMaze(frameNo) {
@@ -247,7 +260,7 @@ class GameBoard {
         return false;
     }
 }
-GameBoard.PURGATORY = { by: 1000, bx: 1000 };
+GameBoard.PURGATORY = [{ by: 17, bx: -1 }, { by: 17, bx: 28 }];
 GameBoard.width = 28;
 GameBoard.height = 36;
 // 0 is illegal, 1 is legal

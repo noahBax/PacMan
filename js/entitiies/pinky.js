@@ -2,6 +2,7 @@ import { Ghost } from "./ghost.js";
 class Pinky extends Ghost {
     constructor(pacmanRef) {
         super(pacmanRef);
+        this.PET_NAME = "Pinky";
         this.__currentBoardLocation = { by: 4, bx: 1 };
         this.__startPositionForVector = { cy: 64, cx: 16 };
         this.direction = "right";

@@ -32,6 +32,10 @@ class Ghost extends Entity {
         this.latentDirection = bestMovedTowardsTarget.direction;
         this.__turningLocation = bestMovedTowardsTarget.coord;
     }
+    setInitial(coords, vector, currFrame) {
+        super.setInitial(coords, vector, currFrame);
+        this.initializeGhost();
+    }
     updateFrame(frameNo) {
         var _a, _b;
         const progress = frameNo - this.__startTime;
@@ -211,9 +215,13 @@ class Ghost extends Entity {
         console.log("	Current direction", this.direction);
         switch (this.direction) {
             case "left":
+                if (GameBoard.isInPurgatory(this))
+                    return { by: 17, bx: 27 };
                 returnBoardPos.bx -= 1;
                 return returnBoardPos;
             case "right":
+                if (GameBoard.isInPurgatory(this))
+                    return { by: 17, bx: 0 };
                 returnBoardPos.bx += 1;
                 return returnBoardPos;
             case "down":

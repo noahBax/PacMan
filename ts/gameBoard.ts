@@ -4,13 +4,14 @@ import { Ghost } from "./entitiies/ghost.js";
 import { Inky } from "./entitiies/inky.js";
 import { PacMan } from "./entitiies/pacman.js";
 import { Pinky } from "./entitiies/pinky.js";
+import { Entity } from "./entity.js";
 import { Renderer } from "./renderer.js";
 import { spriteManager } from "./spriteManager.js";
 import { Direction, boardCoordinate, canvasCoordinate, moveInfo } from "./types.js";
 
 class GameBoard {
 
-	static readonly PURGATORY: boardCoordinate = { by: 1000, bx: 1000};
+	static readonly PURGATORY: [boardCoordinate, boardCoordinate] = [{ by: 17, bx: -1  }, { by: 17, bx: 28 }];
 	
 	static actualWidth: number;
 	static actualHeight: number;
@@ -198,7 +199,7 @@ class GameBoard {
 		this.renderer = renderer;
 	}
 
-	constructor(blinky: Blinky, inky: Inky, pinky: Pinky, clyde: Clyde) {
+	setGhosts(blinky: Blinky, inky: Inky, pinky: Pinky, clyde: Clyde) {
 		this.blinky = blinky;
 		this.inky = inky;
 		this.pinky = pinky;
@@ -264,13 +265,12 @@ class GameBoard {
 				coord: {...GameBoard.PURGATORY},
 				direction: directionFacing
 			}]
-		}
-		if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
+		} else if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
 			if (directionFacing === "left") {
 				return [{
 					coord: {
 						by: 17,
-						bx: 0
+						bx: 27
 					},
 					direction: "left"
 				}];
@@ -278,11 +278,16 @@ class GameBoard {
 				return [{
 					coord: {
 						by: 17,
-						bx: 27
+						bx: 0
 					},
 					direction: "right"
 				}];
 			}
+		}
+
+		if (directionFacing === "left" && coords.by === GameBoard.PURGATORY[0].by && coords.bx === GameBoard.PURGATORY[0].bx) {
+			// Bring you over to right purgatory
+			
 		}
 
 		return ret
@@ -291,18 +296,26 @@ class GameBoard {
 	purgatoryCheck(frameNo: number) {
 		// Todo: Add pacman to this list
 		const list: Ghost[] = [this.blinky, this.inky, this.pinky, this.clyde];
-		for (let i = 0; i < 4; i++) {
+		for (let i = 0; i < list.length; i++) {
 			const entity = list[i];
 			const coords = entity.knownCurrentBoardLocation;
 			if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
 				if (entity.direction === "left") {
 					// Put them on the right side, one offset from the edge
 					entity.setInitial({ cy: 17, cx: GameBoard.width * 16 }, false, frameNo);
+					console.log(entity.PET_NAME, "was in left purgatory");
 				} else if (entity.direction === "right") {
 					// Left side, -16
 					entity.setInitial({ cy: 17, cx: -16 }, false, frameNo);
+					console.log(entity.PET_NAME, "was in right purgatory");
 				}
 			}
+		}
+	}
+
+	static isInPurgatory(entity: Ghost | PacMan) {
+		if (entity instanceof Ghost) {
+			return (entity.knownCurrentBoardLocation.by === GameBoard.PURGATORY.by && entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY.bx);
 		}
 	}
 

@@ -9,6 +9,8 @@ abstract class Ghost extends Entity {
 	private _frightTimer = 0;
 	private _frightStart = 0;
 
+	abstract readonly PET_NAME: string;
+
 	// We'll initialize this
 	knownPreviousBoardLocation: boardCoordinate;
 	knownCurrentBoardLocation: boardCoordinate;
@@ -50,6 +52,11 @@ abstract class Ghost extends Entity {
 		this.latentDirection = bestMovedTowardsTarget.direction;
 		this.__turningLocation = bestMovedTowardsTarget.coord;
 		
+	}
+
+	setInitial(coords: false | canvasCoordinate, vector: false | vector, currFrame: number) {
+		super.setInitial(coords, vector, currFrame);
+		this.initializeGhost();
 	}
 	
 	updateFrame(frameNo: number): RenderObject {
@@ -274,9 +281,11 @@ abstract class Ghost extends Entity {
 		console.log("	Current direction", this.direction);
 		switch (this.direction) { 
 			case "left":
+				if (GameBoard.isInPurgatory(this)) return {by: 17, bx: 27}
 				returnBoardPos.bx -= 1;
 				return returnBoardPos;
 			case "right":
+				if (GameBoard.isInPurgatory(this)) return {by: 17, bx: 0}
 				returnBoardPos.bx += 1;
 				return returnBoardPos;
 			case "down":

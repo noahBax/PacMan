@@ -14,6 +14,7 @@ class Animator {
 	private gameBoard: GameBoard;
 	
 	static CURRENT_FRAME_NO = 0;
+	static ACTIVE = true;
 
 	constructor(foreground_ctx: CanvasRenderingContext2D, background_ctx: CanvasRenderingContext2D, spriteSheet: HTMLImageElement | HTMLCanvasElement, gameBoard: GameBoard) {
 		this.renderer = new Renderer(foreground_ctx, background_ctx, spriteSheet);
@@ -21,15 +22,18 @@ class Animator {
 		this.gameBoard.setRenderer(this.renderer);
 	}
 
-	startRendering() {
-		window.requestAnimationFrame(this.handleFrame.bind(this));
-	}
-
 	registerEntity(entity: Entity) {
 		this.entityList.push(entity);
 	}
 
+	startUpAnimation() {
+		if (Animator.ACTIVE) window.requestAnimationFrame(this.handleFrame.bind(this));
+		// Animator.ACTIVE = true;
+	}
+
 	private handleFrame(timestamp: number) {
+
+		if (!Animator.ACTIVE) return;
 
 		// * Do time business logic yadayada
 		if (timestamp - this.prevFrameTime < 1000/60) {
@@ -51,9 +55,11 @@ class Animator {
 
 		if (DevMode.IN_DEV_MODE) {
 			devMode.updateTargets();
+			devMode.updatePanelLocs();
 		}
 
 		this.renderer.renderForeground(Animator.CURRENT_FRAME_NO);
+		this.gameBoard.purgatoryCheck(Animator.CURRENT_FRAME_NO);
 
 
 		window.requestAnimationFrame(this.handleFrame.bind(this));

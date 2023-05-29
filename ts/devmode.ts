@@ -124,89 +124,36 @@ class DevMode {
 
 	updateTargets() {
 
-		// First get Blinky
-		let target = this._blinky.knownTargetLocation;
-		let temp = this._targetTileCollection[0].dataset;
-		if (parseInt(temp.boardX) !== target.bx || parseInt(temp.boardY) !== target.by) {
-			// Remove current class from target tile
-			let t = (this._gridCells[parseInt(temp.boardY)][parseInt(temp.boardX)]);
-			t.classList.remove(DevMode.TARGET_CELL_CLASS);
-			
-			// Grab the dataset of our targetCell
-			let index = (this._gridCells[target.by][target.bx]);
-			// Use it's info to set the information of our target-location-cell
-			temp.boardX = "" + target.bx
-			temp.boardY = "" + target.by
-			temp.canvasX = index.dataset.canvasX;
-			temp.canvasY = index.dataset.canvasY;
-
-			// Now add the appropriate class to the new target tile
-			index.classList.add(DevMode.TARGET_CELL_CLASS);
-
+		const entities = [this._blinky, this._inky, this._pinky, this._clyde];
+		for (let i = 0; i < entities.length; i++) {
+			let target = entities[i].knownTargetLocation
+			let temp = this._targetTileCollection[0].dataset;
+			if (parseInt(temp.boardX) !== target.bx || parseInt(temp.boardY) !== target.by) {
+				// Remove current class from target tile
+				let t = (this._gridCells[parseInt(temp.boardY)][parseInt(temp.boardX)]);
+				t.classList.remove(DevMode.TARGET_CELL_CLASS);
+				
+				// Grab the dataset of our targetCell
+				let index = (this._gridCells[target.by][target.bx]);
+				// Use it's info to set the information of our target-location-cell
+				temp.boardX = "" + target.bx
+				temp.boardY = "" + target.by
+				temp.canvasX = index.dataset.canvasX;
+				temp.canvasY = index.dataset.canvasY;
+	
+				// Now add the appropriate class to the new target tile
+				index.classList.add(DevMode.TARGET_CELL_CLASS);
+	
+			}
 		}
+	}
 
-		// Inky
-		target = this._inky.knownTargetLocation;
-		temp = this._targetTileCollection[1].dataset;
-		if (parseInt(temp.boardX) !== target.bx || parseInt(temp.boardY) !== target.by) {
-			// Remove current class from target tile
-			let t = (this._gridCells[parseInt(temp.boardY)][parseInt(temp.boardX)]);
-			t.classList.remove(DevMode.TARGET_CELL_CLASS);
-			
-			// Grab the dataset of our targetCell
-			let index = (this._gridCells[target.by][target.bx]);
-			console.log(index, target, target.by, target.bx);
-			// Use it's info to set the information of our target-location-cell
-			temp.boardX = "" + target.bx
-			temp.boardY = "" + target.by
-			temp.canvasX = index.dataset.canvasX;
-			temp.canvasY = index.dataset.canvasY;
-
-			// Now add the appropriate class to the new target tile
-			index.classList.add(DevMode.TARGET_CELL_CLASS);
-			
-		}
-
-		// Pinky
-		target = this._pinky.knownTargetLocation;
-		temp = this._targetTileCollection[2].dataset;
-		if (parseInt(temp.boardX) !== target.bx || parseInt(temp.boardY) !== target.by) {
-			// Remove current class from target tile
-			let t = (this._gridCells[parseInt(temp.boardY)][parseInt(temp.boardX)]);
-			t.classList.remove(DevMode.TARGET_CELL_CLASS);
-			
-			// Grab the dataset of our targetCell
-			let index = (this._gridCells[target.by][target.bx]);
-			// Use it's info to set the information of our target-location-cell
-			temp.boardX = "" + target.bx
-			temp.boardY = "" + target.by
-			temp.canvasX = index.dataset.canvasX;
-			temp.canvasY = index.dataset.canvasY;
-
-			// Now add the appropriate class to the new target tile
-			index.classList.add(DevMode.TARGET_CELL_CLASS);
-			
-		}
-
-		// Clyde
-		target = this._clyde.knownTargetLocation;
-		temp = this._targetTileCollection[3].dataset;
-		if (parseInt(temp.boardX) !== target.bx || parseInt(temp.boardY) !== target.by) {
-			// Remove current class from target tile
-			let t = (this._gridCells[parseInt(temp.boardY)][parseInt(temp.boardX)]);
-			t.classList.remove(DevMode.TARGET_CELL_CLASS);
-			
-			// Grab the dataset of our targetCell
-			let index = (this._gridCells[target.by][target.bx]);
-			// Use it's info to set the information of our target-location-cell
-			temp.boardX = "" + target.bx
-			temp.boardY = "" + target.by
-			temp.canvasX = index.dataset.canvasX;
-			temp.canvasY = index.dataset.canvasY;
-
-			// Now add the appropriate class to the new target tile
-			index.classList.add(DevMode.TARGET_CELL_CLASS);
-			
+	updatePanelLocs() {
+		const entities = [this._blinky, this._inky, this._pinky, this._clyde];
+		const ids= ["blinkyLoc", "inkyLoc", "pinkyLoc", "clydeLoc"];
+		for (let i = 0; i < ids.length; i++) {
+			let e = entities[i].knownCurrentBoardLocation;
+			document.getElementById(ids[i]).textContent = `[${e.by}, ${e.bx}`;
 		}
 	}
 
@@ -225,12 +172,12 @@ class DevMode {
 
 	private _displayGridCoord(event: MouseEvent) {
 		const cell = event.target as GridCell;
-		document.getElementById("tileLocation").textContent = `Location: [${cell.dataset.boardY}, ${cell.dataset.boardX}]`
+		document.getElementById("tileLocation").textContent = `Selected Location: [${cell.dataset.boardY}, ${cell.dataset.boardX}]`
 	}
 	
 	private _dismissGridCoord(event: MouseEvent) {
 		if (!(event.relatedTarget as HTMLElement)?.classList.contains(DevMode.GRID_CELL_CLASS)) {
-			document.getElementById("tileLocation").textContent = `Location: None`
+			document.getElementById("tileLocation").textContent = `Selected Location: None`
 			
 		}
 	}

@@ -42,6 +42,7 @@ function main() {
     window.clyde = clyde;
     console.log("Init-ing clyde");
     clyde.initializeGhost();
+    gameBoard.setGhosts(blinky, inky, pinky, clyde);
     window.gameBoard = gameBoard;
     window.GameBoard = GameBoard;
     window.animator = animator;
@@ -52,8 +53,8 @@ function main() {
     devMode.renderGridTiles();
     clyde.scareMe(600, 0);
     devCanvas.style.display = "block";
-    controller = new Controller(pacman);
-    animator.startRendering();
+    controller = new Controller(pacman, animator);
+    animator.startUpAnimation();
     // And finally
 }
 document.addEventListener('DOMContentLoaded', main);

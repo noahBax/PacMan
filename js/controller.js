@@ -1,14 +1,15 @@
 import { Animator } from "./animator.js";
 import { PacMan } from "./entitiies/pacman.js";
 class Controller {
-    constructor(driving) {
+    constructor(driving, animator) {
         this.lastKey = "right";
         this.driving = driving;
+        this.animator = animator;
         // Start listening to the keyboard
-        window.addEventListener('keydown', this.handleKeyUp.bind(this));
-        window.addEventListener('keyup', this.handleKeyDown.bind(this));
+        window.addEventListener('keydown', this.handleKeyDown.bind(this));
+        window.addEventListener('keyup', this.handleKeyUp.bind(this));
     }
-    handleKeyUp(event) {
+    handleKeyDown(event) {
         if (event.repeat)
             return;
         switch (event.key) {
@@ -36,9 +37,12 @@ class Controller {
                 this.driving.direction = "right";
                 this.driving.setInitial(false, { x: PacMan.SPEED, y: 0 }, Animator.CURRENT_FRAME_NO);
                 break;
+            case "Escape":
+                Animator.ACTIVE = !Animator.ACTIVE;
+                this.animator.startUpAnimation();
         }
     }
-    handleKeyDown(event) {
+    handleKeyUp(event) {
         if (event.repeat)
             return;
         switch (event.key) {

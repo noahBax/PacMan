@@ -5,6 +5,8 @@ import { PacMan } from "./pacman.js";
 
 class Inky extends Ghost {
 	
+	PET_NAME = "Inky";
+	
 	protected __currentBoardLocation: boardCoordinate = {by: 32, bx: 26};
 	protected __startPositionForVector: canvasCoordinate = {cy: 512, cx: 416};
 	direction: Direction = "left";

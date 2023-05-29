@@ -5,6 +5,8 @@ import { PacMan } from "./pacman.js";
 
 class Blinky extends Ghost {
 	
+	PET_NAME = "Blinky";
+	
 	protected __startPositionForVector: canvasCoordinate = {cy: 16*14, cx: 13*16}
 	protected __currentBoardLocation: boardCoordinate = {by: 14, bx: 13};
 	direction: Direction = "left";
