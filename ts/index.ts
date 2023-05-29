@@ -29,25 +29,25 @@ function main() {
 	animator.registerEntity(pacman);
 	window.pacman = pacman
 
-	const blinky = new Blinky(pacman);
+	const blinky = new Blinky(pacman, gameBoard);
 	animator.registerEntity(blinky)
 	window.blinky = blinky
 	console.log("Init-ing blinky");
 	blinky.initializeGhost();
 
-	const inky = new Inky(pacman);
+	const inky = new Inky(pacman, gameBoard);
 	animator.registerEntity(inky)
 	window.inky = inky;
 	console.log("Init-ing inky");
 	inky.initializeGhost();
 
-	const pinky = new Pinky(pacman);
+	const pinky = new Pinky(pacman, gameBoard);
 	animator.registerEntity(pinky);
 	window.pinky = pinky
 	console.log("Init-ing pinky");
 	pinky.initializeGhost();
 
-	const clyde = new Clyde(pacman);
+	const clyde = new Clyde(pacman, gameBoard);
 	animator.registerEntity(clyde);
 	window.clyde = clyde
 	console.log("Init-ing clyde");

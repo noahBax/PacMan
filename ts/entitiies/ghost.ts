@@ -11,6 +11,8 @@ abstract class Ghost extends Entity {
 
 	abstract readonly PET_NAME: string;
 
+	private gameBoard: GameBoard;
+
 	// We'll initialize this
 	knownPreviousBoardLocation: boardCoordinate;
 	knownCurrentBoardLocation: boardCoordinate;
@@ -26,9 +28,10 @@ abstract class Ghost extends Entity {
 
 	private _moveProcessed = true;
 
-	constructor(pacmanRef: PacMan) {
+	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
 		super()
 		this.__pacmanReference = pacmanRef;
+		this.gameBoard = gameBoard;
 	}
 
 	initializeGhost() {
@@ -42,7 +45,7 @@ abstract class Ghost extends Entity {
 		
 		// So first let's do finding the path to the target
 		this._moveProcessed = false;
-		this.knownPreviousBoardLocation = {...this.__currentBoardLocation};
+		this.knownPreviousBoardLocation = this.knownCurrentBoardLocation ??  {...this.__currentBoardLocation};
 		this.knownCurrentBoardLocation = {...this.__currentBoardLocation};
 		this.__currentVector = Ghost.getVectorFromDirection(this.direction);
 
@@ -68,19 +71,29 @@ abstract class Ghost extends Entity {
 				this.state = "chase";
 			}
 		}
-		console.log("	Direction is", this.direction, ". Latent direction is", this.latentDirection);
-		if (this.latentDirection === "none") throw("ahhhh");
-
-
-
+		
+		
 		// Get current position on gameboard
-		const currentCanvasPos = this.getCurrentPosition(frameNo);
+		const currentCanvasPos = GameBoard.correctForPurgatory(this.getCurrentPosition(frameNo));
+		// Correct the coordinate for purgatory
+		
 		// Create a copy and modify a copy of these so we can find our center in the next function
 		const currentBoardPos = GameBoard.getPositionOnBoardGrid({
 			cy: currentCanvasPos.cy + 8,
 			cx: currentCanvasPos.cx + 8
 		});
+		/**
+		 * What to do if we're in purgatory
+		 *  - Teleport to the other side of the map
+		 * 	  - Change __startPositionForvector
+		 * 	- Update associated coordinates (presumably by calling initialize)
+		 */
+
 		
+		console.log("	Direction is", this.direction, ". Latent direction is", this.latentDirection);
+		console.log("	Board position is", currentBoardPos, "and actual is", currentCanvasPos);
+		if (this.latentDirection === "none") throw("ahhhh");
+
 		/**
 		 * Check to see if we are in a different tile than previously recorded
 		 * (We don't have to if the move we are waiting to do hasn't processed)
@@ -138,25 +151,6 @@ abstract class Ghost extends Entity {
 			console.log("	Checking if can apply latent move. Direction is", this.direction, ". Latent direction is", this.latentDirection);
 			
 			let canProcessNow = false;
-			// switch (this.direction) {
-			// 	case "up":
-			// 		canProcessNow = currentCanvasPos.cy % 16 <= 8;
-			// 		break;
-			// 	case "down":
-			// 		canProcessNow = currentCanvasPos.cy % 16 > 8;
-			// 		break;
-			// 	case "left":
-			// 		canProcessNow = currentCanvasPos.cx % 16 <= 8;
-			// 		break;
-			// 	case "right":
-			// 		canProcessNow = currentCanvasPos.cx % 16 > 8;
-			// 		break;
-			// 	case "none":
-			// 		canProcessNow = true;
-			// 		throw("updateFrame: Direction is none, can't process");
-			// 		break;
-			// }
-
 			// * These are reversed comparisons because it is the same thing as adding 8 to the canvas position to center it
 			// * Save cpu time right? Sacrifice readability
 			switch (this.direction) {
@@ -194,6 +188,12 @@ abstract class Ghost extends Entity {
 		}
 
 
+		/**
+		 * Do a purgatory check here to teleport us to the correct side
+		 */
+		GameBoard.purgatoryCheck(frameNo, this);
+		
+		
 		/**
 		 * Return coordinates with respect to canvas
 		 * This'll always happen

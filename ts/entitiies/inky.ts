@@ -12,9 +12,8 @@ class Inky extends Ghost {
 	direction: Direction = "left";
 	protected __currentVector = Ghost.getVectorFromDirection("left");
 	
-	constructor(pacmanRef: PacMan) {
-		super(pacmanRef);
-		
+	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
+		super(pacmanRef, gameBoard);
 	}
 	
 	protected __animationInfo: animationInfo = {

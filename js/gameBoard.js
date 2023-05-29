@@ -52,7 +52,7 @@ class GameBoard {
     }
     /**
      * Calculate the grid square coordinate on the gameboard
-     * @param coords The coordinates with respect to the canvas, not the board
+     * @param coords The coordinates with respect to the canvas
      * @returns The coordinate with respect to the gameboard
      */
     static getPositionOnBoardGrid(coords) {
@@ -98,62 +98,71 @@ class GameBoard {
         }
         /**
          * Now we will do a check to see if the ghosts are in or adjacent to purgatory
-         * If the ghost is either in purgatory or in a block at the either side of the board in a tunnel, then it has access to purgatory and it's surroundings
+         * If a ghost is in left purgatory currently, it needs to have access to right purgatory. It also must be heading left
+         * And if in right it needs to have access to left. Heading right
+         * If the ghost is adjacent to right pergatory and facing right, then it needs to have access to it
+         * Same goes for left
          */
-        if (coords.by === 17 && (coords.bx === 27 && directionFacing === "right" || coords.bx == 0 && directionFacing === "left")) {
-            return [{
-                    coord: { ...GameBoard.PURGATORY },
-                    direction: directionFacing
-                }];
-        }
-        else if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
-            if (directionFacing === "left") {
-                return [{
-                        coord: {
-                            by: 17,
-                            bx: 27
-                        },
-                        direction: "left"
-                    }];
-            }
-            else if (directionFacing === "right") {
-                return [{
-                        coord: {
-                            by: 17,
-                            bx: 0
-                        },
-                        direction: "right"
-                    }];
-            }
-        }
         if (directionFacing === "left" && coords.by === GameBoard.PURGATORY[0].by && coords.bx === GameBoard.PURGATORY[0].bx) {
             // Bring you over to right purgatory
+            return [{
+                    coord: { ...GameBoard.PURGATORY[1] },
+                    direction: "left"
+                }];
+        }
+        else if (directionFacing == "right" && coords.bx === GameBoard.PURGATORY[1].bx && coords.by === GameBoard.PURGATORY[1].by) {
+            // Bring you to left
+            return [{
+                    coord: { ...GameBoard.PURGATORY[0] },
+                    direction: "right"
+                }];
+        }
+        else if (directionFacing == "right" && coords.by === 17 && coords.bx === 27) {
+            return [{
+                    coord: { ...GameBoard.PURGATORY[1] },
+                    direction: "right"
+                }];
+        }
+        else if (directionFacing === "left" && coords.by === 17 && coords.bx === 0) {
+            return [{
+                    coord: { ...GameBoard.PURGATORY[0] },
+                    direction: "left"
+                }];
         }
         return ret;
     }
-    purgatoryCheck(frameNo) {
+    static purgatoryCheck(frameNo, entity) {
         // Todo: Add pacman to this list
-        const list = [this.blinky, this.inky, this.pinky, this.clyde];
-        for (let i = 0; i < list.length; i++) {
-            const entity = list[i];
-            const coords = entity.knownCurrentBoardLocation;
-            if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
-                if (entity.direction === "left") {
-                    // Put them on the right side, one offset from the edge
-                    entity.setInitial({ cy: 17, cx: GameBoard.width * 16 }, false, frameNo);
-                    console.log(entity.PET_NAME, "was in left purgatory");
-                }
-                else if (entity.direction === "right") {
-                    // Left side, -16
-                    entity.setInitial({ cy: 17, cx: -16 }, false, frameNo);
-                    console.log(entity.PET_NAME, "was in right purgatory");
-                }
+        if (entity instanceof Ghost) {
+            // I'm only checking the x here. If it's buggy and somehow somone glitches, this won't stop much
+            if (entity.direction === "left" && entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY[0].bx) {
+                // We need to teleport
+                entity.setInitial({ cy: 17 * 16, cx: GameBoard.width * 16 }, false, frameNo);
+                console.log(entity.PET_NAME, "was in left purgatory");
+            }
+            else if (entity.direction === "right" && entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY[1].bx) {
+                entity.setInitial({ cy: 17 * 16, cx: -16 }, false, frameNo);
+                console.log(entity.PET_NAME, "was in right purgatory");
             }
         }
     }
     static isInPurgatory(entity) {
         if (entity instanceof Ghost) {
             return (entity.knownCurrentBoardLocation.by === GameBoard.PURGATORY.by && entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY.bx);
+        }
+    }
+    static correctForPurgatory(coord) {
+        if (coord.cy > GameBoard.actualWidth) {
+            return {
+                cy: -(GameBoard.actualWidth - coord.cy),
+                cx: coord.cx
+            };
+        }
+        else if (coord.cy < 0) {
+            return {
+                cy: GameBoard.actualWidth - coord.cy,
+                cx: coord.cx
+            };
         }
     }
     drawMaze(frameNo) {

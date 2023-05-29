@@ -44,7 +44,6 @@ class Animator {
             devMode.updatePanelLocs();
         }
         this.renderer.renderForeground(Animator.CURRENT_FRAME_NO);
-        this.gameBoard.purgatoryCheck(Animator.CURRENT_FRAME_NO);
         window.requestAnimationFrame(this.handleFrame.bind(this));
     }
 }

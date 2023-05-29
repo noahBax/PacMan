@@ -1,7 +1,7 @@
 import { Ghost } from "./ghost.js";
 class Blinky extends Ghost {
-    constructor(pacmanRef) {
-        super(pacmanRef);
+    constructor(pacmanRef, gameBoard) {
+        super(pacmanRef, gameBoard);
         this.PET_NAME = "Blinky";
         this.__startPositionForVector = { cy: 16 * 14, cx: 13 * 16 };
         this.__currentBoardLocation = { by: 14, bx: 13 };

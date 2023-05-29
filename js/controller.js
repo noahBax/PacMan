@@ -70,7 +70,6 @@ class Controller {
     }
     popFromButtonList(dir) {
         if (this.buttonPressList.includes(dir)) {
-            console.log("removing", dir, this.buttonPressList.indexOf(dir));
             this.buttonPressList.splice(this.buttonPressList.indexOf(dir), 1);
         }
     }

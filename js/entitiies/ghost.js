@@ -3,7 +3,7 @@ import { GameBoard } from "../gameBoard.js";
 import { spriteManager } from "../spriteManager.js";
 import { PacMan } from "./pacman.js";
 class Ghost extends Entity {
-    constructor(pacmanRef) {
+    constructor(pacmanRef, gameBoard) {
         super();
         this.state = "chase";
         this._frightTimer = 0;
@@ -12,6 +12,7 @@ class Ghost extends Entity {
         this.latentDirection = "right";
         this._moveProcessed = true;
         this.__pacmanReference = pacmanRef;
+        this.gameBoard = gameBoard;
     }
     initializeGhost() {
         /**
@@ -21,9 +22,10 @@ class Ghost extends Entity {
          * - Our direction
          * - by extension or vector
          */
+        var _a;
         // So first let's do finding the path to the target
         this._moveProcessed = false;
-        this.knownPreviousBoardLocation = { ...this.__currentBoardLocation };
+        this.knownPreviousBoardLocation = (_a = this.knownCurrentBoardLocation) !== null && _a !== void 0 ? _a : { ...this.__currentBoardLocation };
         this.knownCurrentBoardLocation = { ...this.__currentBoardLocation };
         this.__currentVector = Ghost.getVectorFromDirection(this.direction);
         const forwardPosition = this.__getForwardBoardCoordinate();
@@ -45,16 +47,24 @@ class Ghost extends Entity {
                 this.state = "chase";
             }
         }
-        console.log("	Direction is", this.direction, ". Latent direction is", this.latentDirection);
-        if (this.latentDirection === "none")
-            throw ("ahhhh");
         // Get current position on gameboard
-        const currentCanvasPos = this.getCurrentPosition(frameNo);
+        const currentCanvasPos = GameBoard.correctForPurgatory(this.getCurrentPosition(frameNo));
+        // Correct the coordinate for purgatory
         // Create a copy and modify a copy of these so we can find our center in the next function
         const currentBoardPos = GameBoard.getPositionOnBoardGrid({
             cy: currentCanvasPos.cy + 8,
             cx: currentCanvasPos.cx + 8
         });
+        /**
+         * What to do if we're in purgatory
+         *  - Teleport to the other side of the map
+         * 	  - Change __startPositionForvector
+         * 	- Update associated coordinates (presumably by calling initialize)
+         */
+        console.log("	Direction is", this.direction, ". Latent direction is", this.latentDirection);
+        console.log("	Board position is", currentBoardPos, "and actual is", currentCanvasPos);
+        if (this.latentDirection === "none")
+            throw ("ahhhh");
         /**
          * Check to see if we are in a different tile than previously recorded
          * (We don't have to if the move we are waiting to do hasn't processed)
@@ -100,24 +110,6 @@ class Ghost extends Entity {
         if (!this._moveProcessed && (currentBoardPos.bx === this.__turningLocation.bx || currentBoardPos.by === this.__turningLocation.by)) {
             console.log("	Checking if can apply latent move. Direction is", this.direction, ". Latent direction is", this.latentDirection);
             let canProcessNow = false;
-            // switch (this.direction) {
-            // 	case "up":
-            // 		canProcessNow = currentCanvasPos.cy % 16 <= 8;
-            // 		break;
-            // 	case "down":
-            // 		canProcessNow = currentCanvasPos.cy % 16 > 8;
-            // 		break;
-            // 	case "left":
-            // 		canProcessNow = currentCanvasPos.cx % 16 <= 8;
-            // 		break;
-            // 	case "right":
-            // 		canProcessNow = currentCanvasPos.cx % 16 > 8;
-            // 		break;
-            // 	case "none":
-            // 		canProcessNow = true;
-            // 		throw("updateFrame: Direction is none, can't process");
-            // 		break;
-            // }
             // * These are reversed comparisons because it is the same thing as adding 8 to the canvas position to center it
             // * Save cpu time right? Sacrifice readability
             switch (this.direction) {
@@ -148,6 +140,10 @@ class Ghost extends Entity {
                 // ToDo: Ideally I want to have the Ghost's eyes facing in the direction they want to turn before it is decided. So I may have things start looking at the latent direction
             }
         }
+        /**
+         * Do a purgatory check here to teleport us to the correct side
+         */
+        GameBoard.purgatoryCheck(frameNo, this);
         /**
          * Return coordinates with respect to canvas
          * This'll always happen

@@ -1,8 +1,8 @@
 import { GameBoard } from "../gameBoard.js";
 import { Ghost } from "./ghost.js";
 class Inky extends Ghost {
-    constructor(pacmanRef) {
-        super(pacmanRef);
+    constructor(pacmanRef, gameBoard) {
+        super(pacmanRef, gameBoard);
         this.PET_NAME = "Inky";
         this.__currentBoardLocation = { by: 32, bx: 26 };
         this.__startPositionForVector = { cy: 512, cx: 416 };
