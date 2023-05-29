@@ -1,9 +1,17 @@
+import { Blinky } from "./entitiies/blinky.js";
+import { Clyde } from "./entitiies/clyde.js";
+import { Ghost } from "./entitiies/ghost.js";
+import { Inky } from "./entitiies/inky.js";
+import { PacMan } from "./entitiies/pacman.js";
+import { Pinky } from "./entitiies/pinky.js";
 import { Renderer } from "./renderer.js";
 import { spriteManager } from "./spriteManager.js";
 import { Direction, boardCoordinate, canvasCoordinate, moveInfo } from "./types.js";
 
 class GameBoard {
 
+	static readonly PURGATORY: boardCoordinate = { by: 1000, bx: 1000};
+	
 	static actualWidth: number;
 	static actualHeight: number;
 	
@@ -11,6 +19,11 @@ class GameBoard {
 	static readonly height = 36;
 
 	private renderer: Renderer;
+
+	private blinky: Blinky
+	private inky: Inky
+	private pinky: Pinky
+	private clyde: Clyde
 
 		// 0 is illegal, 1 is legal
 		static readonly legalSpaces = [
@@ -185,29 +198,35 @@ class GameBoard {
 		this.renderer = renderer;
 	}
 
+	constructor(blinky: Blinky, inky: Inky, pinky: Pinky, clyde: Clyde) {
+		this.blinky = blinky;
+		this.inky = inky;
+		this.pinky = pinky;
+		this.clyde = clyde;
+	}
+
 	/**
 	 * Calculate the grid square coordinate on the gameboard
 	 * @param coords The coordinates with respect to the canvas, not the board
 	 * @returns The coordinate with respect to the gameboard
 	 */
 	static getPositionOnBoardGrid(coords: canvasCoordinate): boardCoordinate {
-		// Get center coordinates
 
-		let ret = {...coords}
-		ret.cx += 8;
-		ret.cy += 8;
 		return {
-			by: Math.floor((ret.cy) / GameBoard.actualHeight * GameBoard.height),
-			bx: Math.floor((ret.cx) / GameBoard.actualWidth * GameBoard.width),
+			by: Math.floor((coords.cy) / GameBoard.actualHeight * GameBoard.height),
+			bx: Math.floor((coords.cx) / GameBoard.actualWidth * GameBoard.width),
 		}
 	}
 	/**
 	 * Get legal spaces that are around the coordinate in question
 	 * @param coords Coordinates with respect to the gameboard
+	 * @param directionFacing Needed for possibility of purgatory. If outside, won't matter
 	 * @returns A list of coordinates which describe legal spaces around the target
 	 */
-	static getLegalMoves(coords: boardCoordinate): moveInfo[] {
-		console.log("Leval Moves starting with coord", coords);
+	static getLegalMoves(coords: boardCoordinate, directionFacing: Direction): moveInfo[] {
+		console.log("	Legal Moves starting with coord", coords);
+
+		// ToDo: Purgatory stuff! Not here though
 
 		let ret: moveInfo[] = [];
 		
@@ -218,7 +237,7 @@ class GameBoard {
 				direction: "left"
 			});
 		}
-		if (coords.bx < GameBoard.width && GameBoard.legalSpaces[coords.by][coords.bx + 1] === 1) {
+		if (coords.bx < (GameBoard.width - 1) && GameBoard.legalSpaces[coords.by][coords.bx + 1] === 1) {
 			ret.push({
 				coord: {by: coords.by, bx: coords.bx + 1},
 				direction: "right"
@@ -228,16 +247,63 @@ class GameBoard {
 			ret.push({
 				coord: {by: (coords.by - 1), bx: coords.bx},
 				direction: "up"
-		});
+			});
 		}
-		if (coords.by < GameBoard.height && GameBoard.legalSpaces[coords.by + 1][coords.bx] === 1) {
+		if (coords.by < (GameBoard.height - 1) && GameBoard.legalSpaces[coords.by + 1][coords.bx] === 1) {
 			ret.push({
 				coord: {by: coords.by + 1, bx: coords.bx},
 				direction: "down"
-		});
+			});
+		}
+		/**
+		 * Now we will do a check to see if the ghosts are in or adjacent to purgatory
+		 * If the ghost is either in purgatory or in a block at the either side of the board in a tunnel, then it has access to purgatory and it's surroundings
+		 */
+		if (coords.by === 17 && (coords.bx === 27 && directionFacing === "right" || coords.bx == 0 && directionFacing === "left")) {
+			return [{
+				coord: {...GameBoard.PURGATORY},
+				direction: directionFacing
+			}]
+		}
+		if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
+			if (directionFacing === "left") {
+				return [{
+					coord: {
+						by: 17,
+						bx: 0
+					},
+					direction: "left"
+				}];
+			} else if (directionFacing === "right") {
+				return [{
+					coord: {
+						by: 17,
+						bx: 27
+					},
+					direction: "right"
+				}];
+			}
 		}
 
 		return ret
+	}
+
+	purgatoryCheck(frameNo: number) {
+		// Todo: Add pacman to this list
+		const list: Ghost[] = [this.blinky, this.inky, this.pinky, this.clyde];
+		for (let i = 0; i < 4; i++) {
+			const entity = list[i];
+			const coords = entity.knownCurrentBoardLocation;
+			if (coords.by === GameBoard.PURGATORY.by && coords.bx === GameBoard.PURGATORY.bx) {
+				if (entity.direction === "left") {
+					// Put them on the right side, one offset from the edge
+					entity.setInitial({ cy: 17, cx: GameBoard.width * 16 }, false, frameNo);
+				} else if (entity.direction === "right") {
+					// Left side, -16
+					entity.setInitial({ cy: 17, cx: -16 }, false, frameNo);
+				}
+			}
+		}
 	}
 
 	drawMaze(frameNo: number): boolean {

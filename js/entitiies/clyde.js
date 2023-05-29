@@ -2,7 +2,7 @@ import { Ghost } from "./ghost.js";
 class Clyde extends Ghost {
     constructor(pacmanRef) {
         super(pacmanRef);
-        this.__currentLocation = { by: 32, bx: 1 };
+        this.__currentBoardLocation = { by: 32, bx: 1 };
         this.__startPositionForVector = { cy: 32 * 16, cx: 16, };
         this.direction = "right";
         this.__currentVector = Ghost.getVectorFromDirection("right");
@@ -12,7 +12,6 @@ class Clyde extends Ghost {
             right: "clydeRight",
             up: "clydeUp"
         };
-        this.__currentLocation = { bx: 0, by: 0 };
     }
     getTarget() {
         return { bx: 0, by: 0 };

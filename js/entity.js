@@ -1,7 +1,5 @@
 class Entity {
     constructor() {
-        this.__startPositionForVector = { cx: 0, cy: 0 };
-        this.__currentVector = { x: 0, y: 0 };
         this.__startTime = 0;
         this.direction = "right";
     }

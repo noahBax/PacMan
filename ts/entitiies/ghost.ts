@@ -9,18 +9,20 @@ abstract class Ghost extends Entity {
 	private _frightTimer = 0;
 	private _frightStart = 0;
 
-	knownPreviousLocation: boardCoordinate = {by: 0, bx: 0}
-	knownCurrentLocation: boardCoordinate = {by: 0, bx: 0}
-	knownTargetLocation: boardCoordinate = {by: 0, bx: 0};
+	// We'll initialize this
+	knownPreviousBoardLocation: boardCoordinate;
+	knownCurrentBoardLocation: boardCoordinate;
+	knownTargetLocation: boardCoordinate;
 	// This current location is public
 	
-	protected abstract __currentLocation: boardCoordinate;
+	protected abstract __currentBoardLocation: boardCoordinate;
 	protected abstract __startPositionForVector: canvasCoordinate;
 
-	// Direction that won't be applied until we reach the center of the cell
-	private _latentDirection: Direction = "right";
-	private _moveProcessed = true;
 	protected __turningLocation: boardCoordinate;
+	// Direction that won't be applied until we reach the center of the turningLocation
+	latentDirection: Direction = "right";
+
+	private _moveProcessed = true;
 
 	constructor(pacmanRef: PacMan) {
 		super()
@@ -38,8 +40,15 @@ abstract class Ghost extends Entity {
 		
 		// So first let's do finding the path to the target
 		this._moveProcessed = false;
-		this.knownPreviousLocation = {...this.__currentLocation};
-		const bestPosition = this._targetLogic(0);
+		this.knownPreviousBoardLocation = {...this.__currentBoardLocation};
+		this.knownCurrentBoardLocation = {...this.__currentBoardLocation};
+		this.__currentVector = Ghost.getVectorFromDirection(this.direction);
+
+		const forwardPosition = this.__getForwardBoardCoordinate();
+		const bestMovedTowardsTarget = this._targetLogic(forwardPosition);
+		// Above also sets the knownTargetLocation variable
+		this.latentDirection = bestMovedTowardsTarget.direction;
+		this.__turningLocation = bestMovedTowardsTarget.coord;
 		
 	}
 	
@@ -52,118 +61,181 @@ abstract class Ghost extends Entity {
 				this.state = "chase";
 			}
 		}
+		console.log("	Direction is", this.direction, ". Latent direction is", this.latentDirection);
+		if (this.latentDirection === "none") throw("ahhhh");
+
 
 
 		// Get current position on gameboard
-		const currentBoardPos = {...this.__currentLocation};
+		const currentCanvasPos = this.getCurrentPosition(frameNo);
+		// Create a copy and modify a copy of these so we can find our center in the next function
+		const currentBoardPos = GameBoard.getPositionOnBoardGrid({
+			cy: currentCanvasPos.cy + 8,
+			cx: currentCanvasPos.cx + 8
+		});
 		
-		// Check to see if we have moved a tile
-		if (!this._moveProcessed && this.__currentLocation.bx !== currentBoardPos.bx || this.__currentLocation.by !== currentBoardPos.by) {
-			console.log("We have moved");
+		/**
+		 * Check to see if we are in a different tile than previously recorded
+		 * (We don't have to if the move we are waiting to do hasn't processed)
+		 * If we have we need to
+		 * 	- Update the recorded tile
+		 *  - Adjust
+		 * 	  - knownPreviousBoardLocation
+		 * 	  - knownCurrentBoardLocation
+		 * 	  - __currentBoardLocation
+		 *  - Find out what the best way to get to the target tile is
+		 *  - Adjust
+		 *    - latentDirection
+		 *    - __turningLocation
+		 * Lastly we need to mark the move as unprocessed
+		 */
+		if (this._moveProcessed && this.__currentBoardLocation.bx !== currentBoardPos.bx || this.__currentBoardLocation.by !== currentBoardPos.by) {
+			console.log("	We have moved");
 			
-			// Update the record so we can perform the check next time
-			this.knownPreviousLocation = {...this.__currentLocation};
-			this.__currentLocation = {...currentBoardPos};
-			this.knownCurrentLocation = {...currentBoardPos};
-			console.log("Location Previously", this.knownPreviousLocation, "Current Location", this.knownCurrentLocation);
+			this.knownPreviousBoardLocation = {...this.__currentBoardLocation};
+			this.__currentBoardLocation 	= {...currentBoardPos};
+			this.knownCurrentBoardLocation 	= {...currentBoardPos};
 
-			// Do target stuff
-			const bestPos = this._targetLogic(frameNo);
-			console.log("Target block", this.knownTargetLocation, "Move to", bestPos);
+			console.log("	Location Previously", this.knownPreviousBoardLocation, "Current Location", this.knownCurrentBoardLocation);
 
-			this._latentDirection = bestPos?.direction ?? "none";
+
+			const bestPossibleMove = this._targetLogic(this.__turningLocation);
+			console.log("	Target block", this.knownTargetLocation, "Move to", bestPossibleMove);
+
+
+
+			this.latentDirection 	= bestPossibleMove?.direction ?? "none";
+			this.__turningLocation 	= bestPossibleMove?.coord ?? {...this.knownCurrentBoardLocation};
+
+
 			this._moveProcessed = false;
 		
 		}
 		
-		// Check to see if we are at the turning point
-		if (!this._moveProcessed && (currentBoardPos.bx !== this.__turningLocation.bx || currentBoardPos.by !== this.__turningLocation.by)) {
-			console.log("Processing direction change")
+		/**
+		 * Check to see if we are at a point we can apply our latent move at
+		 * (Don't have to check if the move has already been processed)
+		 * 
+		 * We first check to see if we are in the correct square by looking at turningLocation and currentBoardPos
+		 * Next check to see if we are past the middle point
+		 * If we are, we can
+		 *  - Apply the latent direction
+		 *  - Adjust
+		 *    - __startPositionForVector
+		 *    - __currentVector
+		 * 	  - direction
+		 *    - __startTime
+		 * Mark the move as processed
+		 */
+		if (!this._moveProcessed && (currentBoardPos.bx === this.__turningLocation.bx || currentBoardPos.by === this.__turningLocation.by)) {
+			console.log("	Checking if can apply latent move. Direction is", this.direction, ". Latent direction is", this.latentDirection);
 			
-			const currCanvasPos = this.getCurrentPosition(frameNo);
 			let canProcessNow = false;
+			// switch (this.direction) {
+			// 	case "up":
+			// 		canProcessNow = currentCanvasPos.cy % 16 <= 8;
+			// 		break;
+			// 	case "down":
+			// 		canProcessNow = currentCanvasPos.cy % 16 > 8;
+			// 		break;
+			// 	case "left":
+			// 		canProcessNow = currentCanvasPos.cx % 16 <= 8;
+			// 		break;
+			// 	case "right":
+			// 		canProcessNow = currentCanvasPos.cx % 16 > 8;
+			// 		break;
+			// 	case "none":
+			// 		canProcessNow = true;
+			// 		throw("updateFrame: Direction is none, can't process");
+			// 		break;
+			// }
+
+			// * These are reversed comparisons because it is the same thing as adding 8 to the canvas position to center it
+			// * Save cpu time right? Sacrifice readability
 			switch (this.direction) {
 				case "up":
-					canProcessNow = currCanvasPos.cy % 16 <= 8;
+					canProcessNow = currentCanvasPos.cy % 16 >= 8;
 					break;
 				case "down":
-					canProcessNow = currCanvasPos.cy % 16 > 8;
+					canProcessNow = currentCanvasPos.cy % 16 < 8;
 					break;
 				case "left":
-					canProcessNow = currCanvasPos.cx % 16 <= 8;
+					canProcessNow = currentCanvasPos.cx % 16 >= 8;
 					break;
 				case "right":
-					canProcessNow = currCanvasPos.cx % 16 > 8;
+					canProcessNow = currentCanvasPos.cx % 16 < 8;
+					break;
 				case "none":
 					canProcessNow = true;
-					// Idk when this'll happen so I want to know
+					throw("updateFrame: Direction is none, can't process");
 					break;
 			}
 
 			if (canProcessNow) {
-				console.log("processing now")
+				console.log("	We can apply the latent move")
 				
+				this.__startPositionForVector = {...currentCanvasPos};
+				this.__currentVector = Ghost.getVectorFromDirection(this.latentDirection);
+				this.direction = this.latentDirection;
+				this.__startTime = frameNo;
+				
+
 				this._moveProcessed = true;
-				// Set startpos to current (rounded obviously)
-				this.__startPositionForVector = {
-					cx: Math.round(currCanvasPos.cx / 16) * 16,
-					cy: Math.round(currCanvasPos.cy / 16) * 16
-				}
 
-				// Update vector
-				this.__currentVector = Ghost.getVectorFromDirection(this._latentDirection);
-
-				// Update direction
-				this.direction = this._latentDirection;
-				// ToDo: Make it so that direction isn't updated til now. More faithful to original game
+				// ToDo: Ideally I want to have the Ghost's eyes facing in the direction they want to turn before it is decided. So I may have things start looking at the latent direction
 			}
 		}
 
 
-		// * Return coordinates with respect to canvas
+		/**
+		 * Return coordinates with respect to canvas
+		 * This'll always happen
+		 */
 		return {
-			placementCoords: {
-				cx: this.__startPositionForVector.cx + this.__currentVector.x * progress,
-				cy: this.__startPositionForVector.cy + this.__currentVector.y * progress,
-			},
+			placementCoords: currentCanvasPos,
 			sheetCoords: this._imageDeterminer(frameNo)
 		}
 	}
 
-	private _targetLogic(frameNo: number): moveInfo | undefined {
-		let currBoardPos = GameBoard.getPositionOnBoardGrid(this.getCurrentPosition(frameNo));
+	private _targetLogic(forwardPosition: boardCoordinate): moveInfo | undefined {
 		// Do target Logic
 		const currTarget = this.getTarget();
 		this.knownTargetLocation = {...currTarget};
-		const forwardPosition = this.__getForwardBoardCoordinate(frameNo);
-		console.log("Position moving forward", forwardPosition)
-		const legalMoves = GameBoard.getLegalMoves(forwardPosition);
+		
+		console.log("	Position moving forward", forwardPosition)
 
-		// Loop through to find which path we should take
+		const legalMoves = GameBoard.getLegalMoves(forwardPosition, this.direction);
+		console.log("	Legal moves around it are", legalMoves);
+
 		// Literally an implementation of greedy best first search
 		let bestDistance = Infinity;
-		let bestPos: moveInfo = legalMoves[0]
+		let bestMove: moveInfo;
+		console.log("	Position is", this.__currentBoardLocation)
 		legalMoves.forEach(move => {
+			console.log("	looking at possible move", move);
 
 			// Check to see if this is the square being ocupied
-			if (move.coord.bx !== currBoardPos.bx && move.coord.by !== currBoardPos.by) {
+			if (!(move.coord.bx === this.__currentBoardLocation.bx && move.coord.by === this.__currentBoardLocation.by)) {
 
+				console.log("	Not our current yay");
 				const distance = (currTarget.bx - move.coord.bx)**2 + (currTarget.by - move.coord.by)**2;
 				if (distance < bestDistance) {
 					bestDistance = distance;
-					bestPos = move;
+					bestMove = move;
 				}
 			}
 		});
 
-		return bestPos;
+		console.log("	Best move toward target is", bestMove);
+
+		return bestMove;
 	}
 
 	/**
 	 * Get the target tile, where the ghost is trying to get to
 	 */
+	
 	abstract getTarget(): boardCoordinate;
-
 	scareMe(frameTimer: number, currFrame: number) {
 		this.state = "frightened";
 		this._frightStart = currFrame;
@@ -190,7 +262,6 @@ abstract class Ghost extends Entity {
 			const progression = frameNo - this.__startTime;
 
 			const indexName = this.__animationInfo[this.direction];
-			console.log(indexName, this.direction, this.__animationInfo);
 			const animLength = spriteManager[indexName].length;
 			const frameNumer = Math.floor(progression / Entity._FRAMES_PER_IMAGE) % animLength
 
@@ -198,22 +269,22 @@ abstract class Ghost extends Entity {
 		}
 	}
 
-	protected __getForwardBoardCoordinate(frameNo: number): boardCoordinate {
-		console.log("Current direction", this.direction);
-		let currentBoardPos  = GameBoard.getPositionOnBoardGrid(this.getCurrentPosition(frameNo));
-		switch (this.direction) {
+	protected __getForwardBoardCoordinate(): boardCoordinate {
+		let returnBoardPos = {...this.__currentBoardLocation};
+		console.log("	Current direction", this.direction);
+		switch (this.direction) { 
 			case "left":
-				currentBoardPos.bx -= 1;
-				return currentBoardPos;
+				returnBoardPos.bx -= 1;
+				return returnBoardPos;
 			case "right":
-				currentBoardPos.bx += 1;
-				return currentBoardPos;
+				returnBoardPos.bx += 1;
+				return returnBoardPos;
 			case "down":
-				currentBoardPos.by += 1;
-				return currentBoardPos;
+				returnBoardPos.by += 1;
+				return returnBoardPos;
 			case "up":
-				currentBoardPos.by -= 1;
-				return currentBoardPos;
+				returnBoardPos.by -= 1;
+				return returnBoardPos;
 			default:
 				// If for whatever reason we ain't moving, set to right
 				return {bx: 0, by: 0};

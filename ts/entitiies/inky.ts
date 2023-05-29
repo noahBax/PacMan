@@ -5,7 +5,7 @@ import { PacMan } from "./pacman.js";
 
 class Inky extends Ghost {
 	
-	protected __currentLocation: boardCoordinate = {by: 32, bx: 25};
+	protected __currentBoardLocation: boardCoordinate = {by: 32, bx: 26};
 	protected __startPositionForVector: canvasCoordinate = {cy: 512, cx: 416};
 	direction: Direction = "left";
 	protected __currentVector = Ghost.getVectorFromDirection("left");
@@ -26,16 +26,32 @@ class Inky extends Ghost {
 		let coordRn = {...this.__pacmanReference.currentBoardPosition};
 		switch (this.__pacmanReference.direction) {
 			case "down":
-				coordRn.by += 4;
+				if (coordRn.by < GameBoard.height - 5) {
+					coordRn.by += 4;
+				} else {
+					coordRn.by = GameBoard.height - 1;
+				}
 				return coordRn;
 			case "up":
-				coordRn.by -= 4;
+				if (coordRn.by > 4) {
+					coordRn.by -= 4;
+				} else {
+					coordRn.by = 0;
+				}
 				return coordRn;
 			case "left":
-				coordRn.bx -= 4;
+				if (coordRn.bx > 4) {
+					coordRn.bx -= 4;
+				} else {
+					coordRn.bx = 0;
+				}
 				return coordRn;
 			case "right":
-				coordRn.bx += 4;
+				if (coordRn.bx < GameBoard.width - 5) {
+					coordRn.bx += 4;
+				} else {
+					coordRn.bx = GameBoard.width - 1
+				}
 				return coordRn;
 		}
 	}

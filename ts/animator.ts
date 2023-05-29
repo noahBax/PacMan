@@ -32,7 +32,7 @@ class Animator {
 	private handleFrame(timestamp: number) {
 
 		// * Do time business logic yadayada
-		if (timestamp - this.prevFrameTime < 1000/10) {
+		if (timestamp - this.prevFrameTime < 1000/60) {
 			window.requestAnimationFrame(this.handleFrame.bind(this));
 			return;
 		}
@@ -50,7 +50,7 @@ class Animator {
 		});
 
 		if (DevMode.IN_DEV_MODE) {
-			devMode.updateTargets(Animator.CURRENT_FRAME_NO);
+			devMode.updateTargets();
 		}
 
 		this.renderer.renderForeground(Animator.CURRENT_FRAME_NO);

@@ -7,8 +7,8 @@ import { PacMan } from "./entitiies/pacman.js";
 import { Pinky } from "./entitiies/pinky.js";
 import { GameBoard } from "./gameBoard.js";
 
-export type canvasCoordinate = {cx: number, cy: number};
-export type boardCoordinate = {bx: number, by: number};
+export type canvasCoordinate = {cy: number, cx: number};
+export type boardCoordinate = {by: number, bx: number};
 
 // Vector is measured in pixels / ms
 export type vector = {x: number, y: number};

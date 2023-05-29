@@ -5,14 +5,13 @@ import { PacMan } from "./pacman.js";
 
 class Pinky extends Ghost {
 	
-	protected __currentLocation: boardCoordinate = {by: 4, bx: 1};
+	protected __currentBoardLocation: boardCoordinate = {by: 4, bx: 1};
 	protected __startPositionForVector: canvasCoordinate = {cy: 64, cx: 16};
 	direction: Direction = "right";
 	protected __currentVector = Ghost.getVectorFromDirection("right");
 	
 	constructor(pacmanRef: PacMan) {
 		super(pacmanRef);
-		this.__currentLocation = {bx: 0, by: 0};
 		
 	}
 	

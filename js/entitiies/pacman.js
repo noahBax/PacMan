@@ -4,6 +4,7 @@ import { spriteManager } from "../spriteManager.js";
 class PacMan extends Entity {
     constructor() {
         super(...arguments);
+        this.__currentVector = { x: 0, y: 0 };
         this.__startPositionForVector = { cx: 216, cy: 320 };
         this._animationState = "normal";
         this.currentBoardPosition = { bx: 13, by: 20 };

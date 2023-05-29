@@ -4,8 +4,8 @@ import { Direction, RenderObject, animationInfo, canvasCoordinate, vector } from
 abstract class Entity {
 	static readonly _FRAMES_PER_IMAGE = 6;
 
-	protected __startPositionForVector: canvasCoordinate = {cx: 0, cy: 0};
-	protected __currentVector: vector = {x: 0, y: 0};
+	protected abstract __startPositionForVector: canvasCoordinate
+	protected abstract __currentVector: vector
 	protected __startTime = 0;
 	protected __pacmanReference: PacMan;
 	protected abstract __animationInfo: animationInfo;

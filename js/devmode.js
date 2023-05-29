@@ -72,7 +72,7 @@ class DevMode {
         this._temp_ctx.clearRect(0, 0, 16, 16);
         this._temp_ctx.setLineDash([]);
     }
-    updateTargets(frameNo) {
+    updateTargets() {
         // First get Blinky
         let target = this._blinky.knownTargetLocation;
         let temp = this._targetTileCollection[0].dataset;
@@ -99,6 +99,7 @@ class DevMode {
             t.classList.remove(DevMode.TARGET_CELL_CLASS);
             // Grab the dataset of our targetCell
             let index = (this._gridCells[target.by][target.bx]);
+            console.log(index, target, target.by, target.bx);
             // Use it's info to set the information of our target-location-cell
             temp.boardX = "" + target.bx;
             temp.boardY = "" + target.by;

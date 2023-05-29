@@ -5,7 +5,8 @@ import { Direction, canvasCoordinate, vector, RenderObject, animationInfo, board
 
 class PacMan extends Entity{
 	static SPEED = 1;
-
+	
+	protected __currentVector: vector = {x: 0, y: 0};
 	protected __startPositionForVector: canvasCoordinate = {cx: 216, cy: 320}
 	private _animationState: ("normal" | "dying") = "normal";
 
