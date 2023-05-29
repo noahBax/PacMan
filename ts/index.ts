@@ -70,6 +70,7 @@ function main() {
 	devCanvas.style.display = "block";
 	
 	controller = new Controller(pacman, animator);
+	window.controller = controller;
 	animator.startUpAnimation();
 
 	// And finally

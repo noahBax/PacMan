@@ -54,6 +54,7 @@ function main() {
     clyde.scareMe(600, 0);
     devCanvas.style.display = "block";
     controller = new Controller(pacman, animator);
+    window.controller = controller;
     animator.startUpAnimation();
     // And finally
 }

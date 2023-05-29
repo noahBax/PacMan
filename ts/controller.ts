@@ -2,12 +2,14 @@ import { Animator } from "./animator.js";
 import { PacMan } from "./entitiies/pacman.js";
 import { Entity } from "./entity.js";
 import { Direction } from "./types.js";
+import { Ghost } from "./entitiies/ghost.js";
 
 class Controller {
 	private driving: Entity;
-	private lastKey: Direction = "right";
 
 	private animator: Animator;
+
+	private buttonPressList: Direction[] = [];
 
 
 	constructor(driving: Entity, animator: Animator) {
@@ -24,27 +26,23 @@ class Controller {
 		switch (event.key) {
 			case 'w':
 			case 'ArrowUp':
-				this.lastKey = "up";
-				this.driving.direction = "up";
-				this.driving.setInitial(false, {x: 0, y: -PacMan.SPEED}, Animator.CURRENT_FRAME_NO);
+				this.pushToButtonList("up");
+				this.applyLastButton();
 				break;
 			case 'a':
-			case 'ArrowLeft':
-				this.lastKey = "left";
-				this.driving.direction = "left";
-				this.driving.setInitial(false, {x: -PacMan.SPEED, y: 0}, Animator.CURRENT_FRAME_NO);
+			case 'ArrowLeft':		
+					this.pushToButtonList("left");
+					this.applyLastButton();
 				break;
 			case 's':
 			case 'ArrowDown':
-				this.lastKey = "down";
-				this.driving.direction = "down";
-				this.driving.setInitial(false, {x: 0, y: PacMan.SPEED}, Animator.CURRENT_FRAME_NO);
+				this.pushToButtonList("down");
+				this.applyLastButton();
 				break;
 			case 'd':
 			case 'ArrowRight':
-				this.lastKey = "right";
-				this.driving.direction = "right";
-				this.driving.setInitial(false, {x: PacMan.SPEED, y: 0}, Animator.CURRENT_FRAME_NO);
+				this.pushToButtonList("right");
+				this.applyLastButton();
 				break;
 			case "Escape":
 				Animator.ACTIVE = !Animator.ACTIVE;
@@ -57,33 +55,46 @@ class Controller {
 		switch (event.key) {
 			case 'w':
 			case 'ArrowUp':
-				if (this.lastKey === "up") {
-					// this.pacman.direction = "none";
-					this.driving.setInitial(false, {x: 0, y: 0}, Animator.CURRENT_FRAME_NO);
-				}
+				this.popFromButtonList("up");
+				this.applyLastButton();
 				break;
 			case 'a':
 			case 'ArrowLeft':
-				if (this.lastKey === "left") {
-					// this.pacman.direction = "none";
-					this.driving.setInitial(false, {x: 0, y: 0}, Animator.CURRENT_FRAME_NO);
-				}
+				this.popFromButtonList("left");
+				this.applyLastButton();
 				break;
 			case 's':
 			case 'ArrowDown':
-				if (this.lastKey === "down") {
-					// this.pacman.direction = "none";
-					this.driving.setInitial(false, {x: 0, y: 0}, Animator.CURRENT_FRAME_NO);
-				}
+				this.popFromButtonList("down");
+				this.applyLastButton();
 				break;
 			case 'd':
 			case 'ArrowRight':
-				if (this.lastKey === "right") {
-					// this.pacman.direction = "none";
-					this.driving.setInitial(false, {x: 0, y: 0}, Animator.CURRENT_FRAME_NO);
-				}
+				this.popFromButtonList("right");
+				this.applyLastButton();
 				break;
 
+		}
+	}
+
+	private pushToButtonList(dir: Direction) {
+		if (!this.buttonPressList.includes(dir)) this.buttonPressList.push(dir);
+	}
+
+	private popFromButtonList(dir: Direction) {
+		if (this.buttonPressList.includes(dir)) {
+			console.log("removing", dir, this.buttonPressList.indexOf(dir));
+			this.buttonPressList.splice(this.buttonPressList.indexOf(dir), 1);
+		}
+	}
+
+	private applyLastButton() {
+		if (this.buttonPressList.length === 0) {
+			// Do nothing
+			this.driving.setInitial(false, {x: 0, y: 0}, Animator.CURRENT_FRAME_NO);
+		} else {
+			this.driving.direction = this.buttonPressList[this.buttonPressList.length - 1];
+			this.driving.setInitial(false, Ghost.getVectorFromDirection(this.driving.direction), Animator.CURRENT_FRAME_NO);
 		}
 	}
 }

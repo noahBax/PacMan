@@ -1,4 +1,5 @@
 import { Animator } from "./animator.js";
+import { Controller } from "./controller.js";
 import { DevMode } from "./devmode.js";
 import { Blinky } from "./entitiies/blinky.js";
 import { Clyde } from "./entitiies/clyde.js";
@@ -45,6 +46,7 @@ declare global {
 		animator: Animator
 		Animator: any
 		developer: DevMode
+		controller: Controller
 	}
 }
 
