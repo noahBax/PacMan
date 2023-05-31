@@ -69,7 +69,39 @@ class GameBoard {
      */
     static getLegalMoves(coords, directionFacing) {
         console.log("	Legal Moves starting with coord", coords);
-        // ToDo: Purgatory stuff! Not here though
+        /**
+         * Check to see if the ghosts are in or adjacent to purgatory
+         * If a ghost is in left purgatory currently, it needs to have access to right purgatory. It also must be heading left
+         * And if in right it needs to have access to left. Heading right
+         * If the ghost is adjacent to right pergatory and facing right, then it needs to have access to it
+         * Same goes for left
+         */
+        if (directionFacing === "left" && coords.bx === GameBoard.PURGATORY[0].bx) {
+            // Bring you over to right purgatory
+            return [{
+                    coord: { ...GameBoard.PURGATORY[1] },
+                    direction: "left"
+                }];
+        }
+        else if (directionFacing == "right" && coords.bx === GameBoard.PURGATORY[1].bx) {
+            // Bring you to left
+            return [{
+                    coord: { ...GameBoard.PURGATORY[0] },
+                    direction: "right"
+                }];
+        }
+        else if (directionFacing == "right" && coords.by === 17 && coords.bx === GameBoard.width - 1) {
+            return [{
+                    coord: { ...GameBoard.PURGATORY[1] },
+                    direction: "right"
+                }];
+        }
+        else if (directionFacing === "left" && coords.by === 17 && coords.bx === 0) {
+            return [{
+                    coord: { ...GameBoard.PURGATORY[0] },
+                    direction: "left"
+                }];
+        }
         let ret = [];
         // Check left and right first (because we like the cache like that)
         if (coords.bx > 0 && GameBoard.legalSpaces[coords.by][coords.bx - 1] === 1) {
@@ -96,39 +128,6 @@ class GameBoard {
                 direction: "down"
             });
         }
-        /**
-         * Now we will do a check to see if the ghosts are in or adjacent to purgatory
-         * If a ghost is in left purgatory currently, it needs to have access to right purgatory. It also must be heading left
-         * And if in right it needs to have access to left. Heading right
-         * If the ghost is adjacent to right pergatory and facing right, then it needs to have access to it
-         * Same goes for left
-         */
-        if (directionFacing === "left" && coords.by === GameBoard.PURGATORY[0].by && coords.bx === GameBoard.PURGATORY[0].bx) {
-            // Bring you over to right purgatory
-            return [{
-                    coord: { ...GameBoard.PURGATORY[1] },
-                    direction: "left"
-                }];
-        }
-        else if (directionFacing == "right" && coords.bx === GameBoard.PURGATORY[1].bx && coords.by === GameBoard.PURGATORY[1].by) {
-            // Bring you to left
-            return [{
-                    coord: { ...GameBoard.PURGATORY[0] },
-                    direction: "right"
-                }];
-        }
-        else if (directionFacing == "right" && coords.by === 17 && coords.bx === 27) {
-            return [{
-                    coord: { ...GameBoard.PURGATORY[1] },
-                    direction: "right"
-                }];
-        }
-        else if (directionFacing === "left" && coords.by === 17 && coords.bx === 0) {
-            return [{
-                    coord: { ...GameBoard.PURGATORY[0] },
-                    direction: "left"
-                }];
-        }
         return ret;
     }
     static purgatoryCheck(frameNo, entity) {
@@ -148,22 +147,24 @@ class GameBoard {
     }
     static isInPurgatory(entity) {
         if (entity instanceof Ghost) {
-            return (entity.knownCurrentBoardLocation.by === GameBoard.PURGATORY.by && entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY.bx);
+            return (entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY[0].bx || entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY[1].bx);
         }
     }
     static correctForPurgatory(coord) {
-        if (coord.cy > GameBoard.actualWidth) {
+        // console.log(coord);
+        if (coord.cx > GameBoard.actualWidth) {
             return {
-                cy: -(GameBoard.actualWidth - coord.cy),
-                cx: coord.cx
+                cx: -(GameBoard.actualWidth - coord.cx),
+                cy: coord.cy
             };
         }
-        else if (coord.cy < 0) {
+        else if (coord.cx < 0) {
             return {
-                cy: GameBoard.actualWidth - coord.cy,
-                cx: coord.cx
+                cx: GameBoard.actualWidth - coord.cx,
+                cy: coord.cy
             };
         }
+        return coord;
     }
     drawMaze(frameNo) {
         for (let i = 0; i < GameBoard.height; i++) {
