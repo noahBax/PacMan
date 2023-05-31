@@ -40,7 +40,7 @@ abstract class Ghost extends Entity {
 		 * - We know the start of our vector
 		 * - Our board position
 		 * - Our direction
-		 * - by extension or vector
+		 * - by extension our vector
 		 */
 		
 		// So first let's do finding the path to the target
