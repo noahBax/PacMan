@@ -40,6 +40,7 @@ class Animator {
             this.renderer.drawForeground(renderObj);
         });
         if (DevMode.IN_DEV_MODE) {
+            devMode.updateFrameRate(timestamp);
             devMode.updateTargets();
             devMode.updatePanelLocs();
         }

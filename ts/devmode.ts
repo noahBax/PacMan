@@ -12,6 +12,11 @@ class DevMode {
 	private static readonly GRID_CELL_CLASS = "gridCellClass";
 	private static readonly TARGET_CELL_CLASS = "targetTile";
 
+	private frameRateBuffer = [0,0,0,0,0,0,0];
+	private frbIndex = 0;
+	private lastTimeOfFrame = 0;
+	private frameRateElement: HTMLSpanElement;
+
 	static IN_DEV_MODE = true;
 
 	private dev_ctx: CanvasRenderingContext2D;
@@ -53,6 +58,8 @@ class DevMode {
 		this._temp_ctx = this._tempCanvas.getContext("2d");
 		this._cellCollection = document.createElement("div");
 		this._cellCollection.id = "numberBox";
+
+		this.frameRateElement = document.getElementById("frameRate");
 
 		for (let i = 0; i < 4; i++) {
 			let t = document.createElement("div") as GridCell;
@@ -120,6 +127,13 @@ class DevMode {
 
 		this._temp_ctx.clearRect(0, 0, 16, 16);
 		this._temp_ctx.setLineDash([]);
+	}
+
+	updateFrameRate(time: number) {
+		this.frameRateBuffer[this.frbIndex] = time - this.lastTimeOfFrame;
+		this.lastTimeOfFrame = time;
+		this.frbIndex = (this.frbIndex++) % 7; //this.frameRateBuffer.length
+		this.frameRateElement.textContent = Math.round(1000 / this.frameRateBuffer.reduce((acc, curr) => acc + curr)) + " fps";
 	}
 
 	updateTargets() {

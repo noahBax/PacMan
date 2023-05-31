@@ -1,6 +1,9 @@
 import { GameBoard } from "./gameBoard.js";
 class DevMode {
     constructor(dev_ctx, pacman, blinky, inky, pinky, clyde, animator, spriteSheet, gameBoard) {
+        this.frameRateBuffer = [0, 0, 0, 0, 0, 0, 0];
+        this.frbIndex = 0;
+        this.lastTimeOfFrame = 0;
         this._gridRendered = false;
         this._gridCells = [];
         this._targetTileCollection = [];
@@ -19,6 +22,7 @@ class DevMode {
         this._temp_ctx = this._tempCanvas.getContext("2d");
         this._cellCollection = document.createElement("div");
         this._cellCollection.id = "numberBox";
+        this.frameRateElement = document.getElementById("frameRate");
         for (let i = 0; i < 4; i++) {
             let t = document.createElement("div");
             t.classList.add("targetTileCover");
@@ -71,6 +75,12 @@ class DevMode {
         }
         this._temp_ctx.clearRect(0, 0, 16, 16);
         this._temp_ctx.setLineDash([]);
+    }
+    updateFrameRate(time) {
+        this.frameRateBuffer[this.frbIndex] = time - this.lastTimeOfFrame;
+        this.lastTimeOfFrame = time;
+        this.frbIndex = (this.frbIndex++) % 7; //this.frameRateBuffer.length
+        this.frameRateElement.textContent = Math.round(1000 / this.frameRateBuffer.reduce((acc, curr) => acc + curr)) + " fps";
     }
     updateTargets() {
         const entities = [this._blinky, this._inky, this._pinky, this._clyde];

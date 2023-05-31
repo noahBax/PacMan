@@ -50,6 +50,7 @@ class Ghost extends Entity {
         // Get current position on gameboard
         const currentCanvasPos = GameBoard.correctForPurgatory(this.getCurrentPosition(frameNo));
         // Correct the coordinate for purgatory
+        console.log(frameNo, this.getCurrentPosition(frameNo), currentCanvasPos);
         // Create a copy and modify a copy of these so we can find our center in the next function
         const currentBoardPos = GameBoard.getPositionOnBoardGrid({
             cy: currentCanvasPos.cy + 8,

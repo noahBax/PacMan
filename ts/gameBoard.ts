@@ -313,17 +313,19 @@ class GameBoard {
 	}
 
 	static correctForPurgatory(coord: canvasCoordinate): canvasCoordinate {
-		if (coord.cy > GameBoard.actualWidth) {
+		if (coord.cx > GameBoard.actualWidth) {
 			return {
 				cy: -(GameBoard.actualWidth - coord.cy),
 				cx: coord.cx
 			}
-		} else if (coord.cy < 0) {
+		} else if (coord.cx < 0) {
 			return {
 				cy: GameBoard.actualWidth - coord.cy,
 				cx: coord.cx
 			} 
 		}
+
+		return coord;
 	}
 
 	drawMaze(frameNo: number): boolean {
