@@ -4,7 +4,7 @@ import { canvasCoordinate } from "./types.js"
  * Each sprite on spritesheet is 16x16
  * There is a 3px offset on the left
  */
-const spriteManager: {[k: string]: canvasCoordinate[]} = {
+const spriteManager: {[k in spriteManagerItems]: canvasCoordinate[]} = {
     "100": [ {"cx": 3, "cy": 144 } ],
     "200": [ {"cx": 3, "cy": 128 } ],
     "300": [ {"cx": 19, "cy": 144 } ],
@@ -50,5 +50,49 @@ const spriteManager: {[k: string]: canvasCoordinate[]} = {
 	"blank": [ {"cx": 211,"cy": 144} ]	// This is just a space in the bottom right
 
 };
+
+export type spriteManagerItems = "100" |
+    "200" |
+    "300" |
+    "400" |
+    "500" |
+    "600" |
+    "700" |
+    "800" |
+    "1000" |
+    "pacdeath" |
+    "pacRight" |
+    "pacLeft" |
+    "pacUp" |
+    "pacDown" |
+    "pacStatic" |
+    "blinkyRight" |
+    "blinkyLeft" |
+    "blinkyUp" |
+    "blinkyDown" |
+    "pinkyRight" |
+    "pinkyLeft" |
+    "pinkyUp" |
+    "pinkyDown" |
+    "inkyRight" |
+    "inkyLeft" |
+    "inkyUp" |
+    "inkyDown" |
+    "clydeRight" |
+    "clydeLeft" |
+    "clydeUp" |
+    "clydeDown" |
+    "ghostFrightened" |
+    "ghostSkeptical" |
+    "eyes" |
+    "energizer" |
+    "dot" |
+    "quad3Corner" |
+    "quad2Corner" |
+    "quad1Corner" |
+    "quad4Corner" |
+    "horizontalBar" |
+    "verticalBar" |
+    "blank"
 
 export { spriteManager }
