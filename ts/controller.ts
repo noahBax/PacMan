@@ -1,24 +1,28 @@
 import { Animator } from "./animator.js";
 import { PacMan } from "./entitiies/pacman.js";
-import { Entity } from "./entity.js";
 import { Direction } from "./types.js";
-import { Ghost } from "./entitiies/ghost.js";
 
 class Controller {
-	private driving: Entity;
+	private _driving: PacMan;
 
-	private animator: Animator;
+	private _animator: Animator;
 
-	private buttonPressList: Direction[] = [];
+	static readonly DRIVING_SPEED = 1.5;
+
+	buttonPressList: Exclude<Direction, "none">[] = [];
+
+	listUpdatedFlag = false;
 
 
-	constructor(driving: Entity, animator: Animator) {
-		this.driving = driving;
-		this.animator = animator;
+	constructor(driving: PacMan, animator: Animator) {
+		this._driving = driving;
+		this._animator = animator;
 
 		// Start listening to the keyboard
 		window.addEventListener('keydown', this.handleKeyDown.bind(this));
 		window.addEventListener('keyup', this.handleKeyUp.bind(this));
+
+		this._driving.setController(this);
 	}
 
 	private handleKeyDown(event: KeyboardEvent) {
@@ -27,26 +31,26 @@ class Controller {
 			case 'w':
 			case 'ArrowUp':
 				this.pushToButtonList("up");
-				this.applyLastButton();
+				// this.applyLastButton();
 				break;
 			case 'a':
 			case 'ArrowLeft':		
 					this.pushToButtonList("left");
-					this.applyLastButton();
+					// this.applyLastButton();
 				break;
 			case 's':
 			case 'ArrowDown':
 				this.pushToButtonList("down");
-				this.applyLastButton();
+				// this.applyLastButton();
 				break;
 			case 'd':
 			case 'ArrowRight':
 				this.pushToButtonList("right");
-				this.applyLastButton();
+				// this.applyLastButton();
 				break;
 			case "Escape":
 				Animator.ACTIVE = !Animator.ACTIVE;
-				this.animator.startUpAnimation();
+				this._animator.startUpAnimation();
 		}
 	}
 
@@ -56,46 +60,50 @@ class Controller {
 			case 'w':
 			case 'ArrowUp':
 				this.popFromButtonList("up");
-				this.applyLastButton();
+				// this.applyLastButton();
 				break;
 			case 'a':
 			case 'ArrowLeft':
 				this.popFromButtonList("left");
-				this.applyLastButton();
+				// this.applyLastButton();
 				break;
 			case 's':
 			case 'ArrowDown':
 				this.popFromButtonList("down");
-				this.applyLastButton();
+				// this.applyLastButton();
 				break;
 			case 'd':
 			case 'ArrowRight':
 				this.popFromButtonList("right");
-				this.applyLastButton();
+				// this.applyLastButton();
 				break;
 
 		}
 	}
 
-	private pushToButtonList(dir: Direction) {
+	private pushToButtonList(dir: Exclude<Direction, "none">) {
+		this.listUpdatedFlag = true;
 		if (!this.buttonPressList.includes(dir)) this.buttonPressList.push(dir);
 	}
 
-	private popFromButtonList(dir: Direction) {
+	private popFromButtonList(dir: Exclude<Direction, "none">) {
+		this.listUpdatedFlag = true;
 		if (this.buttonPressList.includes(dir)) {
 			this.buttonPressList.splice(this.buttonPressList.indexOf(dir), 1);
 		}
 	}
 
-	private applyLastButton() {
-		if (this.buttonPressList.length === 0) {
-			// Do nothing
-			this.driving.setInitial(false, {x: 0, y: 0}, Animator.CURRENT_FRAME_NO);
-		} else {
-			this.driving.direction = this.buttonPressList[this.buttonPressList.length - 1];
-			this.driving.setInitial(false, Ghost.getVectorFromDirection(this.driving.direction), Animator.CURRENT_FRAME_NO);
-		}
-	}
+	// private applyLastButton() {
+	// 	if (this._buttonPressList.length === 0) {
+	// 		// Do nothing
+	// 		this._driving.updateCanvasCoords(Animator.CURRENT_FRAME_NO);
+	// 		this._driving.setVelocityVector({x: 0, y: 0}, this._driving.direction, Animator.CURRENT_FRAME_NO);
+	// 	} else {
+	// 		this._driving.direction = this._buttonPressList[this._buttonPressList.length - 1];
+	// 		this._driving.updateCanvasCoords(Animator.CURRENT_FRAME_NO);
+	// 		this._driving.setVelocityVector(Ghost.getVectorFromDirection(this._driving.direction), this._driving.direction, Animator.CURRENT_FRAME_NO);
+	// 	}
+	// }
 }
 
 export { Controller }

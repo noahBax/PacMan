@@ -26,22 +26,22 @@ function main() {
     animator.registerEntity(blinky);
     window.blinky = blinky;
     console.log("Init-ing blinky");
-    blinky.initializeGhost();
+    // blinky.initializeGhost();
     const inky = new Inky(pacman, gameBoard);
     animator.registerEntity(inky);
     window.inky = inky;
     console.log("Init-ing inky");
-    inky.initializeGhost();
+    // inky.initializeGhost();
     const pinky = new Pinky(pacman, gameBoard);
     animator.registerEntity(pinky);
     window.pinky = pinky;
     console.log("Init-ing pinky");
-    pinky.initializeGhost();
+    // pinky.initializeGhost();
     const clyde = new Clyde(pacman, gameBoard);
     animator.registerEntity(clyde);
     window.clyde = clyde;
     console.log("Init-ing clyde");
-    clyde.initializeGhost();
+    // clyde.initializeGhost();
     gameBoard.setGhosts(blinky, inky, pinky, clyde);
     window.gameBoard = gameBoard;
     window.GameBoard = GameBoard;
@@ -58,5 +58,11 @@ function main() {
     animator.startUpAnimation();
     // And finally
 }
+function unpackCoords(coord) {
+    if (coord.hasOwnProperty('cx')) {
+        return `[${coord.cy}, ${coord.cx}]`;
+    }
+    return `[${coord.by}, ${coord.bx}]`;
+}
 document.addEventListener('DOMContentLoaded', main);
-export { devMode };
+export { devMode, unpackCoords };

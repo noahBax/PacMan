@@ -4,7 +4,7 @@ import { canvasCoordinate } from "./types.js"
  * Each sprite on spritesheet is 16x16
  * There is a 3px offset on the left
  */
-const spriteManager: {[k in spriteManagerItems]: canvasCoordinate[]} = {
+const spriteManager: {[key in spriteManagerItems]: canvasCoordinate[]} = {
     "100": [ {"cx": 3, "cy": 144 } ],
     "200": [ {"cx": 3, "cy": 128 } ],
     "300": [ {"cx": 19, "cy": 144 } ],

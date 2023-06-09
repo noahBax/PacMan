@@ -8,6 +8,7 @@ import { Pinky } from "./entitiies/pinky.js";
 import { Clyde } from "./entitiies/clyde.js";
 import { GameBoard } from "./gameBoard.js";
 import { DevMode } from "./devmode.js";
+import { boardCoordinate, canvasCoordinate } from "./types.js";
 
 let animator: Animator;
 let controller: Controller;
@@ -33,25 +34,25 @@ function main() {
 	animator.registerEntity(blinky)
 	window.blinky = blinky
 	console.log("Init-ing blinky");
-	blinky.initializeGhost();
+	// blinky.initializeGhost();
 
 	const inky = new Inky(pacman, gameBoard);
 	animator.registerEntity(inky)
 	window.inky = inky;
 	console.log("Init-ing inky");
-	inky.initializeGhost();
+	// inky.initializeGhost();
 
 	const pinky = new Pinky(pacman, gameBoard);
 	animator.registerEntity(pinky);
 	window.pinky = pinky
 	console.log("Init-ing pinky");
-	pinky.initializeGhost();
+	// pinky.initializeGhost();
 
 	const clyde = new Clyde(pacman, gameBoard);
 	animator.registerEntity(clyde);
 	window.clyde = clyde
 	console.log("Init-ing clyde");
-	clyde.initializeGhost();
+	// clyde.initializeGhost();
 
 	gameBoard.setGhosts(blinky, inky, pinky, clyde);
 
@@ -76,6 +77,13 @@ function main() {
 	// And finally
 }
 
+function unpackCoords(coord: canvasCoordinate | boardCoordinate) {
+	if (coord.hasOwnProperty('cx')) {
+		return `[${(coord as canvasCoordinate).cy}, ${(coord as canvasCoordinate).cx}]`;
+	}
+	return `[${(coord as boardCoordinate).by}, ${(coord as boardCoordinate).bx}]`;
+}
+
 document.addEventListener('DOMContentLoaded', main);
 
-export { devMode }
+export { devMode, unpackCoords }

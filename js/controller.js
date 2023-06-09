@@ -1,13 +1,14 @@
 import { Animator } from "./animator.js";
-import { Ghost } from "./entitiies/ghost.js";
 class Controller {
     constructor(driving, animator) {
         this.buttonPressList = [];
-        this.driving = driving;
-        this.animator = animator;
+        this.listUpdatedFlag = false;
+        this._driving = driving;
+        this._animator = animator;
         // Start listening to the keyboard
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
+        this._driving.setController(this);
     }
     handleKeyDown(event) {
         if (event.repeat)
@@ -16,26 +17,26 @@ class Controller {
             case 'w':
             case 'ArrowUp':
                 this.pushToButtonList("up");
-                this.applyLastButton();
+                // this.applyLastButton();
                 break;
             case 'a':
             case 'ArrowLeft':
                 this.pushToButtonList("left");
-                this.applyLastButton();
+                // this.applyLastButton();
                 break;
             case 's':
             case 'ArrowDown':
                 this.pushToButtonList("down");
-                this.applyLastButton();
+                // this.applyLastButton();
                 break;
             case 'd':
             case 'ArrowRight':
                 this.pushToButtonList("right");
-                this.applyLastButton();
+                // this.applyLastButton();
                 break;
             case "Escape":
                 Animator.ACTIVE = !Animator.ACTIVE;
-                this.animator.startUpAnimation();
+                this._animator.startUpAnimation();
         }
     }
     handleKeyUp(event) {
@@ -45,43 +46,36 @@ class Controller {
             case 'w':
             case 'ArrowUp':
                 this.popFromButtonList("up");
-                this.applyLastButton();
+                // this.applyLastButton();
                 break;
             case 'a':
             case 'ArrowLeft':
                 this.popFromButtonList("left");
-                this.applyLastButton();
+                // this.applyLastButton();
                 break;
             case 's':
             case 'ArrowDown':
                 this.popFromButtonList("down");
-                this.applyLastButton();
+                // this.applyLastButton();
                 break;
             case 'd':
             case 'ArrowRight':
                 this.popFromButtonList("right");
-                this.applyLastButton();
+                // this.applyLastButton();
                 break;
         }
     }
     pushToButtonList(dir) {
+        this.listUpdatedFlag = true;
         if (!this.buttonPressList.includes(dir))
             this.buttonPressList.push(dir);
     }
     popFromButtonList(dir) {
+        this.listUpdatedFlag = true;
         if (this.buttonPressList.includes(dir)) {
             this.buttonPressList.splice(this.buttonPressList.indexOf(dir), 1);
         }
     }
-    applyLastButton() {
-        if (this.buttonPressList.length === 0) {
-            // Do nothing
-            this.driving.setInitial(false, { x: 0, y: 0 }, Animator.CURRENT_FRAME_NO);
-        }
-        else {
-            this.driving.direction = this.buttonPressList[this.buttonPressList.length - 1];
-            this.driving.setInitial(false, Ghost.getVectorFromDirection(this.driving.direction), Animator.CURRENT_FRAME_NO);
-        }
-    }
 }
+Controller.DRIVING_SPEED = 1.5;
 export { Controller };

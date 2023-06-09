@@ -140,7 +140,7 @@ class DevMode {
 
 		const entities = [this._blinky, this._inky, this._pinky, this._clyde];
 		for (let i = 0; i < entities.length; i++) {
-			let target = entities[i].knownTargetLocation
+			let target = entities[i].targetCoord;
 			let temp = this._targetTileCollection[0].dataset;
 			if (parseInt(temp.boardX) !== target.bx || parseInt(temp.boardY) !== target.by) {
 				// Remove current class from target tile
@@ -162,12 +162,12 @@ class DevMode {
 		}
 	}
 
-	updatePanelLocs() {
+	updatePanelLocs(frameNo: number) {
 		const entities = [this._blinky, this._inky, this._pinky, this._clyde];
 		const ids= ["blinkyLoc", "inkyLoc", "pinkyLoc", "clydeLoc"];
 		for (let i = 0; i < ids.length; i++) {
-			let e = entities[i].knownCurrentBoardLocation;
-			document.getElementById(ids[i]).textContent = `[${e.by}, ${e.bx}`;
+			let e = entities[i].getBoardCoordinates(frameNo);
+			document.getElementById(ids[i]).textContent = `[${e.by}, ${e.bx}]`;
 		}
 	}
 

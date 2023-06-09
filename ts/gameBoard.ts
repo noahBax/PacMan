@@ -207,7 +207,8 @@ class GameBoard {
 	}
 
 	/**
-	 * Calculate the grid square coordinate on the gameboard
+	 * Calculate the grid square coordinate on the gameboard.
+	 * This does NOT adjust for the center
 	 * @param coords The coordinates with respect to the canvas
 	 * @returns The coordinate with respect to the gameboard
 	 */
@@ -220,13 +221,13 @@ class GameBoard {
 	}
 	/**
 	 * Get legal spaces that are around the coordinate in question
-	 * @param coords Coordinates with respect to the gameboard
+	 * @param baseCoordinate Cell coordinates that you want valid around
 	 * @param directionFacing Needed for possibility of purgatory. If outside, won't matter
 	 * @returns A list of coordinates which describe legal spaces around the target
 	 */
-	static getLegalMoves(coords: boardCoordinate, directionFacing: Direction): moveInfo[] {
+	static getLegalMoves(baseCoordinate: boardCoordinate, directionFacing: Direction): moveInfo[] {
 		
-		console.log("	Legal Moves starting with coord", coords);
+		// console.log("	Legal Moves starting with coord", baseCoordinate);
 
 		/**
 		 * Check to see if the ghosts are in or adjacent to purgatory
@@ -235,25 +236,29 @@ class GameBoard {
 		 * If the ghost is adjacent to right pergatory and facing right, then it needs to have access to it
 		 * Same goes for left
 		 */
-		if (directionFacing === "left" && coords.bx === GameBoard.PURGATORY[0].bx) {
+		if (directionFacing === "left" && baseCoordinate.bx === GameBoard.PURGATORY[0].bx) {
 			// Bring you over to right purgatory
 			return [{
+				baseCoordinate: baseCoordinate,
 				coord: {...GameBoard.PURGATORY[1]},
 				direction: "left"
 			}];
-		} else if (directionFacing == "right" && coords.bx === GameBoard.PURGATORY[1].bx) {
+		} else if (directionFacing == "right" && baseCoordinate.bx === GameBoard.PURGATORY[1].bx) {
 			// Bring you to left
 			return [{
+				baseCoordinate: baseCoordinate,
 				coord: {...GameBoard.PURGATORY[0]},
 				direction: "right"
 			}];
-		} else if (directionFacing == "right" && coords.by === 17 && coords.bx === GameBoard.width - 1) {
+		} else if (directionFacing == "right" && baseCoordinate.bx === 27) {
 			return [{
+				baseCoordinate: baseCoordinate,
 				coord: {...GameBoard.PURGATORY[1]},
 				direction: "right"
 			}];
-		} else if (directionFacing === "left" && coords.by === 17 && coords.bx === 0) {
+		} else if (directionFacing === "left" && baseCoordinate.bx === 0) {
 			return [{
+				baseCoordinate: baseCoordinate,
 				coord: {...GameBoard.PURGATORY[0]},
 				direction: "left"
 			}];
@@ -262,27 +267,31 @@ class GameBoard {
 		let ret: moveInfo[] = [];
 		
 		// Check left and right first (because we like the cache like that)
-		if (coords.bx > 0 && GameBoard.legalSpaces[coords.by][coords.bx - 1] === 1) {
+		if (baseCoordinate.bx > 0 && GameBoard.legalSpaces[baseCoordinate.by][baseCoordinate.bx - 1] === 1) {
 			ret.push({
-				coord: {by: coords.by, bx: coords.bx - 1},
+				baseCoordinate: baseCoordinate,
+				coord: {by: baseCoordinate.by, bx: baseCoordinate.bx - 1},
 				direction: "left"
 			});
 		}
-		if (coords.bx < (GameBoard.width - 1) && GameBoard.legalSpaces[coords.by][coords.bx + 1] === 1) {
+		if (baseCoordinate.bx < (27) && GameBoard.legalSpaces[baseCoordinate.by][baseCoordinate.bx + 1] === 1) {
 			ret.push({
-				coord: {by: coords.by, bx: coords.bx + 1},
+				baseCoordinate: baseCoordinate,
+				coord: {by: baseCoordinate.by, bx: baseCoordinate.bx + 1},
 				direction: "right"
 			});
 		}
-		if (coords.by > 0 && GameBoard.legalSpaces[coords.by - 1][coords.bx] === 1) {
+		if (baseCoordinate.by > 0 && GameBoard.legalSpaces[baseCoordinate.by - 1][baseCoordinate.bx] === 1) {
 			ret.push({
-				coord: {by: (coords.by - 1), bx: coords.bx},
+				baseCoordinate: baseCoordinate,
+				coord: {by: (baseCoordinate.by - 1), bx: baseCoordinate.bx},
 				direction: "up"
 			});
 		}
-		if (coords.by < (GameBoard.height - 1) && GameBoard.legalSpaces[coords.by + 1][coords.bx] === 1) {
+		if (baseCoordinate.by < (GameBoard.height - 1) && GameBoard.legalSpaces[baseCoordinate.by + 1][baseCoordinate.bx] === 1) {
 			ret.push({
-				coord: {by: coords.by + 1, bx: coords.bx},
+				baseCoordinate: baseCoordinate,
+				coord: {by: baseCoordinate.by + 1, bx: baseCoordinate.bx},
 				direction: "down"
 			});
 		}
@@ -291,44 +300,30 @@ class GameBoard {
 		return ret
 	}
 
-	static purgatoryCheck(frameNo: number, entity: Ghost | PacMan) {
-		// Todo: Add pacman to this list
+	static correctForPurgatory(entity: Entity, coord: canvasCoordinate, frameNo: number): boolean {
+
+		// For the record, I can't figure out why latent information does not need to be updated
+		// for the right direction and it does for the left
+		// I ain't touching it because it seems to work
+		
 		if (entity instanceof Ghost) {
-
-			// I'm only checking the x here. If it's buggy and somehow somone glitches, this won't stop much
-			if (entity.direction === "left" && entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY[0].bx) {
-				// We need to teleport
-				entity.setInitial({ cy: 17*16, cx: GameBoard.width*16}, false, frameNo);
-				console.log(entity.PET_NAME, "was in left purgatory");
-			} else if (entity.direction === "right" && entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY[1].bx) {
-				entity.setInitial({ cy: 17*16, cx: -16}, false, frameNo);
-				console.log(entity.PET_NAME, "was in right purgatory");
-			}	
-		}
-	}
-
-	static isInPurgatory(entity: Ghost | PacMan): boolean {
-		if (entity instanceof Ghost) {
-			return (entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY[0].bx || entity.knownCurrentBoardLocation.bx === GameBoard.PURGATORY[1].bx);
-		}
-	}
-
-	static correctForPurgatory(coord: canvasCoordinate): canvasCoordinate {
-		if (coord.cx > GameBoard.actualWidth) {
-			return {
-				cx: -(GameBoard.actualWidth - coord.cx),
-				cy: coord.cy
+			if (coord.cx > GameBoard.actualWidth && entity.direction === "right") {
+				// console.group("	%cCorrecting for pergatory", 'color: #32CD32;')
+				entity.setCanvasCoords(frameNo, {
+					cy: this.PURGATORY[0].by*16,
+					cx: this.PURGATORY[0].bx*16
+				}, false, false);
+				return true;
+			} else if (coord.cx < 0 && entity.direction === "left") {
+				entity.setCanvasCoords(frameNo, {
+					cy: this.PURGATORY[1].by*16,
+					cx: this.PURGATORY[1].bx*16
+				}, false, true);
+				return true;
 			}
-		} else if (coord.cx < 0) {
-			return {
-				cx: GameBoard.actualWidth - coord.cx,
-				cy: coord.cy
-			} 
 		}
 
-		return coord;
-
-		return coord;
+		return false;
 	}
 
 	drawMaze(frameNo: number): boolean {

@@ -7,6 +7,7 @@ import { Inky } from "./entitiies/inky.js";
 import { PacMan } from "./entitiies/pacman.js";
 import { Pinky } from "./entitiies/pinky.js";
 import { GameBoard } from "./gameBoard.js";
+import { spriteManagerItems } from "./spriteManager.js";
 
 export type canvasCoordinate = {cy: number, cx: number};
 export type boardCoordinate = {by: number, bx: number};
@@ -22,16 +23,17 @@ export type RenderObject = {
 export type Direction = "up" | "down" | "left" | "right" | "none";
 
 export type animationInfo = {
-	up: string,
-	down: string,
-	left: string,
-	right: string,
-	static?: string
+	up: spriteManagerItems,
+	down: spriteManagerItems,
+	left: spriteManagerItems,
+	right: spriteManagerItems,
+	none?: spriteManagerItems
 }
 
 export type moveInfo = {
 	coord: boardCoordinate,
-	direction: Direction
+	direction: Direction,
+	baseCoordinate: boardCoordinate
 }
 
 declare global {

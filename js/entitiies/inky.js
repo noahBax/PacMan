@@ -4,10 +4,16 @@ class Inky extends Ghost {
     constructor(pacmanRef, gameBoard) {
         super(pacmanRef, gameBoard);
         this.PET_NAME = "Inky";
-        this.__currentBoardLocation = { by: 32, bx: 26 };
         this.__startPositionForVector = { cy: 512, cx: 416 };
+        this.recordedBoardLocation = { by: 32, bx: 26 };
         this.direction = "left";
         this.__currentVector = Ghost.getVectorFromDirection("left");
+        this.targetCoord = { by: 32, bx: 25 };
+        this.__latentMoveInformation = {
+            baseCoordinate: { by: 32, bx: 26 },
+            coord: { by: 32, bx: 25 },
+            direction: "left"
+        };
         this.__animationInfo = {
             down: "inkyDown",
             left: "inkyLeft",
@@ -15,8 +21,8 @@ class Inky extends Ghost {
             up: "inkyUp"
         };
     }
-    getTarget() {
-        let coordRn = { ...this.__pacmanReference.currentBoardPosition };
+    getTarget(frameNo) {
+        let coordRn = { ...this.__pacmanReference.recordedBoardPosition };
         switch (this.__pacmanReference.direction) {
             case "down":
                 if (coordRn.by < GameBoard.height - 5) {
@@ -53,7 +59,7 @@ class Inky extends Ghost {
         }
     }
     updateFrame(frameNo) {
-        console.log("Processing Inky");
+        console.log("%cProcessing Inky", 'color: #00ffff;');
         return super.updateFrame(frameNo);
     }
 }

@@ -1,5 +1,5 @@
 import { GameBoard } from "../gameBoard.js";
-import { animationInfo, boardCoordinate, canvasCoordinate, Direction, RenderObject, vector } from "../types.js";
+import { animationInfo, boardCoordinate, canvasCoordinate, Direction, moveInfo, RenderObject, vector } from "../types.js";
 import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
@@ -7,10 +7,17 @@ class Inky extends Ghost {
 	
 	PET_NAME = "Inky";
 	
-	protected __currentBoardLocation: boardCoordinate = {by: 32, bx: 26};
 	protected __startPositionForVector: canvasCoordinate = {cy: 512, cx: 416};
+	recordedBoardLocation: boardCoordinate = {by: 32, bx: 26};
 	direction: Direction = "left";
 	protected __currentVector = Ghost.getVectorFromDirection("left");
+	targetCoord: boardCoordinate = { by: 32, bx: 25};
+
+	protected __latentMoveInformation: moveInfo = {
+		baseCoordinate: { by: 32, bx: 26 },
+		coord: {  by: 32, bx: 25 },
+		direction: "left"
+	};
 	
 	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
 		super(pacmanRef, gameBoard);
@@ -23,8 +30,8 @@ class Inky extends Ghost {
 		up: "inkyUp"
 	};
 	
-	getTarget(): boardCoordinate {
-		let coordRn = {...this.__pacmanReference.currentBoardPosition};
+	getTarget(frameNo: number): boardCoordinate {
+		let coordRn = {...this.__pacmanReference.recordedBoardPosition};
 		switch (this.__pacmanReference.direction) {
 			case "down":
 				if (coordRn.by < GameBoard.height - 5) {
@@ -58,7 +65,7 @@ class Inky extends Ghost {
 	}
 
 	updateFrame(frameNo: number): RenderObject {
-		console.log("Processing Inky");
+		console.log("%cProcessing Inky", 'color: #00ffff;');
 		return super.updateFrame(frameNo);
 	}
 	
