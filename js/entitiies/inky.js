@@ -7,7 +7,7 @@ class Inky extends Ghost {
         this.__startPositionForVector = { cy: 512, cx: 416 };
         this.recordedBoardLocation = { by: 32, bx: 26 };
         this.direction = "left";
-        this.__currentVector = Ghost.getVectorFromDirection("left");
+        this.__currentVector = Ghost.vectorFromDirection["left"];
         this.targetCoord = { by: 32, bx: 25 };
         this.__latentMoveInformation = {
             baseCoordinate: { by: 32, bx: 26 },

@@ -10,7 +10,7 @@ class Clyde extends Ghost {
 	protected __startPositionForVector: canvasCoordinate = {cy: 32*16, cx: 16, }
 	recordedBoardLocation: boardCoordinate = { by: 32, bx: 1 };
 	direction: Direction = "right"; 
-	protected __currentVector = Ghost.getVectorFromDirection("right");
+	protected __currentVector = Ghost.vectorFromDirection["right"];
 	targetCoord: boardCoordinate = { by: 32, bx: 2 };
 
 	protected __latentMoveInformation: moveInfo = {

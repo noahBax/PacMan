@@ -1,4 +1,5 @@
 import { Ghost } from "./entitiies/ghost.js";
+import { PacMan } from "./entitiies/pacman.js";
 import { spriteManager } from "./spriteManager.js";
 class GameBoard {
     constructor() {
@@ -143,16 +144,16 @@ class GameBoard {
         // For the record, I can't figure out why latent information does not need to be updated
         // for the right direction and it does for the left
         // I ain't touching it because it seems to work
-        if (entity instanceof Ghost) {
+        if (entity instanceof Ghost || entity instanceof PacMan) {
             if (coord.cx > GameBoard.actualWidth && entity.direction === "right") {
                 // console.group("	%cCorrecting for pergatory", 'color: #32CD32;')
                 entity.setCanvasCoords(frameNo, {
                     cy: this.PURGATORY[0].by * 16,
                     cx: this.PURGATORY[0].bx * 16
-                }, false, false);
+                }, false, true);
                 return true;
             }
-            else if (coord.cx < 0 && entity.direction === "left") {
+            else if (coord.cx < -16 && entity.direction === "left") {
                 entity.setCanvasCoords(frameNo, {
                     cy: this.PURGATORY[1].by * 16,
                     cx: this.PURGATORY[1].bx * 16

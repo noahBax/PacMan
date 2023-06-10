@@ -10,7 +10,7 @@ class Inky extends Ghost {
 	protected __startPositionForVector: canvasCoordinate = {cy: 512, cx: 416};
 	recordedBoardLocation: boardCoordinate = {by: 32, bx: 26};
 	direction: Direction = "left";
-	protected __currentVector = Ghost.getVectorFromDirection("left");
+	protected __currentVector = Ghost.vectorFromDirection["left"];
 	targetCoord: boardCoordinate = { by: 32, bx: 25};
 
 	protected __latentMoveInformation: moveInfo = {

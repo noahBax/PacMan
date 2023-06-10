@@ -6,7 +6,7 @@ class Clyde extends Ghost {
         this.__startPositionForVector = { cy: 32 * 16, cx: 16, };
         this.recordedBoardLocation = { by: 32, bx: 1 };
         this.direction = "right";
-        this.__currentVector = Ghost.getVectorFromDirection("right");
+        this.__currentVector = Ghost.vectorFromDirection["right"];
         this.targetCoord = { by: 32, bx: 2 };
         this.__latentMoveInformation = {
             baseCoordinate: { by: 32, bx: 1 },

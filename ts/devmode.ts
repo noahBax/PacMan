@@ -1,6 +1,7 @@
 import { Animator } from "./animator.js";
 import { Blinky } from "./entitiies/blinky.js";
 import { Clyde } from "./entitiies/clyde.js";
+import { Ghost } from "./entitiies/ghost.js";
 import { Inky } from "./entitiies/inky.js";
 import { PacMan } from "./entitiies/pacman.js";
 import { Pinky } from "./entitiies/pinky.js";
@@ -33,6 +34,9 @@ class DevMode {
 	private _clyde: Clyde;
 	private _animator: Animator;
 	private _gameBoard: GameBoard;
+
+	private _ghosts: Ghost[];
+	private readonly _ghostPanelIDs = ["blinkyLoc", "inkyLoc", "pinkyLoc", "clydeLoc"];
 
 	private _spriteSheet: HTMLCanvasElement | HTMLImageElement
 	private _tempCanvas: HTMLCanvasElement;
@@ -70,6 +74,8 @@ class DevMode {
 			t.dataset.canvasY = "" + 0;
 			this._targetTileCollection.push(t);
 		}
+
+		this._ghosts = [this._blinky, this._inky, this._pinky, this._clyde];
 
 	}
 
@@ -163,11 +169,9 @@ class DevMode {
 	}
 
 	updatePanelLocs(frameNo: number) {
-		const entities = [this._blinky, this._inky, this._pinky, this._clyde];
-		const ids= ["blinkyLoc", "inkyLoc", "pinkyLoc", "clydeLoc"];
-		for (let i = 0; i < ids.length; i++) {
-			let e = entities[i].getBoardCoordinates(frameNo);
-			document.getElementById(ids[i]).textContent = `[${e.by}, ${e.bx}]`;
+		for (let i = 0; i < this._ghostPanelIDs.length; i++) {
+			let e = this._ghosts[i].getBoardCoordinates(frameNo);
+			document.getElementById(this._ghostPanelIDs[i]).textContent = `[${e.by}, ${e.bx}]`;
 		}
 	}
 

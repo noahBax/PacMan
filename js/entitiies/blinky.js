@@ -6,7 +6,7 @@ class Blinky extends Ghost {
         this.__startPositionForVector = { cy: 16 * 14, cx: 13 * 16 };
         this.recordedBoardLocation = { by: 14, bx: 13 };
         this.direction = "left";
-        this.__currentVector = Ghost.getVectorFromDirection("left");
+        this.__currentVector = Ghost.vectorFromDirection["left"];
         this.targetCoord = { by: 14, bx: 12 };
         this.__latentMoveInformation = {
             baseCoordinate: { by: 14, bx: 13 },

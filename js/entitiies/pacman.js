@@ -5,6 +5,7 @@ import { spriteManager } from "../spriteManager.js";
 class PacMan extends Entity {
     constructor() {
         super(...arguments);
+        this.PET_NAME = "Pac-Man";
         this.__currentVector = { x: 0, y: 0 };
         this.__startPositionForVector = { cx: 216, cy: 320 };
         this._animationState = "normal";
@@ -27,6 +28,10 @@ class PacMan extends Entity {
     updateFrame(frameNo) {
         let currentCanvasPos = this.getCanvasCoords(frameNo);
         let currentBoardPos = this.getBoardCoordinatesCentered(frameNo);
+        if (GameBoard.correctForPurgatory(this, currentCanvasPos, frameNo)) {
+            currentCanvasPos = this.getCanvasCoords(frameNo);
+            currentBoardPos = this.getBoardCoordinatesCentered(frameNo);
+        }
         /**
          * Some things to consider
          * If pacman is moving, and nothing is changing then we don't need to change anything
@@ -37,7 +42,7 @@ class PacMan extends Entity {
          * That being we watch to see when we cross the center and if the current direction is invalid we set the direction to none
         */
         // Get valid positions around current cell
-        const legalMoves = GameBoard.getLegalMoves(currentBoardPos, "none");
+        const legalMoves = GameBoard.getLegalMoves(currentBoardPos, this.direction);
         const dirs = legalMoves.map(moveInfo => moveInfo.direction);
         // First check to see if we've run into a wall
         if (this._isCornering)
@@ -73,8 +78,7 @@ class PacMan extends Entity {
         // No check needed for if list is empty, this will take care of it
         for (let i = presses.length - 1; i >= 0; i--) {
             if (dirs.includes(presses[i])) {
-                this.setVelocityVector(this._computePossibleCornerVector(this.direction, presses[i]), this.direction, frameNo);
-                this._corneringTarget = legalMoves[i].coord;
+                this.setVelocityVector(Entity.vectorFromDirection[presses[i]], presses[i], frameNo); //this._computePossibleCornerVector(this.direction, presses[i])
                 if (presses[i] === "left" || presses[i] === "right") {
                     this.setCanvasCoords(frameNo, pos, false, true);
                 }
@@ -88,79 +92,63 @@ class PacMan extends Entity {
         this._controller.listUpdatedFlag = false;
     }
     checkCornering(frameNo, canvasCoords, boardCoords) {
-        // if (boardCoords.bx !== this._corneringTarget.bx || boardCoords.by !== this._corneringTarget.by) return;
         switch (this._previousDirection) {
             case "down":
-                if ((canvasCoords.cy + 8) % 16 >= 8) {
+                if (canvasCoords.cy >= this._corneringTarget.cy) {
                     this.updateCanvasCoords(frameNo, false, true);
-                    this.setVelocityVector(Entity.getVectorFromDirection(this.direction), this.direction, frameNo);
+                    this.setVelocityVector(Entity.vectorFromDirection[this.direction], this.direction, frameNo);
                     this._isCornering = false;
                 }
                 break;
             case "left":
                 if ((canvasCoords.cx + 8) % 16 <= 8) {
                     this.updateCanvasCoords(frameNo, true, false);
-                    this.setVelocityVector(Entity.getVectorFromDirection(this.direction), this.direction, frameNo);
+                    this.setVelocityVector(Entity.vectorFromDirection[this.direction], this.direction, frameNo);
                     this._isCornering = false;
                 }
                 break;
             case "right":
                 if ((canvasCoords.cx + 8) % 16 >= 8) {
                     this.updateCanvasCoords(frameNo, true, false);
-                    this.setVelocityVector(Entity.getVectorFromDirection(this.direction), this.direction, frameNo);
+                    this.setVelocityVector(Entity.vectorFromDirection[this.direction], this.direction, frameNo);
                     this._isCornering = false;
                 }
                 break;
             case "up":
                 if ((canvasCoords.cy + 8) % 16 <= 8) {
                     this.updateCanvasCoords(frameNo, false, true);
-                    this.setVelocityVector(Entity.getVectorFromDirection(this.direction), this.direction, frameNo);
+                    this.setVelocityVector(Entity.vectorFromDirection[this.direction], this.direction, frameNo);
                     this._isCornering = false;
                 }
         }
     }
-    _computePossibleCornerVector(oldDir, newDir) {
+    _getCornerVector(prevDir, newDir, targetSpace) {
+        if (newDir === "none")
+            return { x: 0, y: 0 };
+        if (prevDir === "none")
+            return Entity.vectorFromDirection[newDir];
+        if (prevDir === newDir)
+            return this.__currentVector;
         // Take care of turning around and standing still
-        if (this.__currentVector.x === 0 && this.__currentVector.y === 0 || oldDir === newDir || oldDir === "left" && newDir === "right" || oldDir === "up" && newDir === "down" || newDir === "left" && oldDir === "right" || newDir === "up" && oldDir === "down") {
-            return Entity.getVectorFromDirection(newDir);
+        if (prevDir === "left" && newDir === "right" || prevDir === "up" && newDir === "down" || newDir === "left" && prevDir === "right" || newDir === "up" && prevDir === "down") {
+            return Entity.vectorFromDirection[newDir];
         }
         let ret = { x: 0, y: 0 };
         let t = Controller.DRIVING_SPEED;
-        if (oldDir === "right" || newDir === "right")
+        if (prevDir === "right" || newDir === "right")
             ret.x = t;
         else
             ret.x = -t;
-        if (oldDir === "down" || newDir === "down")
+        if (prevDir === "down" || newDir === "down")
             ret.y = t;
         else
             ret.y = -t;
         this._isCornering = true;
-        // if (oldDir === "right" || newDir === "right"){
-        // 	ret.x = t;
-        // 	coord
-        // }
-        // else {
-        // 	ret.x = -t;
-        // }
-        // if (oldDir === "up" || newDir === "up") ret.y = -t;
-        // else ret.y = t;
-        // this._isCornering = true;
-        // if (oldDir === "right") {
-        // 	if (newDir === "down") 	return { x: t, y: t};
-        // 	if (newDir === "up") 	return { x: t, y: -t};
-        // 	return Entity.getVectorFromDirection(newDir);
-        // }
-        // if (oldDir === "left") {
-        // 	if (newDir === "down") 	return { x: -t, y: t };
-        // 	if (newDir === "up")	return { x: -t, y: -t };
-        // 	return Entity.getVectorFromDirection(newDir);
-        // }
-        // if (oldDir === "down") {
-        // 	if (newDir === "right") return { x: t, y: t};
-        // 	if (newDir === "left") return { x: -t, y: t};
-        // 	return Entity.getVectorFromDirection(newDir);
-        // }
-        // if (newDir === "right") 
+        this._previousDirection = prevDir;
+        this._corneringTarget = {
+            cy: targetSpace.by * 16,
+            cx: targetSpace.bx * 16
+        };
         return ret;
     }
     _imageDeterminer(frameNo) {

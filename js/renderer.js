@@ -22,6 +22,7 @@ class Renderer {
         // Clear frame first
         this.foreground_ctx.clearRect(0, 0, this.width, this.height);
         // Next draw what is in the queue
+        // console.log(this.foregroundDrawQueue);
         this.foregroundDrawQueue.forEach(item => {
             this.foreground_ctx.drawImage(this.spriteSheet, item.sheetCoords.cx, item.sheetCoords.cy, 16, 16, item.placementCoords.cx, item.placementCoords.cy, 16, 16);
         });

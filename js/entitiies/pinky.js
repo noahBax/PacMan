@@ -6,7 +6,7 @@ class Pinky extends Ghost {
         this.__startPositionForVector = { cy: 64, cx: 16 };
         this.recordedBoardLocation = { by: 4, bx: 1 };
         this.direction = "right";
-        this.__currentVector = Ghost.getVectorFromDirection("right");
+        this.__currentVector = Ghost.vectorFromDirection["right"];
         this.targetCoord = { by: 4, bx: 2 };
         this.__latentMoveInformation = {
             baseCoordinate: { by: 4, bx: 1 },

@@ -7,7 +7,7 @@ class Controller {
 
 	private _animator: Animator;
 
-	static readonly DRIVING_SPEED = 1.5;
+	static readonly DRIVING_SPEED = 0.08;
 
 	buttonPressList: Exclude<Direction, "none">[] = [];
 

@@ -52,6 +52,7 @@ class Entity {
      */
     getCanvasCoords(frameNo) {
         const delta = frameNo - this.__startFrame;
+        // console.log(delta);
         return {
             cx: (this.__startPositionForVector.cx + this.__currentVector.x * delta),
             cy: (this.__startPositionForVector.cy + this.__currentVector.y * delta),
@@ -98,24 +99,31 @@ class Entity {
     updateCanvasCoords(frameNo, roundX = false, roundY = false) {
         this.setCanvasCoords(frameNo, this.getCanvasCoords(frameNo), roundX, roundY);
     }
-    static getVectorFromDirection(direction) {
-        switch (direction) {
-            case "up":
-                return { x: 0, y: -Controller.DRIVING_SPEED };
-                break;
-            case "down":
-                return { x: 0, y: Controller.DRIVING_SPEED };
-                break;
-            case "left":
-                return { x: -Controller.DRIVING_SPEED, y: 0 };
-                break;
-            case "right":
-                return { x: Controller.DRIVING_SPEED, y: 0 };
-                break;
-            default:
-                return { x: 0, y: 0 };
-        }
-    }
 }
-Entity._FRAMES_PER_IMAGE = 6;
+Entity._FRAMES_PER_IMAGE = 128;
+// static vectorFromDirection(direction: Direction): vector {
+// 	switch (direction) {
+// 		case "up":
+// 			return {x: 0, y: -Controller.DRIVING_SPEED}
+// 			break;
+// 		case "down":
+// 			return {x: 0, y: Controller.DRIVING_SPEED}
+// 			break;
+// 		case "left":
+// 			return {x: -Controller.DRIVING_SPEED, y: 0}
+// 			break;
+// 		case "right":
+// 			return {x: Controller.DRIVING_SPEED, y: 0}
+// 			break;
+// 		default:
+// 			return {x: 0, y: 0}
+// 	}
+// }
+Entity.vectorFromDirection = {
+    "up": { x: 0, y: -Controller.DRIVING_SPEED },
+    "down": { x: 0, y: Controller.DRIVING_SPEED },
+    "left": { x: -Controller.DRIVING_SPEED, y: 0 },
+    "right": { x: Controller.DRIVING_SPEED, y: 0 },
+    "none": { x: 0, y: 0 }
+};
 export { Entity };
