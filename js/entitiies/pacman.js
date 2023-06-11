@@ -66,7 +66,8 @@ class PacMan extends Entity {
         }
         return {
             placementCoords: currentCanvasPos,
-            sheetCoords: this._imageDeterminer(frameNo)
+            sheetCoords: this._imageDeterminer(frameNo),
+            enlarge: true
         };
     }
     /**

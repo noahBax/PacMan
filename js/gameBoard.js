@@ -69,7 +69,7 @@ class GameBoard {
      * @param directionFacing Needed for possibility of purgatory. If outside, won't matter
      * @returns A list of coordinates which describe legal spaces around the target
      */
-    static getLegalMoves(baseCoordinate, directionFacing) {
+    static getLegalMoves(baseCoordinate, directionFacing, isGhost = false) {
         // console.log("	Legal Moves starting with coord", baseCoordinate);
         /**
          * Check to see if the ghosts are in or adjacent to purgatory
@@ -107,6 +107,62 @@ class GameBoard {
                     coord: { ...GameBoard.PURGATORY[0] },
                     direction: "left"
                 }];
+        }
+        else if (isGhost && baseCoordinate.by === 14 && baseCoordinate.bx === 12) {
+            return [
+                {
+                    baseCoordinate: baseCoordinate,
+                    coord: { by: 14, bx: 11 },
+                    direction: "left"
+                },
+                {
+                    baseCoordinate: baseCoordinate,
+                    coord: { by: 14, bx: 13 },
+                    direction: "right"
+                }
+            ];
+        }
+        else if (isGhost && baseCoordinate.by === 14 && baseCoordinate.bx === 15) {
+            return [
+                {
+                    baseCoordinate: baseCoordinate,
+                    coord: { by: 14, bx: 14 },
+                    direction: "left"
+                },
+                {
+                    baseCoordinate: baseCoordinate,
+                    coord: { by: 14, bx: 16 },
+                    direction: "right"
+                }
+            ];
+        }
+        else if (isGhost && baseCoordinate.by === 26 && baseCoordinate.bx === 12) {
+            return [
+                {
+                    baseCoordinate: baseCoordinate,
+                    coord: { by: 26, bx: 11 },
+                    direction: "left"
+                },
+                {
+                    baseCoordinate: baseCoordinate,
+                    coord: { by: 26, bx: 13 },
+                    direction: "right"
+                }
+            ];
+        }
+        else if (isGhost && baseCoordinate.by === 26 && baseCoordinate.bx === 15) {
+            return [
+                {
+                    baseCoordinate: baseCoordinate,
+                    coord: { by: 26, bx: 14 },
+                    direction: "left"
+                },
+                {
+                    baseCoordinate: baseCoordinate,
+                    coord: { by: 26, bx: 16 },
+                    direction: "right"
+                }
+            ];
         }
         let ret = [];
         // Check left and right first (because we like the cache like that)
@@ -162,6 +218,17 @@ class GameBoard {
             }
         }
         return false;
+    }
+    tryToEatDot(boardCoord) {
+        if (this.currentDotSpaces[boardCoord.by][boardCoord.bx] === 1) {
+            GameBoard.PACMAN_SCORE += 10;
+            this.currentDotSpaces[boardCoord.by][boardCoord.bx] = 0;
+            this.renderer.paintBackground({
+                placementCoords: { cy: boardCoord.by * 16, cx: boardCoord.bx * 16 },
+                sheetCoords: spriteManager.blank[0]
+            });
+            this.renderer.clearBackgroundSpot({ cy: boardCoord.by * 16, cx: boardCoord.bx * 16 }, { y: 16, x: 16 });
+        }
     }
     drawMaze(frameNo) {
         for (let i = 0; i < GameBoard.height; i++) {
@@ -267,9 +334,10 @@ class GameBoard {
         return false;
     }
 }
+GameBoard.PACMAN_SCORE = 0;
 GameBoard.PURGATORY = [{ by: 17, bx: -1 }, { by: 17, bx: 28 }];
-GameBoard.width = 28;
 GameBoard.height = 36;
+GameBoard.width = 28;
 // 0 is illegal, 1 is legal
 GameBoard.legalSpaces = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

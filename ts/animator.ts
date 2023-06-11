@@ -1,4 +1,5 @@
 import { DevMode } from "./devmode.js";
+import { PacMan } from "./entitiies/pacman.js";
 import { Entity } from "./entity.js";
 import { GameBoard } from "./gameBoard.js";
 import { devMode } from "./index.js";
@@ -10,6 +11,7 @@ class Animator {
 	private _prevFrameTime = 0;
 	private _mazeFinishedDrawing = false;
 	private _dotsFinishedDrawing = false;
+	private _pacmanRef: PacMan;
 
 	private _pauseTime = 0;
 
@@ -28,6 +30,7 @@ class Animator {
 
 	registerEntity(entity: Entity) {
 		this._entityList.push(entity);
+		if (entity instanceof PacMan) this._pacmanRef = entity;
 	}
 
 	startUpAnimation() {
@@ -64,13 +67,16 @@ class Animator {
 			this._renderer.drawForeground(renderObj);
 		});
 
+		this._gameBoard.tryToEatDot((this._pacmanRef.recordedBoardPosition));
+
 		if (DevMode.IN_DEV_MODE) {
 			devMode.updateFrameRate(timestamp);
-			// devMode.updateTargets();
+			devMode.updateTargets();
 			devMode.updatePanelLocs(timestamp);
 		}
 
 		this._renderer.renderForeground(timestamp);
+		this._renderer.renderBackground(timestamp);
 
 
 		window.requestAnimationFrame(this.handleFrame.bind(this));

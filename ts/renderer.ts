@@ -1,5 +1,5 @@
 import { GameBoard } from "./gameBoard.js";
-import { RenderObject } from "./types.js";
+import { RenderObject, canvasCoordinate, vector } from "./types.js";
 
 class Renderer {
 	private width = 0;
@@ -36,8 +36,13 @@ class Renderer {
 
 		// Next draw what is in the queue
 		// console.log(this.foregroundDrawQueue);
+		
 		this.foregroundDrawQueue.forEach( item => {
-			this.foreground_ctx.drawImage(this.spriteSheet, item.sheetCoords.cx, item.sheetCoords.cy, 16, 16, item.placementCoords.cx, item.placementCoords.cy, 16, 16);
+			if (item.enlarge) {
+				this.foreground_ctx.drawImage(this.spriteSheet, item.sheetCoords.cx, item.sheetCoords.cy, 16, 16, item.placementCoords.cx-2, item.placementCoords.cy-2, 20, 20);
+			} else {
+				this.foreground_ctx.drawImage(this.spriteSheet, item.sheetCoords.cx, item.sheetCoords.cy, 16, 16, item.placementCoords.cx, item.placementCoords.cy, 16, 16);
+			}
 		});
 
 		this.foregroundDrawQueue = [];
@@ -49,6 +54,8 @@ class Renderer {
 	}
 
 	renderBackground(frameNo: number) {
+
+		if (this.backgroundDrawQueue.length === 0) return;
 
 		// Clear frame first
 		this.background_ctx.clearRect(0, 0, this.width, this.height);
@@ -63,6 +70,10 @@ class Renderer {
 
 	paintBackground(renderObj: RenderObject) {
 		this.background_ctx.drawImage(this.spriteSheet, renderObj.sheetCoords.cx, renderObj.sheetCoords.cy, 16, 16, renderObj.placementCoords.cx, renderObj.placementCoords.cy, 16, 16);
+	}
+
+	clearBackgroundSpot(placementCoords: canvasCoordinate, size: vector) {
+		this.background_ctx.clearRect(placementCoords.cx, placementCoords.cy, size.x, size.y);
 	}
 }
 

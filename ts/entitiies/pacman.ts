@@ -90,10 +90,10 @@ class PacMan extends Entity{
 			this._haveCheckedForWall = true;
 		}
 
-
 		return {
 			placementCoords: currentCanvasPos,
-			sheetCoords: this._imageDeterminer(frameNo)
+			sheetCoords: this._imageDeterminer(frameNo),
+			enlarge: true
 		};
 	}
 

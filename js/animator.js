@@ -1,4 +1,5 @@
 import { DevMode } from "./devmode.js";
+import { PacMan } from "./entitiies/pacman.js";
 import { devMode } from "./index.js";
 import { Renderer } from "./renderer.js";
 class Animator {
@@ -14,6 +15,8 @@ class Animator {
     }
     registerEntity(entity) {
         this._entityList.push(entity);
+        if (entity instanceof PacMan)
+            this._pacmanRef = entity;
     }
     startUpAnimation() {
         if (Animator.ACTIVE)
@@ -43,12 +46,14 @@ class Animator {
             // console.log(renderObj)
             this._renderer.drawForeground(renderObj);
         });
+        this._gameBoard.tryToEatDot((this._pacmanRef.recordedBoardPosition));
         if (DevMode.IN_DEV_MODE) {
             devMode.updateFrameRate(timestamp);
-            // devMode.updateTargets();
+            devMode.updateTargets();
             devMode.updatePanelLocs(timestamp);
         }
         this._renderer.renderForeground(timestamp);
+        this._renderer.renderBackground(timestamp);
         window.requestAnimationFrame(this.handleFrame.bind(this));
     }
 }

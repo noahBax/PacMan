@@ -8,7 +8,7 @@ class Blinky extends Ghost {
 	PET_NAME = "Blinky";
 	
 	protected __startPositionForVector: canvasCoordinate = {cy: 16*14, cx: 13*16}
-	recordedBoardLocation: boardCoordinate = {by: 14, bx: 13};
+	recordedBoardPosition: boardCoordinate = {by: 14, bx: 13};
 	direction: Direction = "left";
 	protected __currentVector: vector = Ghost.vectorFromDirection["left"];
 	targetCoord: boardCoordinate = {  by: 14, bx: 12 };
@@ -18,6 +18,11 @@ class Blinky extends Ghost {
 		coord: {  by: 14, bx: 12 },
 		direction: "left"
 	};
+
+	scatterTarget = {
+		by: 0,
+		bx: 25
+	}
 	
 	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
 		super(pacmanRef, gameBoard);
@@ -31,7 +36,13 @@ class Blinky extends Ghost {
 	};
 	
 	getTarget(frameNo: number) {
-		return this.__pacmanReference.recordedBoardPosition;
+		let pos = {...this.__pacmanReference.recordedBoardPosition};
+		if (pos.bx < 0) pos.bx = 0;
+		else if (pos.bx >= GameBoard.width) pos.bx = GameBoard.width - 1;
+
+		if (pos.by < 0) pos.by = 0;
+		else if (pos.by >= GameBoard.height) pos.by = GameBoard.height - 1;
+		return pos;
 	}
 
 	updateFrame(frameNo: number): RenderObject {

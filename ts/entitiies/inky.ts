@@ -1,5 +1,6 @@
 import { GameBoard } from "../gameBoard.js";
 import { animationInfo, boardCoordinate, canvasCoordinate, Direction, moveInfo, RenderObject, vector } from "../types.js";
+import { Blinky } from "./blinky.js";
 import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
@@ -8,19 +9,27 @@ class Inky extends Ghost {
 	PET_NAME = "Inky";
 	
 	protected __startPositionForVector: canvasCoordinate = {cy: 512, cx: 416};
-	recordedBoardLocation: boardCoordinate = {by: 32, bx: 26};
+	recordedBoardPosition: boardCoordinate = {by: 32, bx: 26};
 	direction: Direction = "left";
 	protected __currentVector = Ghost.vectorFromDirection["left"];
 	targetCoord: boardCoordinate = { by: 32, bx: 25};
+
+	private _blinkyRef: Blinky;
 
 	protected __latentMoveInformation: moveInfo = {
 		baseCoordinate: { by: 32, bx: 26 },
 		coord: {  by: 32, bx: 25 },
 		direction: "left"
 	};
+
+	scatterTarget = {
+		by: 35,
+		bx: 27
+	}
 	
-	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
+	constructor(pacmanRef: PacMan, blinkyRef: Blinky, gameBoard: GameBoard) {
 		super(pacmanRef, gameBoard);
+		this._blinkyRef = blinkyRef;
 	}
 	
 	protected __animationInfo: animationInfo = {
@@ -31,37 +40,58 @@ class Inky extends Ghost {
 	};
 	
 	getTarget(frameNo: number): boardCoordinate {
-		let coordRn = {...this.__pacmanReference.recordedBoardPosition};
+		let offsetTile = {...this.__pacmanReference.recordedBoardPosition};
 		switch (this.__pacmanReference.direction) {
 			case "down":
-				if (coordRn.by < GameBoard.height - 5) {
-					coordRn.by += 4;
+				if (offsetTile.by < GameBoard.height - 3) {
+					offsetTile.by += 2;
 				} else {
-					coordRn.by = GameBoard.height - 1;
+					offsetTile.by = GameBoard.height - 1;
 				}
-				return coordRn;
+				break;
 			case "up":
-				if (coordRn.by > 4) {
-					coordRn.by -= 4;
+				if (offsetTile.by > 2) {
+					offsetTile.by -= 2;
 				} else {
-					coordRn.by = 0;
+					offsetTile.by = 0;
 				}
-				return coordRn;
+				if (offsetTile.bx > 2) {
+					offsetTile.bx -= 2;
+				} else {
+					offsetTile.bx = 0;
+				}
+				break;
 			case "left":
-				if (coordRn.bx > 4) {
-					coordRn.bx -= 4;
+				if (offsetTile.bx > 2) {
+					offsetTile.bx -= 2;
 				} else {
-					coordRn.bx = 0;
+					offsetTile.bx = 0;
 				}
-				return coordRn;
+				break;
 			case "right":
-				if (coordRn.bx < GameBoard.width - 5) {
-					coordRn.bx += 4;
+				if (offsetTile.bx < GameBoard.width - 3) {
+					offsetTile.bx += 2;
 				} else {
-					coordRn.bx = GameBoard.width - 1
+					offsetTile.bx = GameBoard.width - 1
 				}
-				return coordRn;
+				break;
 		}
+		const differenceVector: vector = {
+			x: offsetTile.bx - this._blinkyRef.recordedBoardPosition.bx,
+			y: offsetTile.by - this._blinkyRef.recordedBoardPosition.by
+		}
+
+		offsetTile.bx += 2 * differenceVector.x;
+		offsetTile.by += 2 * differenceVector.y;
+
+		if (offsetTile.bx < 0) offsetTile.bx = 0;
+		else if (offsetTile.bx >= GameBoard.width) offsetTile.bx = GameBoard.width - 1;
+
+		if (offsetTile.by < 0) offsetTile.by = 0;
+		else if (offsetTile.by >= GameBoard.height) offsetTile.by = GameBoard.height - 1;
+
+
+		return offsetTile;
 	}
 
 	updateFrame(frameNo: number): RenderObject {

@@ -8,7 +8,7 @@ class Clyde extends Ghost {
 	PET_NAME = "Clyde";
 	
 	protected __startPositionForVector: canvasCoordinate = {cy: 32*16, cx: 16, }
-	recordedBoardLocation: boardCoordinate = { by: 32, bx: 1 };
+	recordedBoardPosition: boardCoordinate = { by: 32, bx: 1 };
 	direction: Direction = "right"; 
 	protected __currentVector = Ghost.vectorFromDirection["right"];
 	targetCoord: boardCoordinate = { by: 32, bx: 2 };
@@ -18,6 +18,11 @@ class Clyde extends Ghost {
 		coord: {  by: 32, bx: 2 },
 		direction: "left"
 	};
+
+	scatterTarget = {
+		by: 35,
+		bx: 0
+	}
 	
 	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
 		super(pacmanRef, gameBoard);
@@ -31,8 +36,20 @@ class Clyde extends Ghost {
 	};
 
 	getTarget(frameNo: number): boardCoordinate {
-		// return this.__pacmanReference.getBoardCoordinates(frameNo);
-		return this.__pacmanReference.recordedBoardPosition;
+		const pacmanPos = this.__pacmanReference.recordedBoardPosition
+		const distanceToPacman = (this.recordedBoardPosition.bx - pacmanPos.bx)**2 + (this.recordedBoardPosition.by - pacmanPos.by)**2;
+		
+		if (distanceToPacman < 64) return this.scatterTarget;
+
+		
+		let pos = {...this.__pacmanReference.recordedBoardPosition};
+		if (pos.bx < 0) pos.bx = 0;
+		else if (pos.bx >= GameBoard.width) pos.bx = GameBoard.width - 1;
+
+		if (pos.by < 0) pos.by = 0;
+		else if (pos.by >= GameBoard.height) pos.by = GameBoard.height - 1;
+		return pos;
+
 	}
 
 	updateFrame(frameNo: number): RenderObject {

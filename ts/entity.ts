@@ -16,6 +16,8 @@ abstract class Entity {
 	protected abstract __animationInfo: animationInfo;
 	protected __startFrame = 0;
 
+	abstract recordedBoardPosition: boardCoordinate;
+
 	abstract readonly PET_NAME: string;
 
 	direction: Direction = "right";

@@ -11,13 +11,15 @@ import { Direction, boardCoordinate, canvasCoordinate, moveInfo } from "./types.
 
 class GameBoard {
 
+	static PACMAN_SCORE = 0;
+
 	static readonly PURGATORY: [boardCoordinate, boardCoordinate] = [{ by: 17, bx: -1  }, { by: 17, bx: 28 }];
 	
 	static actualWidth: number;
 	static actualHeight: number;
 	
-	static readonly width = 28;
 	static readonly height = 36;
+	static readonly width = 28;
 
 	private renderer: Renderer;
 
@@ -225,7 +227,7 @@ class GameBoard {
 	 * @param directionFacing Needed for possibility of purgatory. If outside, won't matter
 	 * @returns A list of coordinates which describe legal spaces around the target
 	 */
-	static getLegalMoves(baseCoordinate: boardCoordinate, directionFacing: Direction): moveInfo[] {
+	static getLegalMoves(baseCoordinate: boardCoordinate, directionFacing: Direction, isGhost=false): moveInfo[] {
 		
 		// console.log("	Legal Moves starting with coord", baseCoordinate);
 
@@ -262,6 +264,58 @@ class GameBoard {
 				coord: {...GameBoard.PURGATORY[0]},
 				direction: "left"
 			}];
+		} else if (isGhost && baseCoordinate.by === 14 && baseCoordinate.bx === 12) {
+			return [
+				{
+					baseCoordinate: baseCoordinate,
+					coord: { by: 14, bx: 11 },
+					direction: "left"
+				},
+				{
+					baseCoordinate: baseCoordinate,
+					coord: { by: 14, bx: 13 },
+					direction: "right"
+				}
+			]
+		} else if (isGhost && baseCoordinate.by === 14 && baseCoordinate.bx === 15) {
+			return [
+				{
+					baseCoordinate: baseCoordinate,
+					coord: { by: 14, bx: 14 },
+					direction: "left"
+				},
+				{
+					baseCoordinate: baseCoordinate,
+					coord: { by: 14, bx: 16 },
+					direction: "right"
+				}
+			]
+		} else if (isGhost && baseCoordinate.by === 26 && baseCoordinate.bx === 12) {
+			return [
+				{
+					baseCoordinate: baseCoordinate,
+					coord: { by: 26, bx: 11 },
+					direction: "left"
+				},
+				{
+					baseCoordinate: baseCoordinate,
+					coord: { by: 26, bx: 13 },
+					direction: "right"
+				}
+			]
+		} else if (isGhost && baseCoordinate.by === 26 && baseCoordinate.bx === 15) {
+			return [
+				{
+					baseCoordinate: baseCoordinate,
+					coord: { by: 26, bx: 14 },
+					direction: "left"
+				},
+				{
+					baseCoordinate: baseCoordinate,
+					coord: { by: 26, bx: 16 },
+					direction: "right"
+				}
+			]
 		}
 		
 		let ret: moveInfo[] = [];
@@ -324,6 +378,21 @@ class GameBoard {
 		}
 
 		return false;
+	}
+
+	tryToEatDot(boardCoord: boardCoordinate) {
+		if (this.currentDotSpaces[boardCoord.by][boardCoord.bx] === 1) {
+			GameBoard.PACMAN_SCORE += 10;
+			this.currentDotSpaces[boardCoord.by][boardCoord.bx] = 0;
+			this.renderer.paintBackground({
+				placementCoords: { cy: boardCoord.by * 16, cx: boardCoord.bx * 16},
+				sheetCoords: spriteManager.blank[0]
+			});
+			this.renderer.clearBackgroundSpot(
+				{ cy: boardCoord.by * 16, cx: boardCoord.bx * 16},
+				{ y: 16, x: 16 }
+			);
+		}
 	}
 
 	drawMaze(frameNo: number): boolean {

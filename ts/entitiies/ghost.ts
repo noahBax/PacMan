@@ -20,12 +20,14 @@ abstract class Ghost extends Entity {
 	
 	
 	// Items that are updated manually
-	abstract recordedBoardLocation: boardCoordinate;
+	abstract recordedBoardPosition: boardCoordinate;
 	abstract targetCoord: boardCoordinate;
 	
 	// Items that needed to be updated on velocity + position change
 	protected abstract __latentMoveInformation: moveInfo;
 	private _moveProcessed = true;
+
+	abstract scatterTarget: boardCoordinate;
 	
 	
 
@@ -79,7 +81,7 @@ abstract class Ghost extends Entity {
 		console.log(`	%cBoard position is %c${unpackCoords(currentBoardPos)}%c, and actual is %c${unpackCoords(currentCanvasPos)}`, 'color: #bada55;', 'color: #FFD700;', 'color: #bada55;', 'color: #FFD700;');
 		console.log(`	%cTurning cell is %c${unpackCoords(this.__latentMoveInformation.baseCoordinate)}`, 'color: #bada55', 'color: #FFD700;');
 		console.log(`	%cLatent cell is %c${unpackCoords(this.__latentMoveInformation.coord)}`, 'color: #bada55;', 'color: #FFD700;');
-		console.log(`	%cPrevious location is,%c${unpackCoords(this.recordedBoardLocation)}`, 'color: #bada55;', 'color: #FFD700');
+		console.log(`	%cPrevious location is,%c${unpackCoords(this.recordedBoardPosition)}`, 'color: #bada55;', 'color: #FFD700');
 
 		if (this.__latentMoveInformation.direction === "none") throw("ahhhh");
 		/**
@@ -98,8 +100,9 @@ abstract class Ghost extends Entity {
 		}
 
 		// Check if we have moved
-		if (this.recordedBoardLocation.bx !== currentBoardPos.bx || this.recordedBoardLocation.by !== currentBoardPos.by) {
-			console.group(`	%cWe have moved from ${unpackCoords(this.recordedBoardLocation)} to ${unpackCoords(currentBoardPos)}`, 'color: #FFA500');
+		// if (this.recordedBoardLocation.bx !== currentBoardPos.bx || this.recordedBoardLocation.by !== currentBoardPos.by) {
+		if (currentBoardPos.bx === this.__latentMoveInformation.coord.bx && currentBoardPos.by === this.__latentMoveInformation.coord.by) {
+			console.group(`	%cWe have moved from ${unpackCoords(this.recordedBoardPosition)} to ${unpackCoords(currentBoardPos)}`, 'color: #FFA500');
 
 			// Calculate the new target coord
 			this.targetCoord = this.getTarget(frameNo);
@@ -113,7 +116,7 @@ abstract class Ghost extends Entity {
 			this._moveProcessed = false;
 			
 			// Now update previous
-			this.recordedBoardLocation = currentBoardPos;
+			this.recordedBoardPosition = currentBoardPos;
 
 			console.log(`	New latent move information is`, this.__latentMoveInformation);
 
@@ -146,13 +149,14 @@ abstract class Ghost extends Entity {
 		 */
 		return {
 			placementCoords: currentCanvasPos,
-			sheetCoords: this._imageDeterminer(frameNo)
+			sheetCoords: this._imageDeterminer(frameNo),
+			enlarge: true
 		}
 	}
 
 	private _askTargetLogic(): moveInfo | undefined {
 
-		const legalMoves = GameBoard.getLegalMoves(this.__latentMoveInformation.coord, this.direction);
+		const legalMoves = GameBoard.getLegalMoves(this.__latentMoveInformation.coord, this.direction, true);
 		console.log("	Legal moves around it are", legalMoves);
 
 		// Literally an implementation of greedy best first search
@@ -162,7 +166,7 @@ abstract class Ghost extends Entity {
 			console.log("	looking at possible move", move);
 
 			// Check to see if this is the square being ocupied
-			if (!(move.coord.bx === this.recordedBoardLocation.bx && move.coord.by === this.recordedBoardLocation.by)) {
+			if (!(move.coord.bx === this.recordedBoardPosition.bx && move.coord.by === this.recordedBoardPosition.by)) {
 
 				console.log("	Not our previous yay");
 				const distance = (this.targetCoord.bx - move.coord.bx)**2 + (this.targetCoord.by - move.coord.by)**2;

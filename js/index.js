@@ -27,7 +27,7 @@ function main() {
     window.blinky = blinky;
     console.log("Init-ing blinky");
     // blinky.initializeGhost();
-    const inky = new Inky(pacman, gameBoard);
+    const inky = new Inky(pacman, blinky, gameBoard);
     animator.registerEntity(inky);
     window.inky = inky;
     console.log("Init-ing inky");
@@ -56,7 +56,10 @@ function main() {
     controller = new Controller(pacman, animator);
     window.controller = controller;
     animator.startUpAnimation();
-    // And finally
+    // Pause the game when the page loses focus
+    window.addEventListener("blur", () => {
+        Animator.ACTIVE = false;
+    });
 }
 function unpackCoords(coord) {
     if (coord.hasOwnProperty('cx')) {

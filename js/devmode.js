@@ -1,4 +1,5 @@
 import { GameBoard } from "./gameBoard.js";
+import { unpackCoords } from "./index.js";
 class DevMode {
     constructor(dev_ctx, pacman, blinky, inky, pinky, clyde, animator, spriteSheet, gameBoard) {
         this.frameRateBuffer = [0, 0, 0, 0, 0, 0, 0];
@@ -6,7 +7,9 @@ class DevMode {
         this.lastTimeOfFrame = 0;
         this._gridRendered = false;
         this._gridCells = [];
-        this._ghostPanelIDs = ["blinkyLoc", "inkyLoc", "pinkyLoc", "clydeLoc"];
+        this._panelLocationIDs = ["blinkyLoc", "inkyLoc", "pinkyLoc", "clydeLoc"];
+        this._panelTargetIDs = ["blinkyTarget", "inkyTarget", "pinkyTarget", "clydeTarget"];
+        this._ghostColors = ["#ff0000", "#00ffff", "#FCB5FF", "#F8BB55"];
         this._targetTileCollection = [];
         this.dev_ctx = dev_ctx;
         this._pacman = pacman;
@@ -21,8 +24,8 @@ class DevMode {
         this._temp_ctx = this._tempCanvas.getContext("2d");
         this._cachedGrid = document.createElement("canvas");
         this._temp_ctx = this._tempCanvas.getContext("2d");
-        this._cellCollection = document.createElement("div");
-        this._cellCollection.id = "numberBox";
+        this._cellCollectionEle = document.createElement("div");
+        this._cellCollectionEle.id = "cellBox";
         this.frameRateElement = document.getElementById("frameRate");
         for (let i = 0; i < 4; i++) {
             let t = document.createElement("div");
@@ -31,20 +34,28 @@ class DevMode {
             t.dataset.boardY = "" + 0;
             t.dataset.canvasX = "" + 0;
             t.dataset.canvasY = "" + 0;
+            t.style.backgroundColor = this._ghostColors[i];
             this._targetTileCollection.push(t);
+            this._cellCollectionEle.appendChild(t);
         }
         this._ghosts = [this._blinky, this._inky, this._pinky, this._clyde];
     }
     renderGridTiles() {
-        document.getElementById("easel").appendChild(this._cellCollection);
+        document.getElementById("easel").appendChild(this._cellCollectionEle);
         this._tempCanvas.width = 16;
         this._tempCanvas.height = 16;
         this._temp_ctx.setLineDash([2, 2]);
         this._temp_ctx.lineWidth = 1;
-        const leftMoveValue = this._cellCollection.getBoundingClientRect().width / GameBoard.width; //GameBoard.width;
-        const topMoveValue = this._cellCollection.getBoundingClientRect().height / GameBoard.height; //GameBoard.height;
-        const topOffsetDistance = window.scrollY + this._cellCollection.getBoundingClientRect().top;
-        const leftOffsetDistance = window.scrollX + this._cellCollection.getBoundingClientRect().left;
+        const leftMoveValue = this._cellCollectionEle.getBoundingClientRect().width / GameBoard.width; //GameBoard.width;
+        const topMoveValue = this._cellCollectionEle.getBoundingClientRect().height / GameBoard.height; //GameBoard.height;
+        const topOffsetDistance = window.scrollY + this._cellCollectionEle.getBoundingClientRect().top;
+        const leftOffsetDistance = window.scrollX + this._cellCollectionEle.getBoundingClientRect().left;
+        // Take care of the cover tiles first
+        for (let i = 0; i < 4; i++) {
+            let t = this._targetTileCollection[i];
+            t.style.width = leftMoveValue + "px";
+            t.style.height = topMoveValue + "px";
+        }
         this._temp_ctx.strokeStyle = 'rgba(255, 255, 255, 1)';
         this._temp_ctx.moveTo(0, 16);
         this._temp_ctx.lineTo(0, 0);
@@ -55,8 +66,6 @@ class DevMode {
             for (let j = 0; j < GameBoard.width; j++) {
                 // Create teh GridCell element
                 const num = document.createElement("div");
-                this._cellCollection.appendChild(num);
-                this._gridCells[i].push(num);
                 // Put a copy of the grid cell onto the dev canvas
                 this._paintDeveloper({ placementCoords: { cx: j * 16, cy: i * 16 }, sheetCoords: { cx: 0, cy: 0 } }, this._tempCanvas);
                 // Add appropriate class
@@ -68,11 +77,13 @@ class DevMode {
                 num.style.left = leftOffsetDistance + j * leftMoveValue + "px";
                 num.dataset.boardX = "" + j;
                 num.dataset.boardY = "" + i;
-                num.dataset.canvasX = topOffsetDistance + i * topMoveValue + "px";
-                num.dataset.canvasY = leftOffsetDistance + j * leftMoveValue + "px";
+                num.dataset.canvasX = leftOffsetDistance + j * leftMoveValue + "px";
+                num.dataset.canvasY = topOffsetDistance + i * topMoveValue + "px";
                 // Add event listeners
                 num.addEventListener("mouseenter", this._displayGridCoord);
                 num.addEventListener("mouseleave", this._dismissGridCoord);
+                this._cellCollectionEle.appendChild(num);
+                this._gridCells[i].push(num);
             }
         }
         this._temp_ctx.clearRect(0, 0, 16, 16);
@@ -86,29 +97,23 @@ class DevMode {
     }
     updateTargets() {
         const entities = [this._blinky, this._inky, this._pinky, this._clyde];
-        for (let i = 0; i < entities.length; i++) {
+        for (let i = 0; i < 4; i++) {
+            let targetTile = this._targetTileCollection[i];
             let target = entities[i].targetCoord;
-            let temp = this._targetTileCollection[0].dataset;
-            if (parseInt(temp.boardX) !== target.bx || parseInt(temp.boardY) !== target.by) {
-                // Remove current class from target tile
-                let t = (this._gridCells[parseInt(temp.boardY)][parseInt(temp.boardX)]);
-                t.classList.remove(DevMode.TARGET_CELL_CLASS);
-                // Grab the dataset of our targetCell
-                let index = (this._gridCells[target.by][target.bx]);
-                // Use it's info to set the information of our target-location-cell
-                temp.boardX = "" + target.bx;
-                temp.boardY = "" + target.by;
-                temp.canvasX = index.dataset.canvasX;
-                temp.canvasY = index.dataset.canvasY;
-                // Now add the appropriate class to the new target tile
-                index.classList.add(DevMode.TARGET_CELL_CLASS);
-            }
+            // console.log(entities[i].PET_NAME, target, this._gridCells[target.by]);
+            let targetCellStats = this._gridCells[target.by][target.bx].dataset;
+            // targetTile.style.position = "absolute";
+            targetTile.style.left = targetCellStats.canvasX;
+            targetTile.style.top = targetCellStats.canvasY;
+            // console.log("drawn");
         }
     }
     updatePanelLocs(frameNo) {
-        for (let i = 0; i < this._ghostPanelIDs.length; i++) {
+        for (let i = 0; i < this._panelLocationIDs.length; i++) {
             let e = this._ghosts[i].getBoardCoordinates(frameNo);
-            document.getElementById(this._ghostPanelIDs[i]).textContent = `[${e.by}, ${e.bx}]`;
+            document.getElementById(this._panelLocationIDs[i]).textContent = `[${e.by}, ${e.bx}]`;
+            e = this._ghosts[i].targetCoord;
+            document.getElementById(this._panelTargetIDs[i]).textContent = unpackCoords(e);
         }
     }
     /**

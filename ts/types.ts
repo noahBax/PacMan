@@ -17,7 +17,8 @@ export type vector = {x: number, y: number};
 
 export type RenderObject = {
 	placementCoords: canvasCoordinate,
-	sheetCoords: canvasCoordinate
+	sheetCoords: canvasCoordinate,
+	enlarge?: boolean
 };
 
 export type Direction = "up" | "down" | "left" | "right" | "none";
@@ -54,9 +55,9 @@ declare global {
 
 export interface GridCell extends HTMLDivElement {
 	dataset: {
-		boardX?: string
-		boardY?: string
-		canvasX?: string
-		canvasY?: string
+		boardX: string
+		boardY: string
+		canvasX: string
+		canvasY: string
 	}
 }

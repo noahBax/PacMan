@@ -12,7 +12,7 @@
 		#easel {
 			display: grid;
 		}
-		#backdrop, #renderBox, #devBox, #numberBox {
+		#backdrop, #renderBox, #devBox, #cellBox {
 			grid-column: 1;
 			grid-row: 1;
 			height: 128.57vw;
@@ -22,7 +22,7 @@
 			margin: 0px;
 			padding: 0px;
 		}
-		#numberBox>div {
+		#cellBox>.gridCellClass {
 			color: white;
 			position: absolute;
 			padding: 0px;
@@ -37,7 +37,7 @@
 			font-family: monospace;
 			/* cursor: none */
 		}
-		#numberBox>div:hover {
+		#cellBox>.gridCellClass:hover {
 			opacity: 1;
 			/* border: 1px solid white; */
 			/* width: calc(100% - 2px);
@@ -81,14 +81,23 @@
 		#cellInfoSection {
 			padding-left: 10px;
 		}
-		.targetTile {
-			background-image: repeating-linear-gradient(-214deg, rgba(255,255,255, 0.25), rgba(255,255,255, 0.25) 1px, transparent 0px, transparent 13px);
-			background-size: 9px;
+		.targetTileCover {
+			/* background-image: repeating-linear-gradient(-214deg, rgba(255,255,255, 0.25), rgba(255,255,255, 0.25) 1px, transparent 0px, transparent 13px); */
+			top: 0px;
+			left: 0px;
+			/* background-size: 9px; */
+
 		}
 		/* Use this in the GridTile*/
 		.targetTileCover {
 			background-blend-mode: multiply;
-			background-color: pink;
+			position: absolute;
+			padding: 0px;
+			margin: 0px;
+			/* background-color: #e5e5f7; */
+			opacity: 0.5;
+			background-color: #6600ff;
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%239C92AC' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
 		}
 	</style>
 </head>
@@ -107,6 +116,11 @@
 		<p style="color: cyan">Inky: <span id="inkyLoc"></span></p>
 		<p style="color: pink">Pinky: <span id="pinkyLoc"></span></p>
 		<p style="color: orange">Clyde: <span id="clydeLoc"></span></p>
+		<p>Target locations:</p>
+		<p style="color: orangered">Blinky: <span id="blinkyTarget"></span></p>
+		<p style="color: cyan">Inky: <span id="inkyTarget"></span></p>
+		<p style="color: pink">Pinky: <span id="pinkyTarget"></span></p>
+		<p style="color: orange">Clyde: <span id="clydeTarget"></span></p>
 	</div>
 	<div id="dev_controlPanel">
 
