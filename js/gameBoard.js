@@ -2,7 +2,7 @@ import { Ghost } from "./entitiies/ghost.js";
 import { PacMan } from "./entitiies/pacman.js";
 import { spriteManager } from "./spriteManager.js";
 class GameBoard {
-    constructor() {
+    constructor(director) {
         this.currentDotSpaces = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -41,15 +41,10 @@ class GameBoard {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ];
+        this._director = director;
     }
     setRenderer(renderer) {
         this.renderer = renderer;
-    }
-    setGhosts(blinky, inky, pinky, clyde) {
-        this.blinky = blinky;
-        this.inky = inky;
-        this.pinky = pinky;
-        this.clyde = clyde;
     }
     /**
      * Calculate the grid square coordinate on the gameboard.
@@ -219,15 +214,16 @@ class GameBoard {
         }
         return false;
     }
-    tryToEatDot(boardCoord) {
+    tryToEatDot(timestamp, boardCoord) {
         if (this.currentDotSpaces[boardCoord.by][boardCoord.bx] === 1) {
             GameBoard.PACMAN_SCORE += 10;
             this.currentDotSpaces[boardCoord.by][boardCoord.bx] = 0;
-            this.renderer.paintBackground({
-                placementCoords: { cy: boardCoord.by * 16, cx: boardCoord.bx * 16 },
-                sheetCoords: spriteManager.blank[0]
-            });
             this.renderer.clearBackgroundSpot({ cy: boardCoord.by * 16, cx: boardCoord.bx * 16 }, { y: 16, x: 16 });
+        }
+        else if (this.currentDotSpaces[boardCoord.by][boardCoord.bx] === 2) {
+            GameBoard.PACMAN_SCORE += 50;
+            this.currentDotSpaces[boardCoord.by][boardCoord.bx] = 0;
+            this._director.powerPelletEatenEvent(timestamp);
         }
     }
     drawMaze(frameNo) {

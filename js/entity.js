@@ -100,7 +100,7 @@ class Entity {
         this.setCanvasCoords(frameNo, this.getCanvasCoords(frameNo), roundX, roundY);
     }
 }
-Entity._FRAMES_PER_IMAGE = 128;
+Entity.FRAMES_PER_IMAGE = 128;
 // static vectorFromDirection(direction: Direction): vector {
 // 	switch (direction) {
 // 		case "up":

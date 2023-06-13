@@ -1,6 +1,7 @@
 import { Animator } from "./animator.js";
 import { Controller } from "./controller.js";
 import { DevMode } from "./devmode.js";
+import { Director } from "./director.js";
 import { Blinky } from "./entitiies/blinky.js";
 import { Clyde } from "./entitiies/clyde.js";
 import { Inky } from "./entitiies/inky.js";
@@ -44,12 +45,14 @@ declare global {
 		inky: Inky,
 		pinky: Pinky
 		clyde: Clyde,
-		GameBoard: any,
+		GameBoard: typeof GameBoard,
 		gameBoard: GameBoard
 		animator: Animator
-		Animator: any
+		Animator: typeof Animator
 		developer: DevMode
 		controller: Controller
+		director: Director
+		Director: typeof Director
 	}
 }
 

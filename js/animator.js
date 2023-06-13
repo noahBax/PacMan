@@ -1,6 +1,5 @@
 import { DevMode } from "./devmode.js";
 import { PacMan } from "./entitiies/pacman.js";
-import { devMode } from "./index.js";
 import { Renderer } from "./renderer.js";
 class Animator {
     constructor(foreground_ctx, background_ctx, spriteSheet, gameBoard) {
@@ -18,7 +17,7 @@ class Animator {
         if (entity instanceof PacMan)
             this._pacmanRef = entity;
     }
-    startUpAnimation() {
+    startAnimating() {
         if (Animator.ACTIVE)
             window.requestAnimationFrame(this.handleFrame.bind(this));
         // Animator.ACTIVE = true;
@@ -46,11 +45,13 @@ class Animator {
             // console.log(renderObj)
             this._renderer.drawForeground(renderObj);
         });
-        this._gameBoard.tryToEatDot((this._pacmanRef.recordedBoardPosition));
+        this._gameBoard.tryToEatDot(timestamp, this._pacmanRef.recordedBoardPosition);
+        // Todo: Use a developer variable
         if (DevMode.IN_DEV_MODE) {
-            devMode.updateFrameRate(timestamp);
-            devMode.updateTargets();
-            devMode.updatePanelLocs(timestamp);
+            window.developer.updateFrameRate(timestamp);
+            // window.developer.updateTargets();
+            window.developer.updatePanelLocs(timestamp);
+            window.developer.updateScore();
         }
         this._renderer.renderForeground(timestamp);
         this._renderer.renderBackground(timestamp);

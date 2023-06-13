@@ -39,7 +39,7 @@ class Renderer {
 		
 		this.foregroundDrawQueue.forEach( item => {
 			if (item.enlarge) {
-				this.foreground_ctx.drawImage(this.spriteSheet, item.sheetCoords.cx, item.sheetCoords.cy, 16, 16, item.placementCoords.cx-2, item.placementCoords.cy-2, 20, 20);
+				this.foreground_ctx.drawImage(this.spriteSheet, item.sheetCoords.cx, item.sheetCoords.cy, 16, 16, item.placementCoords.cx-8, item.placementCoords.cy-8, 32, 32);
 			} else {
 				this.foreground_ctx.drawImage(this.spriteSheet, item.sheetCoords.cx, item.sheetCoords.cy, 16, 16, item.placementCoords.cx, item.placementCoords.cy, 16, 16);
 			}

@@ -4,7 +4,9 @@ import { GameBoard } from "../gameBoard.js";
 import { spriteManager, spriteManagerItems } from "../spriteManager.js";
 import { Direction, canvasCoordinate, vector, RenderObject, animationInfo, boardCoordinate, moveInfo } from "../types.js";
 
-class PacMan extends Entity{
+class PacMan extends Entity {
+
+	private static _CHOMPS_PER_IMAGE = Entity.FRAMES_PER_IMAGE / 2;
 	
 	PET_NAME = "Pac-Man";
 
@@ -191,7 +193,7 @@ class PacMan extends Entity{
 
 			const indexName: spriteManagerItems = this.__animationInfo[this.direction]
 			const animLength = spriteManager[indexName].length;
-			const frameNumer = Math.floor(progression / Entity._FRAMES_PER_IMAGE) % animLength
+			const frameNumer = Math.floor(progression / PacMan._CHOMPS_PER_IMAGE) % animLength
 
 			// return spriteManager.pacStatic[0];
 			return spriteManager[indexName][frameNumer];

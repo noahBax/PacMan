@@ -4,7 +4,7 @@ import { GameBoard } from "./gameBoard.js";
 import { Direction, RenderObject, animationInfo, boardCoordinate, canvasCoordinate, vector } from "./types.js";
 
 abstract class Entity {
-	static readonly _FRAMES_PER_IMAGE = 128;
+	static readonly FRAMES_PER_IMAGE = 128;
 
 	protected __startPositionForVector: canvasCoordinate; // Start position for vector
 	private _hasBoardCoordCacheGenerated: number = -1;

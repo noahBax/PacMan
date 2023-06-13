@@ -157,7 +157,7 @@ class PacMan extends Entity {
             const progression = frameNo - this.__startFrame;
             const indexName = this.__animationInfo[this.direction];
             const animLength = spriteManager[indexName].length;
-            const frameNumer = Math.floor(progression / Entity._FRAMES_PER_IMAGE) % animLength;
+            const frameNumer = Math.floor(progression / PacMan._CHOMPS_PER_IMAGE) % animLength;
             // return spriteManager.pacStatic[0];
             return spriteManager[indexName][frameNumer];
         }
@@ -167,4 +167,5 @@ class PacMan extends Entity {
         super.setVelocityVector(vector, direction, frameNo);
     }
 }
+PacMan._CHOMPS_PER_IMAGE = Entity.FRAMES_PER_IMAGE / 2;
 export { PacMan };

@@ -7,7 +7,7 @@ class Controller {
 
 	private _animator: Animator;
 
-	static readonly DRIVING_SPEED = 0.08;
+	static readonly DRIVING_SPEED = 0.07575757625;
 
 	buttonPressList: Exclude<Direction, "none">[] = [];
 
@@ -50,7 +50,7 @@ class Controller {
 				break;
 			case "Escape":
 				Animator.ACTIVE = !Animator.ACTIVE;
-				this._animator.startUpAnimation();
+				this._animator.startAnimating();
 		}
 	}
 

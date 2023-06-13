@@ -45,8 +45,11 @@ class DevMode {
 	private _tempCanvas: HTMLCanvasElement;
 	private _temp_ctx: CanvasRenderingContext2D;
 	private _targetTileCollection: GridCell[] = [];
+	private _tilesRendered = false;
 
-	constructor(dev_ctx: CanvasRenderingContext2D, pacman: PacMan, blinky: Blinky, inky: Inky, pinky: Pinky, clyde: Clyde, animator: Animator, spriteSheet: HTMLImageElement | HTMLCanvasElement, gameBoard: GameBoard) {
+	private _scoreEle: HTMLSpanElement;
+
+	constructor(dev_ctx: CanvasRenderingContext2D, pacman: PacMan, blinky: Blinky, pinky: Pinky, inky: Inky, clyde: Clyde, animator: Animator, spriteSheet: HTMLImageElement | HTMLCanvasElement, gameBoard: GameBoard) {
 		this.dev_ctx = dev_ctx;
 
 		this._pacman = pacman;
@@ -67,6 +70,8 @@ class DevMode {
 		this._cellCollectionEle.id = "cellBox";
 
 		this.frameRateElement = document.getElementById("frameRate");
+		this._scoreEle = document.getElementById("devGameScore");
+
 
 		for (let i = 0; i < 4; i++) {
 			let t = document.createElement("div") as GridCell;
@@ -83,6 +88,10 @@ class DevMode {
 
 		this._ghosts = [this._blinky, this._inky, this._pinky, this._clyde];
 
+	}
+
+	updateScore() {
+		this._scoreEle.textContent = "" + GameBoard.PACMAN_SCORE;
 	}
 
 	renderGridTiles() {
@@ -106,11 +115,11 @@ class DevMode {
 			t.style.height = topMoveValue + "px";
 		}
 		
-		this._temp_ctx.strokeStyle = 'rgba(255, 255, 255, 1)';
-		this._temp_ctx.moveTo(0,16);
-		this._temp_ctx.lineTo(0,0);
-		this._temp_ctx.lineTo(16,0);
-		this._temp_ctx.stroke();
+		// this._temp_ctx.strokeStyle = 'rgba(255, 255, 255, 1)';
+		// this._temp_ctx.moveTo(0,16);
+		// this._temp_ctx.lineTo(0,0);
+		// this._temp_ctx.lineTo(16,0);
+		// this._temp_ctx.stroke();
 		for (let i = 0; i < GameBoard.height; i++) {
 			this._gridCells.push([]);
 			for (let j = 0; j < GameBoard.width; j++) {
@@ -146,16 +155,21 @@ class DevMode {
 
 		this._temp_ctx.clearRect(0, 0, 16, 16);
 		this._temp_ctx.setLineDash([]);
+
+		this._tilesRendered = true;
 	}
 
 	updateFrameRate(time: number) {
 		this.frameRateBuffer[this.frbIndex] = time - this.lastTimeOfFrame;
+		console.log(this.frameRateBuffer);
 		this.lastTimeOfFrame = time;
-		this.frbIndex = (this.frbIndex++) % 7; //this.frameRateBuffer.length
-		this.frameRateElement.textContent = Math.round(1000 / this.frameRateBuffer.reduce((acc, curr) => acc + curr)) + " fps";
+		this.frbIndex = (this.frbIndex + 1) % 7; //this.frameRateBuffer.length
+		this.frameRateElement.textContent = Math.round(1000 / (this.frameRateBuffer.reduce((acc, curr) => acc + curr) / 7)) + " fps";
 	}
 
 	updateTargets() {
+
+		if (!this._tilesRendered) return;
 
 		const entities = [this._blinky, this._inky, this._pinky, this._clyde];
 		for (let i = 0; i < 4; i++) {

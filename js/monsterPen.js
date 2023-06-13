@@ -1,0 +1,3 @@
+class MonsterPen {
+}
+export { MonsterPen };

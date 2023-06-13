@@ -1,0 +1,5 @@
+class MonsterPen {
+
+}
+
+export { MonsterPen };

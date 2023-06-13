@@ -36,7 +36,7 @@ class Controller {
                 break;
             case "Escape":
                 Animator.ACTIVE = !Animator.ACTIVE;
-                this._animator.startUpAnimation();
+                this._animator.startAnimating();
         }
     }
     handleKeyUp(event) {
@@ -77,5 +77,5 @@ class Controller {
         }
     }
 }
-Controller.DRIVING_SPEED = 0.08;
+Controller.DRIVING_SPEED = 0.07575757625;
 export { Controller };

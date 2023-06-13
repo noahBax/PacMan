@@ -58,10 +58,13 @@ abstract class Ghost extends Entity {
 	
 	updateFrame(frameNo: number): RenderObject {
 
-		// * Update frightened timer
+		// ToDo: Do turn-around on mode switch
+
+		// Update frightened timer
 		if (this.__state == "frightened") {
 			if (frameNo - this._frightStart >= this._frightTimer) {
 				this.__state = "chase";
+
 			}
 		}
 
@@ -159,27 +162,52 @@ abstract class Ghost extends Entity {
 		const legalMoves = GameBoard.getLegalMoves(this.__latentMoveInformation.coord, this.direction, true);
 		console.log("	Legal moves around it are", legalMoves);
 
-		// Literally an implementation of greedy best first search
-		let bestDistance = Infinity;
-		let bestMove: moveInfo;
-		legalMoves.forEach(move => {
-			console.log("	looking at possible move", move);
+		if (this.__state === "frightened") {
 
-			// Check to see if this is the square being ocupied
-			if (!(move.coord.bx === this.recordedBoardPosition.bx && move.coord.by === this.recordedBoardPosition.by)) {
+			// Generate a random number to decide which direction we try first 
+			let alternatives: Direction[] = ["right", "down", "left", "up"];
+			let preferredDir: Direction = alternatives[Math.floor(Math.random() * 4)];
+			legalMoves.sort( (a, b) => {
+				return alternatives.indexOf(a.direction) - alternatives.indexOf(b.direction);
+			});
 
-				console.log("	Not our previous yay");
-				const distance = (this.targetCoord.bx - move.coord.bx)**2 + (this.targetCoord.by - move.coord.by)**2;
-				if (distance < bestDistance) {
-					bestDistance = distance;
-					bestMove = move;
-				}
+			console.log("	Preferred random direction is", preferredDir);
+
+			// If that first direction doesn't work out, order of preference is up, left, down, right
+			// We work backwards up that list so that if we find the preferred direction we can take that way first 
+			let ret: moveInfo;
+			// console.log(legalMoves);
+			for (let i = 0; i < legalMoves.length; i++) {
+				if ((legalMoves[i].coord.bx === this.recordedBoardPosition.bx && legalMoves[i].coord.by === this.recordedBoardPosition.by)) continue;
+				ret = legalMoves[i];
+				if (ret.direction === preferredDir) return ret;
 			}
-		});
 
-		console.log("	Best move toward target is", bestMove);
+			return ret;
+			
+		} else {
+			// Literally an implementation of greedy best first search
+			let bestDistance = Infinity;
+			let bestMove: moveInfo;
+			legalMoves.forEach(move => {
+				console.log("	looking at possible move", move);
+	
+				// Check to see if this is the square being ocupied
+				if (!(move.coord.bx === this.recordedBoardPosition.bx && move.coord.by === this.recordedBoardPosition.by)) {
+	
+					console.log("	Not our previous yay");
+					const distance = (this.targetCoord.bx - move.coord.bx)**2 + (this.targetCoord.by - move.coord.by)**2;
+					if (distance < bestDistance) {
+						bestDistance = distance;
+						bestMove = move;
+					}
+				}
+			});
+	
+			console.log("	Best move toward target is", bestMove);
+			return bestMove;
+		}
 
-		return bestMove;
 	}
 
 	/**
@@ -187,19 +215,24 @@ abstract class Ghost extends Entity {
 	 */
 	abstract getTarget(frameNo: number): boardCoordinate;
 
-	scareMe(frameTimer: number, currFrame: number) {
+	/**
+	 * Put the ghost into frightened mode for `timer` ms
+	 * @param timer Time in ms
+	 * @param timestamp Start time
+	 */
+	scareMe(timer: number, timestamp: number) {
 		this.__state = "frightened";
-		this._frightStart = currFrame;
-		this._frightTimer = frameTimer;
+		this._frightStart = timestamp;
+		this._frightTimer = timer;
 	}
 
 	private _imageDeterminer(frameNo: number): canvasCoordinate {
 		if (this.__state === "frightened") {
 			const frightProgression = frameNo - this._frightStart;
 
-			const indexName = (this._frightTimer - frightProgression <= 120) ? "ghostSkeptical" : "ghostFrightened";
+			const indexName = (this._frightTimer - frightProgression <= 2000) ? "ghostSkeptical" : "ghostFrightened";
 			const animLength = spriteManager[indexName].length;
-			const frameNumer = Math.floor(frightProgression / Entity._FRAMES_PER_IMAGE) % animLength
+			const frameNumer = Math.floor(frightProgression / Entity.FRAMES_PER_IMAGE) % animLength
 
 			
 			return spriteManager[indexName][frameNumer];
@@ -208,13 +241,13 @@ abstract class Ghost extends Entity {
 
 			const indexName = "eyes";
 			const animLength = spriteManager[indexName].length;
-			const frameNumer = Math.floor(progression / Entity._FRAMES_PER_IMAGE) % animLength
+			const frameNumer = Math.floor(progression / Entity.FRAMES_PER_IMAGE) % animLength
 		} else {
 			const progression = frameNo - this.__startFrame;
 
 			const indexName = this.__animationInfo[this.__latentMoveInformation.direction];
 			const animLength = spriteManager[indexName].length;
-			const frameNumer = Math.floor(progression / Entity._FRAMES_PER_IMAGE) % animLength
+			const frameNumer = Math.floor(progression / Entity.FRAMES_PER_IMAGE) % animLength
 
 			return spriteManager[indexName][frameNumer];
 		}

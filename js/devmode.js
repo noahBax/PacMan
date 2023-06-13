@@ -1,7 +1,7 @@
 import { GameBoard } from "./gameBoard.js";
 import { unpackCoords } from "./index.js";
 class DevMode {
-    constructor(dev_ctx, pacman, blinky, inky, pinky, clyde, animator, spriteSheet, gameBoard) {
+    constructor(dev_ctx, pacman, blinky, pinky, inky, clyde, animator, spriteSheet, gameBoard) {
         this.frameRateBuffer = [0, 0, 0, 0, 0, 0, 0];
         this.frbIndex = 0;
         this.lastTimeOfFrame = 0;
@@ -11,6 +11,7 @@ class DevMode {
         this._panelTargetIDs = ["blinkyTarget", "inkyTarget", "pinkyTarget", "clydeTarget"];
         this._ghostColors = ["#ff0000", "#00ffff", "#FCB5FF", "#F8BB55"];
         this._targetTileCollection = [];
+        this._tilesRendered = false;
         this.dev_ctx = dev_ctx;
         this._pacman = pacman;
         this._blinky = blinky;
@@ -27,6 +28,7 @@ class DevMode {
         this._cellCollectionEle = document.createElement("div");
         this._cellCollectionEle.id = "cellBox";
         this.frameRateElement = document.getElementById("frameRate");
+        this._scoreEle = document.getElementById("devGameScore");
         for (let i = 0; i < 4; i++) {
             let t = document.createElement("div");
             t.classList.add("targetTileCover");
@@ -39,6 +41,9 @@ class DevMode {
             this._cellCollectionEle.appendChild(t);
         }
         this._ghosts = [this._blinky, this._inky, this._pinky, this._clyde];
+    }
+    updateScore() {
+        this._scoreEle.textContent = "" + GameBoard.PACMAN_SCORE;
     }
     renderGridTiles() {
         document.getElementById("easel").appendChild(this._cellCollectionEle);
@@ -56,11 +61,11 @@ class DevMode {
             t.style.width = leftMoveValue + "px";
             t.style.height = topMoveValue + "px";
         }
-        this._temp_ctx.strokeStyle = 'rgba(255, 255, 255, 1)';
-        this._temp_ctx.moveTo(0, 16);
-        this._temp_ctx.lineTo(0, 0);
-        this._temp_ctx.lineTo(16, 0);
-        this._temp_ctx.stroke();
+        // this._temp_ctx.strokeStyle = 'rgba(255, 255, 255, 1)';
+        // this._temp_ctx.moveTo(0,16);
+        // this._temp_ctx.lineTo(0,0);
+        // this._temp_ctx.lineTo(16,0);
+        // this._temp_ctx.stroke();
         for (let i = 0; i < GameBoard.height; i++) {
             this._gridCells.push([]);
             for (let j = 0; j < GameBoard.width; j++) {
@@ -88,14 +93,18 @@ class DevMode {
         }
         this._temp_ctx.clearRect(0, 0, 16, 16);
         this._temp_ctx.setLineDash([]);
+        this._tilesRendered = true;
     }
     updateFrameRate(time) {
         this.frameRateBuffer[this.frbIndex] = time - this.lastTimeOfFrame;
+        console.log(this.frameRateBuffer);
         this.lastTimeOfFrame = time;
-        this.frbIndex = (this.frbIndex++) % 7; //this.frameRateBuffer.length
-        this.frameRateElement.textContent = Math.round(1000 / this.frameRateBuffer.reduce((acc, curr) => acc + curr)) + " fps";
+        this.frbIndex = (this.frbIndex + 1) % 7; //this.frameRateBuffer.length
+        this.frameRateElement.textContent = Math.round(1000 / (this.frameRateBuffer.reduce((acc, curr) => acc + curr) / 7)) + " fps";
     }
     updateTargets() {
+        if (!this._tilesRendered)
+            return;
         const entities = [this._blinky, this._inky, this._pinky, this._clyde];
         for (let i = 0; i < 4; i++) {
             let targetTile = this._targetTileCollection[i];
