@@ -1,6 +1,8 @@
 import { boardCoordinate, canvasCoordinate } from "./types.js";
 import { Director } from "./director.js";
 
+// Link to source
+// https://pacman.holenet.info/#LvlSpecs
 
 function main() {
 	const director = new Director();

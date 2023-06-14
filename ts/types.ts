@@ -38,6 +38,8 @@ export type moveInfo = {
 	baseCoordinate: boardCoordinate
 }
 
+export type kennelLocation = "right" | "middle" | "left";
+
 declare global {
     interface Window {
 		pacman: PacMan,
