@@ -1,4 +1,6 @@
 import { Director } from "./director.js";
+// Link to source
+// https://pacman.holenet.info/#LvlSpecs
 function main() {
     const director = new Director();
     window.director = director;
