@@ -8,13 +8,8 @@
 	<title>Pac-Man, An Attempt</title>
 	<link rel="icon" href="favicon.png" type="image/x-icon">
 	<style>
-		@font-face { font-family: "Minecraft"; src: url('Minecraft.ttf'); }
 		#easel {
 			display: grid;
-		}
-		@font-face {
-			src: url("PublicPixel-z84yD.ttf");
-			font-family: "Public Pixel";
 		}
 		#backdrop, #renderBox, #devBox, #cellBox {
 			grid-column: 1;
@@ -131,12 +126,11 @@
 
 	</div>
 	<div id="easel">
-		<canvas id="backdrop" width="448" height="576"></canvas>
+		<canvas id="backdrop" width="448" height="576"></canvas> 
 		<canvas id="renderBox" width="448" height="576"></canvas>
 		<canvas id="devBox" width="448" height="576"></canvas>
 	</div>
-	<img src="weirddog.jpg" alt="weird" id="buddy" style="display: none;">
-	<img src="spritesheet.png" alt="Sprite sheet" id="spriteSheet">
+	<img src="sprites.png" alt="Sprite sheet" id="spriteSheet">
 	<script type="module" src="js/index.js"></script>
 </body>
 </html>

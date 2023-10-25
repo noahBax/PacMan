@@ -15,7 +15,6 @@ class Renderer {
 		this.foreground_ctx = foreground_ctx;
 		this.foreground_ctx.imageSmoothingEnabled = false;
 		this.background_ctx = background_ctx;
-		this.background_ctx.imageSmoothingEnabled = false;
 
 		this.width = foreground_ctx.canvas.width;
 		this.height = foreground_ctx.canvas.height;
