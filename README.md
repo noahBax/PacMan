@@ -38,8 +38,7 @@ Right now it's more of a showcase of their behaviors than anything else.
 
 Next best thing to do is implement the Monster Pen that is at the center of the game board.
 Right now I just have the ghosts spawning in at the corners.
-That works fine, but if I want my game to feel more like the real Pac-Man then that is a must.
+That works fine, but if I want my game to feel more like the real Pac-Man, then that is a must.
 Doing this would also make killing ghosts feel more fulfilling I think. Because you're sending them somewhere? Just a feeling.
 
 Aside from those features, there's also smaller things like making the power pellets disappear after you eat them or doing a better implementation of Pac-Man's cornering ability.
-And of course there is also just a bugs that I have chosen to ignore because they don't impact that much about the game.
