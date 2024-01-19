@@ -21,6 +21,10 @@ class Animator {
 	static IN_SLOW_DOWN = false;
 	static slowdownSpeed = 18;
 
+	// We need this flag because the files don't load instantly and pause time
+	// needs to be updated
+	private animationStartedAlready = false;
+
 	constructor(foreground_ctx: CanvasRenderingContext2D, background_ctx: CanvasRenderingContext2D, spriteSheet: HTMLImageElement | HTMLCanvasElement, gameBoard: GameBoard) {
 		this._renderer = new Renderer(foreground_ctx, background_ctx, spriteSheet);
 		this._gameBoard = gameBoard;
@@ -38,6 +42,11 @@ class Animator {
 	}
 
 	private handleFrame(timestamp: number) {
+
+		if (!this.animationStartedAlready) {
+			this._pauseTime = timestamp;
+			this.animationStartedAlready = true;
+		}
 
 		if (!Animator.ACTIVE) {
 			this._pauseTime += (timestamp - this._prevFrameTime);
@@ -64,6 +73,7 @@ class Animator {
 			const renderObj = entity.updateFrame(timestamp);//Animator.CURRENT_FRAME_NO);
 			// console.log(renderObj)
 			this._renderer.drawForeground(renderObj);
+			console.log(entity);
 		});
 
 		this._gameBoard.tryToEatDot(timestamp, this._pacmanRef.recordedBoardPosition);

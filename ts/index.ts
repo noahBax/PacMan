@@ -19,6 +19,6 @@ function unpackCoords(coord: canvasCoordinate | boardCoordinate) {
 	return `[${(coord as boardCoordinate).by}, ${(coord as boardCoordinate).bx}]`;
 }
 
-document.addEventListener('DOMContentLoaded', main);
+window.addEventListener("load", main);
 
 export { unpackCoords }

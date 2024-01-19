@@ -13,5 +13,5 @@ function unpackCoords(coord) {
     }
     return `[${coord.by}, ${coord.bx}]`;
 }
-document.addEventListener('DOMContentLoaded', main);
+window.addEventListener("load", main);
 export { unpackCoords };

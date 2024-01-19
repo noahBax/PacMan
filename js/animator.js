@@ -8,6 +8,9 @@ class Animator {
         this._mazeFinishedDrawing = false;
         this._dotsFinishedDrawing = false;
         this._pauseTime = 0;
+        // We need this flag because the files don't load instantly and pause time
+        // needs to be updated
+        this.animationStartedAlready = false;
         this._renderer = new Renderer(foreground_ctx, background_ctx, spriteSheet);
         this._gameBoard = gameBoard;
         this._gameBoard.setRenderer(this._renderer);
@@ -23,6 +26,10 @@ class Animator {
         // Animator.ACTIVE = true;
     }
     handleFrame(timestamp) {
+        if (!this.animationStartedAlready) {
+            this._pauseTime = timestamp;
+            this.animationStartedAlready = true;
+        }
         if (!Animator.ACTIVE) {
             this._pauseTime += (timestamp - this._prevFrameTime);
             this._prevFrameTime = timestamp;
@@ -44,6 +51,7 @@ class Animator {
             const renderObj = entity.updateFrame(timestamp); //Animator.CURRENT_FRAME_NO);
             // console.log(renderObj)
             this._renderer.drawForeground(renderObj);
+            console.log(entity);
         });
         this._gameBoard.tryToEatDot(timestamp, this._pacmanRef.recordedBoardPosition);
         // Todo: Use a developer variable

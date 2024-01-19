@@ -247,7 +247,7 @@ abstract class Ghost extends Entity {
 
 			const indexName = this.__animationInfo[this.__latentMoveInformation.direction];
 			const animLength = spriteManager[indexName].length;
-			const frameNumer = Math.floor(progression / Entity.FRAMES_PER_IMAGE) % animLength
+			const frameNumer = Math.floor(progression / Entity.FRAMES_PER_IMAGE) % animLength;
 
 			return spriteManager[indexName][frameNumer];
 		}
