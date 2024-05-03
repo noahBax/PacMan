@@ -1,15 +1,3 @@
-import { Animator } from "./animator.js";
-import { Controller } from "./controller.js";
-import { DevMode } from "./devmode.js";
-import { Director } from "./director.js";
-import { Blinky } from "./entitiies/blinky.js";
-import { Clyde } from "./entitiies/clyde.js";
-import { Inky } from "./entitiies/inky.js";
-import { PacMan } from "./entitiies/pacman.js";
-import { Pinky } from "./entitiies/pinky.js";
-import { GameBoard } from "./gameBoard.js";
-import { spriteManagerItems } from "./spriteManager.js";
-
 export type canvasCoordinate = {cy: number, cx: number};
 export type boardCoordinate = {by: number, bx: number};
 
@@ -40,24 +28,6 @@ export type moveInfo = {
 
 export type kennelLocation = "right" | "middle" | "left";
 
-declare global {
-    interface Window {
-		pacman: PacMan,
-		blinky: Blinky,
-		inky: Inky,
-		pinky: Pinky
-		clyde: Clyde,
-		GameBoard: typeof GameBoard,
-		gameBoard: GameBoard
-		animator: Animator
-		Animator: typeof Animator
-		developer: DevMode
-		controller: Controller
-		director: Director
-		Director: typeof Director
-	}
-}
-
 export interface GridCell extends HTMLDivElement {
 	dataset: {
 		boardX: string
@@ -66,3 +36,47 @@ export interface GridCell extends HTMLDivElement {
 		canvasY: string
 	}
 }
+
+export type spriteManagerItems = "100" |
+    "200" |
+    "300" |
+    "400" |
+    "500" |
+    "600" |
+    "700" |
+    "800" |
+    "1000" |
+    "pacdeath" |
+    "pacRight" |
+    "pacLeft" |
+    "pacUp" |
+    "pacDown" |
+    "pacStatic" |
+    "blinkyRight" |
+    "blinkyLeft" |
+    "blinkyUp" |
+    "blinkyDown" |
+    "pinkyRight" |
+    "pinkyLeft" |
+    "pinkyUp" |
+    "pinkyDown" |
+    "inkyRight" |
+    "inkyLeft" |
+    "inkyUp" |
+    "inkyDown" |
+    "clydeRight" |
+    "clydeLeft" |
+    "clydeUp" |
+    "clydeDown" |
+    "ghostFrightened" |
+    "ghostSkeptical" |
+    "eyes" |
+    "energizer" |
+    "dot" |
+    "quad3Corner" |
+    "quad2Corner" |
+    "quad1Corner" |
+    "quad4Corner" |
+    "horizontalBar" |
+    "verticalBar" |
+    "blank"

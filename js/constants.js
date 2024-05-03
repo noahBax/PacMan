@@ -1,0 +1,1 @@
+export const DRIVING_SPEED = 0.07575757625;

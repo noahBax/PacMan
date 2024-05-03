@@ -1,5 +1,6 @@
 import { GameBoard } from "../gameBoard.js";
 import { animationInfo, boardCoordinate, canvasCoordinate, Direction, moveInfo, RenderObject, vector } from "../types.js";
+import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
 import { Blinky } from "./blinky.js";
 import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
@@ -8,18 +9,18 @@ class Inky extends Ghost {
 	
 	PET_NAME = "Inky";
 	
-	protected __startPositionForVector: canvasCoordinate = {cy: 512, cx: 416};
-	recordedBoardPosition: boardCoordinate = {by: 32, bx: 26};
-	direction: Direction = "left";
-	protected __currentVector = Ghost.vectorFromDirection["left"];
-	targetCoord: boardCoordinate = { by: 32, bx: 25};
+	protected __startPositionForVector: canvasCoordinate = {cy: 272, cx: 184};
+	recordedBoardPosition: boardCoordinate = {by: 14, bx: 13};
+	direction: Direction = "down";
+	protected __currentVector = penVectorFromDirection["down"];
+	targetCoord: boardCoordinate = { by: 14, bx: 23};
 
 	private _blinkyRef: Blinky;
 
 	protected __latentMoveInformation: moveInfo = {
-		baseCoordinate: { by: 32, bx: 26 },
-		coord: {  by: 32, bx: 25 },
-		direction: "left"
+		baseCoordinate: { by: 14, bx: 22 },
+		coord: {  by: 14, bx: 23 },
+		direction: "down"
 	};
 
 	scatterTarget = {
@@ -95,7 +96,7 @@ class Inky extends Ghost {
 	}
 
 	updateFrame(frameNo: number): RenderObject {
-		console.log("%cProcessing Inky", 'color: #00ffff;');
+		// console.log("%cProcessing Inky", 'color: #00ffff;');
 		return super.updateFrame(frameNo);
 	}
 	

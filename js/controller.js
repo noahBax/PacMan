@@ -77,5 +77,4 @@ class Controller {
         }
     }
 }
-Controller.DRIVING_SPEED = 0.07575757625;
 export { Controller };

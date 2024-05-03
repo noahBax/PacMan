@@ -1,18 +1,19 @@
 import { GameBoard } from "../gameBoard.js";
+import { penVectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 class Pinky extends Ghost {
     constructor(pacmanRef, gameBoard) {
         super(pacmanRef, gameBoard);
         this.PET_NAME = "Pinky";
-        this.__startPositionForVector = { cy: 64, cx: 16 };
-        this.recordedBoardPosition = { by: 4, bx: 1 };
-        this.direction = "right";
-        this.__currentVector = Ghost.vectorFromDirection["right"];
-        this.targetCoord = { by: 4, bx: 2 };
+        this.__startPositionForVector = { cy: 272, cx: 216 };
+        this.recordedBoardPosition = { by: 14, bx: 13 };
+        this.direction = "down";
+        this.__currentVector = penVectorFromDirection["down"];
+        this.targetCoord = { by: 32, bx: 2 };
         this.__latentMoveInformation = {
-            baseCoordinate: { by: 4, bx: 1 },
-            coord: { by: 4, bx: 2 },
-            direction: "right"
+            baseCoordinate: { by: 14, bx: 23 },
+            coord: { by: 14, bx: 22 },
+            direction: "down"
         };
         this.scatterTarget = {
             by: 0,
@@ -70,7 +71,7 @@ class Pinky extends Ghost {
         // return this.__pacmanReference.getBoardCoordinates(frameNo);
     }
     updateFrame(frameNo) {
-        console.log("%cProcessing Pinky", 'color: #FCB5FF;');
+        // console.log("%cProcessing Pinky", 'color: #FCB5FF;');
         return super.updateFrame(frameNo);
     }
 }

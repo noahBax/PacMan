@@ -1,18 +1,19 @@
 import { GameBoard } from "../gameBoard.js";
+import { penVectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 class Inky extends Ghost {
     constructor(pacmanRef, blinkyRef, gameBoard) {
         super(pacmanRef, gameBoard);
         this.PET_NAME = "Inky";
-        this.__startPositionForVector = { cy: 512, cx: 416 };
-        this.recordedBoardPosition = { by: 32, bx: 26 };
-        this.direction = "left";
-        this.__currentVector = Ghost.vectorFromDirection["left"];
-        this.targetCoord = { by: 32, bx: 25 };
+        this.__startPositionForVector = { cy: 272, cx: 184 };
+        this.recordedBoardPosition = { by: 14, bx: 13 };
+        this.direction = "down";
+        this.__currentVector = penVectorFromDirection["down"];
+        this.targetCoord = { by: 14, bx: 23 };
         this.__latentMoveInformation = {
-            baseCoordinate: { by: 32, bx: 26 },
-            coord: { by: 32, bx: 25 },
-            direction: "left"
+            baseCoordinate: { by: 14, bx: 22 },
+            coord: { by: 14, bx: 23 },
+            direction: "down"
         };
         this.scatterTarget = {
             by: 35,
@@ -85,7 +86,7 @@ class Inky extends Ghost {
         return offsetTile;
     }
     updateFrame(frameNo) {
-        console.log("%cProcessing Inky", 'color: #00ffff;');
+        // console.log("%cProcessing Inky", 'color: #00ffff;');
         return super.updateFrame(frameNo);
     }
 }

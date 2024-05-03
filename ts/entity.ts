@@ -83,20 +83,19 @@ abstract class Entity {
 
 	protected __checkIfAcrossCenter(pos: canvasCoordinate): boolean {
 		// * These are reversed comparisons because the math is the same thing as adding 8 to the canvas position to center it
-		// * Save cpu time right? Sacrifice readability
 		switch (this.direction) {
 			case "up":
 				return pos.cy % 16 > 8;
-				break;
+				
 			case "down":
 				return pos.cy % 16 < 8;
-				break;
+				
 			case "left":
 				return pos.cx % 16 > 8;
-				break;
+				
 			case "right":
 				return pos.cx % 16 < 8;
-				break;
+				
 			case "none":
 				return false;
 		}
@@ -124,6 +123,12 @@ abstract class Entity {
 		this.setCanvasCoords(frameNo, this.getCanvasCoords(frameNo), roundX, roundY);
 	}
 
+	protected purgatoryCheck(frameNo: number) {
+		const currentCanvasPos = this.getCanvasCoords(frameNo);
+		GameBoard.correctForPurgatory(this, currentCanvasPos, frameNo)
+	}
+
+
 	// static vectorFromDirection(direction: Direction): vector {
 	// 	switch (direction) {
 	// 		case "up":
@@ -142,17 +147,6 @@ abstract class Entity {
 	// 			return {x: 0, y: 0}
 	// 	}
 	// }
-
-	static vectorFromDirection: {[key in Direction]: vector} = {
-		"up": {x: 0, y: -Controller.DRIVING_SPEED},
-		"down": {x: 0, y: Controller.DRIVING_SPEED},
-		"left": {x: -Controller.DRIVING_SPEED, y: 0},
-		"right": {x: Controller.DRIVING_SPEED, y: 0},
-		"none": { x: 0, y: 0}
-	}
-	
-
-
 }
 
 export { Entity };

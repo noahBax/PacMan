@@ -1,5 +1,7 @@
 import { GameBoard } from "../gameBoard.js";
+import MonsterState from "../monsterState.js";
 import { animationInfo, boardCoordinate, canvasCoordinate, Direction, moveInfo, RenderObject, vector } from "../types.js";
+import { vectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
@@ -10,7 +12,7 @@ class Blinky extends Ghost {
 	protected __startPositionForVector: canvasCoordinate = {cy: 16*14, cx: 13*16}
 	recordedBoardPosition: boardCoordinate = {by: 14, bx: 13};
 	direction: Direction = "left";
-	protected __currentVector: vector = Ghost.vectorFromDirection["left"];
+	protected __currentVector: vector = vectorFromDirection["left"];
 	targetCoord: boardCoordinate = {  by: 14, bx: 12 };
 
 	protected __latentMoveInformation: moveInfo = {
@@ -26,6 +28,7 @@ class Blinky extends Ghost {
 	
 	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
 		super(pacmanRef, gameBoard);
+		this.monsterPenState = MonsterState.CHASE_MODE;
 	}
 	
 	protected __animationInfo: animationInfo = {
@@ -46,7 +49,7 @@ class Blinky extends Ghost {
 	}
 
 	updateFrame(frameNo: number): RenderObject {
-		console.log("%cProcessing Blinky", 'color: #ff0000;');
+		// console.log("%cProcessing Blinky", 'color: #ff0000;');
 		return super.updateFrame(frameNo);
 	}
 

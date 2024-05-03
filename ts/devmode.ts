@@ -161,7 +161,7 @@ class DevMode {
 
 	updateFrameRate(time: number) {
 		this.frameRateBuffer[this.frbIndex] = time - this.lastTimeOfFrame;
-		console.log(this.frameRateBuffer);
+		// console.log(this.frameRateBuffer);
 		this.lastTimeOfFrame = time;
 		this.frbIndex = (this.frbIndex + 1) % 7; //this.frameRateBuffer.length
 		this.frameRateElement.textContent = Math.round(1000 / (this.frameRateBuffer.reduce((acc, curr) => acc + curr) / 7)) + " fps";

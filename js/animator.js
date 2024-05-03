@@ -51,7 +51,7 @@ class Animator {
             const renderObj = entity.updateFrame(timestamp); //Animator.CURRENT_FRAME_NO);
             // console.log(renderObj)
             this._renderer.drawForeground(renderObj);
-            console.log(entity);
+            // console.log(entity);
         });
         this._gameBoard.tryToEatDot(timestamp, this._pacmanRef.recordedBoardPosition);
         // Todo: Use a developer variable

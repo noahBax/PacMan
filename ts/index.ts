@@ -1,5 +1,14 @@
 import { boardCoordinate, canvasCoordinate } from "./types.js";
 import { Director } from "./director.js";
+import { PacMan } from "./entitiies/pacman.js";
+import { Blinky } from "./entitiies/blinky.js";
+import { Inky } from "./entitiies/inky.js";
+import { Pinky } from "./entitiies/pinky.js";
+import { Clyde } from "./entitiies/clyde.js";
+import { GameBoard } from "./gameBoard.js";
+import { Animator } from "./animator.js";
+import { DevMode } from "./devmode.js";
+import { Controller } from "./controller.js";
 
 // Link to source
 // https://pacman.holenet.info/#LvlSpecs
@@ -18,6 +27,25 @@ function unpackCoords(coord: canvasCoordinate | boardCoordinate) {
 	}
 	return `[${(coord as boardCoordinate).by}, ${(coord as boardCoordinate).bx}]`;
 }
+
+declare global {
+    interface Window {
+		pacman: PacMan,
+		blinky: Blinky,
+		inky: Inky,
+		pinky: Pinky
+		clyde: Clyde,
+		GameBoard: typeof GameBoard,
+		gameBoard: GameBoard
+		animator: Animator
+		Animator: typeof Animator
+		developer: DevMode
+		controller: Controller
+		director: Director
+		Director: typeof Director
+	}
+}
+
 
 window.addEventListener("load", main);
 

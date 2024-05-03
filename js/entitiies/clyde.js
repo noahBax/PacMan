@@ -1,17 +1,18 @@
 import { GameBoard } from "../gameBoard.js";
+import { penVectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 class Clyde extends Ghost {
     constructor(pacmanRef, gameBoard) {
         super(pacmanRef, gameBoard);
         this.PET_NAME = "Clyde";
-        this.__startPositionForVector = { cy: 32 * 16, cx: 16, };
-        this.recordedBoardPosition = { by: 32, bx: 1 };
-        this.direction = "right";
-        this.__currentVector = Ghost.vectorFromDirection["right"];
+        this.__startPositionForVector = { cy: 272, cx: 248 };
+        this.recordedBoardPosition = { by: 14, bx: 13 };
+        this.direction = "down";
+        this.__currentVector = penVectorFromDirection["down"];
         this.targetCoord = { by: 32, bx: 2 };
         this.__latentMoveInformation = {
-            baseCoordinate: { by: 32, bx: 1 },
-            coord: { by: 32, bx: 2 },
+            baseCoordinate: { by: 14, bx: 23 },
+            coord: { by: 14, bx: 22 },
             direction: "left"
         };
         this.scatterTarget = {
@@ -42,7 +43,7 @@ class Clyde extends Ghost {
         return pos;
     }
     updateFrame(frameNo) {
-        console.log("%cProcessing Clyde", "color: #F8BB55;");
+        // console.log("%cProcessing Clyde", "color: #F8BB55;");
         return super.updateFrame(frameNo);
     }
 }

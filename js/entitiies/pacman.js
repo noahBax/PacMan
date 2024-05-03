@@ -1,7 +1,8 @@
-import { Controller } from "../controller.js";
+import { DRIVING_SPEED } from "../constants.js";
 import { Entity } from "../entity.js";
 import { GameBoard } from "../gameBoard.js";
 import { spriteManager } from "../spriteManager.js";
+import { vectorFromDirection } from "../utilities.js";
 class PacMan extends Entity {
     constructor() {
         super(...arguments);
@@ -26,12 +27,9 @@ class PacMan extends Entity {
         this._controller = controller;
     }
     updateFrame(frameNo) {
+        this.purgatoryCheck(frameNo);
         let currentCanvasPos = this.getCanvasCoords(frameNo);
         let currentBoardPos = this.getBoardCoordinatesCentered(frameNo);
-        if (GameBoard.correctForPurgatory(this, currentCanvasPos, frameNo)) {
-            currentCanvasPos = this.getCanvasCoords(frameNo);
-            currentBoardPos = this.getBoardCoordinatesCentered(frameNo);
-        }
         /**
          * Some things to consider
          * If pacman is moving, and nothing is changing then we don't need to change anything
@@ -79,7 +77,7 @@ class PacMan extends Entity {
         // No check needed for if list is empty, this will take care of it
         for (let i = presses.length - 1; i >= 0; i--) {
             if (dirs.includes(presses[i])) {
-                this.setVelocityVector(Entity.vectorFromDirection[presses[i]], presses[i], frameNo); //this._computePossibleCornerVector(this.direction, presses[i])
+                this.setVelocityVector(vectorFromDirection[presses[i]], presses[i], frameNo); //this._computePossibleCornerVector(this.direction, presses[i])
                 if (presses[i] === "left" || presses[i] === "right") {
                     this.setCanvasCoords(frameNo, pos, false, true);
                 }
@@ -97,28 +95,28 @@ class PacMan extends Entity {
             case "down":
                 if (canvasCoords.cy >= this._corneringTarget.cy) {
                     this.updateCanvasCoords(frameNo, false, true);
-                    this.setVelocityVector(Entity.vectorFromDirection[this.direction], this.direction, frameNo);
+                    this.setVelocityVector(vectorFromDirection[this.direction], this.direction, frameNo);
                     this._isCornering = false;
                 }
                 break;
             case "left":
                 if ((canvasCoords.cx + 8) % 16 <= 8) {
                     this.updateCanvasCoords(frameNo, true, false);
-                    this.setVelocityVector(Entity.vectorFromDirection[this.direction], this.direction, frameNo);
+                    this.setVelocityVector(vectorFromDirection[this.direction], this.direction, frameNo);
                     this._isCornering = false;
                 }
                 break;
             case "right":
                 if ((canvasCoords.cx + 8) % 16 >= 8) {
                     this.updateCanvasCoords(frameNo, true, false);
-                    this.setVelocityVector(Entity.vectorFromDirection[this.direction], this.direction, frameNo);
+                    this.setVelocityVector(vectorFromDirection[this.direction], this.direction, frameNo);
                     this._isCornering = false;
                 }
                 break;
             case "up":
                 if ((canvasCoords.cy + 8) % 16 <= 8) {
                     this.updateCanvasCoords(frameNo, false, true);
-                    this.setVelocityVector(Entity.vectorFromDirection[this.direction], this.direction, frameNo);
+                    this.setVelocityVector(vectorFromDirection[this.direction], this.direction, frameNo);
                     this._isCornering = false;
                 }
         }
@@ -127,15 +125,15 @@ class PacMan extends Entity {
         if (newDir === "none")
             return { x: 0, y: 0 };
         if (prevDir === "none")
-            return Entity.vectorFromDirection[newDir];
+            return vectorFromDirection[newDir];
         if (prevDir === newDir)
             return this.__currentVector;
         // Take care of turning around and standing still
         if (prevDir === "left" && newDir === "right" || prevDir === "up" && newDir === "down" || newDir === "left" && prevDir === "right" || newDir === "up" && prevDir === "down") {
-            return Entity.vectorFromDirection[newDir];
+            return vectorFromDirection[newDir];
         }
         let ret = { x: 0, y: 0 };
-        let t = Controller.DRIVING_SPEED;
+        let t = DRIVING_SPEED;
         if (prevDir === "right" || newDir === "right")
             ret.x = t;
         else

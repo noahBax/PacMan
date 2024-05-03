@@ -1,4 +1,5 @@
 import { GameBoard } from "../gameBoard.js";
+import { vectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 class Blinky extends Ghost {
     constructor(pacmanRef, gameBoard) {
@@ -7,7 +8,7 @@ class Blinky extends Ghost {
         this.__startPositionForVector = { cy: 16 * 14, cx: 13 * 16 };
         this.recordedBoardPosition = { by: 14, bx: 13 };
         this.direction = "left";
-        this.__currentVector = Ghost.vectorFromDirection["left"];
+        this.__currentVector = vectorFromDirection["left"];
         this.targetCoord = { by: 14, bx: 12 };
         this.__latentMoveInformation = {
             baseCoordinate: { by: 14, bx: 13 },
@@ -24,6 +25,7 @@ class Blinky extends Ghost {
             right: "blinkyRight",
             up: "blinkyUp"
         };
+        this.monsterPenState = 2;
     }
     getTarget(frameNo) {
         let pos = { ...this.__pacmanReference.recordedBoardPosition };
@@ -38,7 +40,7 @@ class Blinky extends Ghost {
         return pos;
     }
     updateFrame(frameNo) {
-        console.log("%cProcessing Blinky", 'color: #ff0000;');
+        // console.log("%cProcessing Blinky", 'color: #ff0000;');
         return super.updateFrame(frameNo);
     }
 }

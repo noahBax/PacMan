@@ -1,5 +1,6 @@
 import { GameBoard } from "../gameBoard.js";
 import { animationInfo, boardCoordinate, canvasCoordinate, Direction, moveInfo, RenderObject, vector } from "../types.js";
+import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
@@ -7,15 +8,15 @@ class Clyde extends Ghost {
 	
 	PET_NAME = "Clyde";
 	
-	protected __startPositionForVector: canvasCoordinate = {cy: 32*16, cx: 16, }
-	recordedBoardPosition: boardCoordinate = { by: 32, bx: 1 };
-	direction: Direction = "right"; 
-	protected __currentVector = Ghost.vectorFromDirection["right"];
+	protected __startPositionForVector: canvasCoordinate = {cy: 272, cx: 248};
+	recordedBoardPosition: boardCoordinate = {by: 14, bx: 13};
+	direction: Direction = "down"; 
+	protected __currentVector = penVectorFromDirection["down"];
 	targetCoord: boardCoordinate = { by: 32, bx: 2 };
 
 	protected __latentMoveInformation: moveInfo = {
-		baseCoordinate: { by: 32, bx: 1 },
-		coord: {  by: 32, bx: 2 },
+		baseCoordinate: { by: 14, bx: 23 },
+		coord: {  by: 14, bx: 22 },
 		direction: "left"
 	};
 
@@ -53,7 +54,7 @@ class Clyde extends Ghost {
 	}
 
 	updateFrame(frameNo: number): RenderObject {
-		console.log("%cProcessing Clyde", "color: #F8BB55;");
+		// console.log("%cProcessing Clyde", "color: #F8BB55;");
 		return super.updateFrame(frameNo);
 	}
 }

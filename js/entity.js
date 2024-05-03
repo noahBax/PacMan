@@ -1,4 +1,3 @@
-import { Controller } from "./controller.js";
 import { GameBoard } from "./gameBoard.js";
 class Entity {
     constructor() {
@@ -6,6 +5,24 @@ class Entity {
         this._hasCenteredBoardCoordCacheGenerated = -1;
         this.__startFrame = 0;
         this.direction = "right";
+        // static vectorFromDirection(direction: Direction): vector {
+        // 	switch (direction) {
+        // 		case "up":
+        // 			return {x: 0, y: -Controller.DRIVING_SPEED}
+        // 			break;
+        // 		case "down":
+        // 			return {x: 0, y: Controller.DRIVING_SPEED}
+        // 			break;
+        // 		case "left":
+        // 			return {x: -Controller.DRIVING_SPEED, y: 0}
+        // 			break;
+        // 		case "right":
+        // 			return {x: Controller.DRIVING_SPEED, y: 0}
+        // 			break;
+        // 		default:
+        // 			return {x: 0, y: 0}
+        // 	}
+        // }
     }
     /**
      * Compute board coordinates as well as updates
@@ -60,20 +77,15 @@ class Entity {
     }
     __checkIfAcrossCenter(pos) {
         // * These are reversed comparisons because the math is the same thing as adding 8 to the canvas position to center it
-        // * Save cpu time right? Sacrifice readability
         switch (this.direction) {
             case "up":
                 return pos.cy % 16 > 8;
-                break;
             case "down":
                 return pos.cy % 16 < 8;
-                break;
             case "left":
                 return pos.cx % 16 > 8;
-                break;
             case "right":
                 return pos.cx % 16 < 8;
-                break;
             case "none":
                 return false;
         }
@@ -99,31 +111,10 @@ class Entity {
     updateCanvasCoords(frameNo, roundX = false, roundY = false) {
         this.setCanvasCoords(frameNo, this.getCanvasCoords(frameNo), roundX, roundY);
     }
+    purgatoryCheck(frameNo) {
+        const currentCanvasPos = this.getCanvasCoords(frameNo);
+        GameBoard.correctForPurgatory(this, currentCanvasPos, frameNo);
+    }
 }
 Entity.FRAMES_PER_IMAGE = 128;
-// static vectorFromDirection(direction: Direction): vector {
-// 	switch (direction) {
-// 		case "up":
-// 			return {x: 0, y: -Controller.DRIVING_SPEED}
-// 			break;
-// 		case "down":
-// 			return {x: 0, y: Controller.DRIVING_SPEED}
-// 			break;
-// 		case "left":
-// 			return {x: -Controller.DRIVING_SPEED, y: 0}
-// 			break;
-// 		case "right":
-// 			return {x: Controller.DRIVING_SPEED, y: 0}
-// 			break;
-// 		default:
-// 			return {x: 0, y: 0}
-// 	}
-// }
-Entity.vectorFromDirection = {
-    "up": { x: 0, y: -Controller.DRIVING_SPEED },
-    "down": { x: 0, y: Controller.DRIVING_SPEED },
-    "left": { x: -Controller.DRIVING_SPEED, y: 0 },
-    "right": { x: Controller.DRIVING_SPEED, y: 0 },
-    "none": { x: 0, y: 0 }
-};
 export { Entity };
