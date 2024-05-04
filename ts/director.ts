@@ -1,13 +1,13 @@
-import { Animator } from "./animator.js";
-import { Controller } from "./controller.js";
-import { DevMode } from "./devmode.js";
-import { Blinky } from "./entitiies/blinky.js";
-import { Clyde } from "./entitiies/clyde.js";
-import { Inky } from "./entitiies/inky.js";
-import { PacMan } from "./entitiies/pacman.js";
-import { Pinky } from "./entitiies/pinky.js";
-import { PowerPellet } from "./entitiies/powerPellet.js";
-import { GameBoard } from "./gameBoard.js";
+import Animator from "./animator.js";
+import Controller from "./controller.js";
+import DevMode from "./devmode.js";
+import Blinky from "./entitiies/blinky.js";
+import Clyde from "./entitiies/clyde.js";
+import Inky from "./entitiies/inky.js";
+import PacMan from "./entitiies/pacman.js";
+import Pinky from "./entitiies/pinky.js";
+import PowerPellet from "./entitiies/powerPellet.js";
+import GameBoard from "./gameBoard.js";
 
 export var PACMAN: PacMan;
 export var GAME_BOARD: GameBoard;
@@ -119,4 +119,4 @@ class Director {
 	}
 }
 
-export { Director };
+export default Director;

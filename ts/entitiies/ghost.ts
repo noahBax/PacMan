@@ -1,10 +1,9 @@
-import { Entity } from "../entity.js";
-import { GameBoard } from "../gameBoard.js";
+import Entity from "../entity.js";
+import GameBoard from "../gameBoard.js";
 import { unpackCoords } from "../index.js";
-import { spriteManager } from "../spriteManager.js";
+import spriteManager from "../spriteManager.js";
 import { Direction, GhostIDs, GhostNames, GridCell, RenderObject, boardCoordinate, canvasCoordinate, moveInfo, spriteManagerItems, vector } from "../types.js";
 import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
-import { PacMan } from "./pacman.js";
 import MonsterState from "../monsterState.js";
 import IdleController from "./idleController.js";
 import ExitPenController from "./exitPenController.js";
@@ -39,7 +38,6 @@ abstract class Ghost extends Entity {
 
 	protected abstract __ghostNumber: GhostIDs;
 	
-
 
 	constructor() {
 		super();
@@ -97,7 +95,7 @@ abstract class Ghost extends Entity {
 			currentBoardPos.by === this.__latentMoveInformation.baseCoordinate.by
 		);
 
-		
+
 		switch(this.__state) {
 			case MonsterState.IDLE_IN_PEN: // In the pen and wandering. We can literally only go up or down
 
@@ -334,4 +332,4 @@ abstract class Ghost extends Entity {
 }
 
 
-export { Ghost }
+export default Ghost;

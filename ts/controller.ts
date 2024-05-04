@@ -1,6 +1,5 @@
-import { Animator } from "./animator.js";
+import Animator from "./animator.js";
 import { PACMAN } from "./director.js";
-import { PacMan } from "./entitiies/pacman.js";
 import { Direction } from "./types.js";
 
 class Controller {
@@ -103,4 +102,4 @@ class Controller {
 	// }
 }
 
-export { Controller }
+export default Controller;

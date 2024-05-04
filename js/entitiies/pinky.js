@@ -1,8 +1,8 @@
 import { PACMAN } from "../director.js";
-import { GameBoard } from "../gameBoard.js";
+import GameBoard from "../gameBoard.js";
 import { GhostNames } from "../types.js";
 import { penVectorFromDirection } from "../utilities.js";
-import { Ghost } from "./ghost.js";
+import Ghost from "./ghost.js";
 class Pinky extends Ghost {
     constructor() {
         super();
@@ -77,4 +77,4 @@ class Pinky extends Ghost {
         return super.updateFrame(frameNo);
     }
 }
-export { Pinky };
+export default Pinky;

@@ -1,4 +1,4 @@
-import { GameBoard } from "./gameBoard.js";
+import GameBoard from "./gameBoard.js";
 class Entity {
     constructor() {
         this._hasBoardCoordCacheGenerated = -1;
@@ -117,4 +117,4 @@ class Entity {
     }
 }
 Entity.FRAMES_PER_IMAGE = 128;
-export { Entity };
+export default Entity;

@@ -1,8 +1,8 @@
 import { DRIVING_SPEED } from "../constants.js";
-import { Controller } from "../controller.js";
-import { Entity } from "../entity.js";
-import { GameBoard } from "../gameBoard.js";
-import { spriteManager } from "../spriteManager.js";
+import Controller from "../controller.js";
+import Entity from "../entity.js";
+import GameBoard from "../gameBoard.js";
+import spriteManager from "../spriteManager.js";
 import { Direction, canvasCoordinate, vector, RenderObject, animationInfo, boardCoordinate, moveInfo, spriteManagerItems } from "../types.js";
 import { vectorFromDirection } from "../utilities.js";
 
@@ -204,4 +204,4 @@ class PacMan extends Entity {
 	
 }
 
-export { PacMan };
+export default PacMan;

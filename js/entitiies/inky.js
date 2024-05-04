@@ -1,8 +1,8 @@
 import { PACMAN } from "../director.js";
-import { GameBoard } from "../gameBoard.js";
+import GameBoard from "../gameBoard.js";
 import { GhostNames } from "../types.js";
 import { penVectorFromDirection } from "../utilities.js";
-import { Ghost } from "./ghost.js";
+import Ghost from "./ghost.js";
 class Inky extends Ghost {
     constructor(blinkyRef) {
         super();
@@ -92,4 +92,4 @@ class Inky extends Ghost {
         return super.updateFrame(frameNo);
     }
 }
-export { Inky };
+export default Inky;

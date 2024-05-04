@@ -1,14 +1,14 @@
 import { boardCoordinate, canvasCoordinate } from "./types.js";
-import { Director } from "./director.js";
-import { PacMan } from "./entitiies/pacman.js";
-import { Blinky } from "./entitiies/blinky.js";
-import { Inky } from "./entitiies/inky.js";
-import { Pinky } from "./entitiies/pinky.js";
-import { Clyde } from "./entitiies/clyde.js";
-import { GameBoard } from "./gameBoard.js";
-import { Animator } from "./animator.js";
-import { DevMode } from "./devmode.js";
-import { Controller } from "./controller.js";
+import Director from "./director.js";
+import PacMan from "./entitiies/pacman.js";
+import Blinky from "./entitiies/blinky.js";
+import Inky from "./entitiies/inky.js";
+import Pinky from "./entitiies/pinky.js";
+import Clyde from "./entitiies/clyde.js";
+import GameBoard from "./gameBoard.js";
+import Animator from "./animator.js";
+import DevMode from "./devmode.js";
+import Controller from "./controller.js";
 
 // Link to source
 // https://pacman.holenet.info/#LvlSpecs

@@ -1,4 +1,4 @@
-import { GameBoard } from "./gameBoard.js";
+import GameBoard from "./gameBoard.js";
 import { RenderObject, canvasCoordinate, vector } from "./types.js";
 
 class Renderer {
@@ -77,4 +77,4 @@ class Renderer {
 }
 
 
-export { Renderer as Renderer };
+export default Renderer;

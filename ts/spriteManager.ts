@@ -51,4 +51,4 @@ const spriteManager: {[key in spriteManagerItems]: canvasCoordinate[]} = {
 
 };
 
-export { spriteManager }
+export default spriteManager;

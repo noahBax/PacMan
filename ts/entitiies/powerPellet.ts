@@ -1,5 +1,4 @@
-import { Entity } from "../entity.js";
-import { spriteManager } from "../spriteManager.js";
+import spriteManager from "../spriteManager.js";
 import { RenderObject, animationInfo, boardCoordinate, canvasCoordinate, vector } from "../types.js";
 
 class PowerPellet {
@@ -43,4 +42,4 @@ class PowerPellet {
 	}
 }
 
-export { PowerPellet };
+export default PowerPellet;

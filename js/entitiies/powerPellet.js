@@ -1,4 +1,4 @@
-import { spriteManager } from "../spriteManager.js";
+import spriteManager from "../spriteManager.js";
 class PowerPellet {
     constructor(position) {
         this._isVisible = true;
@@ -27,4 +27,4 @@ class PowerPellet {
     }
 }
 PowerPellet._animationLocation = "energizer";
-export { PowerPellet };
+export default PowerPellet;

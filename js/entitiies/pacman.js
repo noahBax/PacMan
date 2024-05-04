@@ -1,7 +1,7 @@
 import { DRIVING_SPEED } from "../constants.js";
-import { Entity } from "../entity.js";
-import { GameBoard } from "../gameBoard.js";
-import { spriteManager } from "../spriteManager.js";
+import Entity from "../entity.js";
+import GameBoard from "../gameBoard.js";
+import spriteManager from "../spriteManager.js";
 import { vectorFromDirection } from "../utilities.js";
 class PacMan extends Entity {
     constructor() {
@@ -166,4 +166,4 @@ class PacMan extends Entity {
     }
 }
 PacMan._CHOMPS_PER_IMAGE = Entity.FRAMES_PER_IMAGE / 2;
-export { PacMan };
+export default PacMan;

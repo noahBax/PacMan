@@ -1,8 +1,8 @@
 import { PACMAN } from "../director.js";
-import { GameBoard } from "../gameBoard.js";
+import GameBoard from "../gameBoard.js";
 import { GhostNames } from "../types.js";
 import { penVectorFromDirection } from "../utilities.js";
-import { Ghost } from "./ghost.js";
+import Ghost from "./ghost.js";
 class Clyde extends Ghost {
     constructor() {
         super();
@@ -49,4 +49,4 @@ class Clyde extends Ghost {
         return super.updateFrame(frameNo);
     }
 }
-export { Clyde };
+export default Clyde;

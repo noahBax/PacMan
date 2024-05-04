@@ -1,8 +1,8 @@
-import { DevMode } from "./devmode.js";
-import { PacMan } from "./entitiies/pacman.js";
-import { Entity } from "./entity.js";
-import { GameBoard } from "./gameBoard.js";
-import { Renderer } from "./renderer.js";
+import DevMode from "./devmode.js";
+import PacMan from "./entitiies/pacman.js";
+import Entity from "./entity.js";
+import GameBoard from "./gameBoard.js";
+import Renderer from "./renderer.js";
 
 class Animator {
 	private _renderer: Renderer;
@@ -98,4 +98,4 @@ class Animator {
 
 }
 
-export { Animator }
+export default Animator;

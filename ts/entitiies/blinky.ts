@@ -1,10 +1,9 @@
 import { PACMAN } from "../director.js";
-import { GameBoard } from "../gameBoard.js";
+import GameBoard from "../gameBoard.js";
 import MonsterState from "../monsterState.js";
 import { animationInfo, boardCoordinate, canvasCoordinate, Direction, GhostIDs, GhostNames, moveInfo, RenderObject, vector } from "../types.js";
 import { vectorFromDirection } from "../utilities.js";
-import { Ghost } from "./ghost.js";
-import { PacMan } from "./pacman.js";
+import Ghost from "./ghost.js";
 
 class Blinky extends Ghost {
 
@@ -58,4 +57,4 @@ class Blinky extends Ghost {
 
 }
 
-export { Blinky };
+export default Blinky;

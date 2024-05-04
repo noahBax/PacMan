@@ -1,13 +1,13 @@
-import { Director } from "./director.js";
-import { Blinky } from "./entitiies/blinky.js";
-import { Clyde } from "./entitiies/clyde.js";
-import { Ghost } from "./entitiies/ghost.js";
-import { Inky } from "./entitiies/inky.js";
-import { PacMan } from "./entitiies/pacman.js";
-import { Pinky } from "./entitiies/pinky.js";
-import { Entity } from "./entity.js";
-import { Renderer } from "./renderer.js";
-import { spriteManager } from "./spriteManager.js";
+import Director from "./director.js";
+import Blinky from "./entitiies/blinky.js";
+import Clyde from "./entitiies/clyde.js";
+import Ghost from "./entitiies/ghost.js";
+import Inky from "./entitiies/inky.js";
+import PacMan from "./entitiies/pacman.js";
+import Pinky from "./entitiies/pinky.js";
+import Entity from "./entity.js";
+import Renderer from "./renderer.js";
+import spriteManager from "./spriteManager.js";
 import { Direction, boardCoordinate, canvasCoordinate, moveInfo } from "./types.js";
 
 class GameBoard {
@@ -497,4 +497,4 @@ class GameBoard {
 	}
 }
 
-export { GameBoard }
+export default GameBoard;

@@ -9,4 +9,4 @@ class Jumbotron {
 	}
 }
 
-export { Jumbotron };
+export default Jumbotron;

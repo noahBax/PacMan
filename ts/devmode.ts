@@ -1,11 +1,11 @@
-import { Animator } from "./animator.js";
-import { Blinky } from "./entitiies/blinky.js";
-import { Clyde } from "./entitiies/clyde.js";
-import { Ghost } from "./entitiies/ghost.js";
-import { Inky } from "./entitiies/inky.js";
-import { PacMan } from "./entitiies/pacman.js";
-import { Pinky } from "./entitiies/pinky.js";
-import { GameBoard } from "./gameBoard.js";
+import Animator from "./animator.js";
+import Blinky from "./entitiies/blinky.js";
+import Clyde from "./entitiies/clyde.js";
+import Ghost from "./entitiies/ghost.js";
+import Inky from "./entitiies/inky.js";
+import PacMan from "./entitiies/pacman.js";
+import Pinky from "./entitiies/pinky.js";
+import GameBoard from "./gameBoard.js";
 import { unpackCoords } from "./index.js";
 import { GridCell, RenderObject } from "./types.js";
 
@@ -223,4 +223,4 @@ class DevMode {
 	}
 }
 
-export { DevMode };
+export default DevMode;

@@ -47,4 +47,4 @@ const spriteManager = {
     "verticalBar": [{ "cx": 179, "cy": 32 }],
     "blank": [{ "cx": 211, "cy": 144 }] // This is just a space in the bottom right
 };
-export { spriteManager };
+export default spriteManager;

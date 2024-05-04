@@ -1,4 +1,4 @@
-import { GameBoard } from "./gameBoard.js";
+import GameBoard from "./gameBoard.js";
 class Renderer {
     constructor(foreground_ctx, background_ctx, spriteSheet) {
         this.width = 0;
@@ -53,4 +53,4 @@ class Renderer {
         this.background_ctx.clearRect(placementCoords.cx, placementCoords.cy, size.x, size.y);
     }
 }
-export { Renderer as Renderer };
+export default Renderer;

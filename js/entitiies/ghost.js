@@ -1,7 +1,7 @@
-import { Entity } from "../entity.js";
-import { GameBoard } from "../gameBoard.js";
+import Entity from "../entity.js";
+import GameBoard from "../gameBoard.js";
 import { unpackCoords } from "../index.js";
-import { spriteManager } from "../spriteManager.js";
+import spriteManager from "../spriteManager.js";
 import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
 import MonsterState from "../monsterState.js";
 import IdleController from "./idleController.js";
@@ -231,4 +231,4 @@ class Ghost extends Entity {
             throw ("ahhhh");
     }
 }
-export { Ghost };
+export default Ghost;

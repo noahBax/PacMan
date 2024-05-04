@@ -1,4 +1,4 @@
-import { Animator } from "./animator.js";
+import Animator from "./animator.js";
 import { PACMAN } from "./director.js";
 class Controller {
     constructor(animator) {
@@ -77,4 +77,4 @@ class Controller {
         }
     }
 }
-export { Controller };
+export default Controller;

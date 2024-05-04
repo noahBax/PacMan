@@ -1,12 +1,12 @@
-import { Animator } from "./animator.js";
-import { Controller } from "./controller.js";
-import { DevMode } from "./devmode.js";
-import { Blinky } from "./entitiies/blinky.js";
-import { Clyde } from "./entitiies/clyde.js";
-import { Inky } from "./entitiies/inky.js";
-import { PacMan } from "./entitiies/pacman.js";
-import { Pinky } from "./entitiies/pinky.js";
-import { GameBoard } from "./gameBoard.js";
+import Animator from "./animator.js";
+import Controller from "./controller.js";
+import DevMode from "./devmode.js";
+import Blinky from "./entitiies/blinky.js";
+import Clyde from "./entitiies/clyde.js";
+import Inky from "./entitiies/inky.js";
+import PacMan from "./entitiies/pacman.js";
+import Pinky from "./entitiies/pinky.js";
+import GameBoard from "./gameBoard.js";
 export var PACMAN;
 export var GAME_BOARD;
 window.GameBoard = GameBoard;
@@ -77,4 +77,4 @@ class Director {
 }
 // Dictionary items
 Director._FRIGHT_TIMES = [6, 5, 4, 3, 2, 5, 2, 2, 1, 5, 2, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1];
-export { Director };
+export default Director;

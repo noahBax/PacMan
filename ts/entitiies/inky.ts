@@ -1,10 +1,9 @@
 import { PACMAN } from "../director.js";
-import { GameBoard } from "../gameBoard.js";
+import GameBoard from "../gameBoard.js";
 import { animationInfo, boardCoordinate, canvasCoordinate, Direction, GhostIDs, GhostNames, moveInfo, RenderObject, vector } from "../types.js";
 import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
-import { Blinky } from "./blinky.js";
-import { Ghost } from "./ghost.js";
-import { PacMan } from "./pacman.js";
+import Blinky from "./blinky.js";
+import Ghost from "./ghost.js";
 
 class Inky extends Ghost {
 	
@@ -104,4 +103,4 @@ class Inky extends Ghost {
 	
 }
 
-export { Inky };
+export default Inky;

@@ -1,4 +1,4 @@
-import { Director } from "./director.js";
+import Director from "./director.js";
 // Link to source
 // https://pacman.holenet.info/#LvlSpecs
 function main() {

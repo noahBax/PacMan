@@ -6,4 +6,4 @@ class Jumbotron {
         this._scoreEle.textContent = "hey there";
     }
 }
-export { Jumbotron };
+export default Jumbotron;

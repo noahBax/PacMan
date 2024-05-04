@@ -1,6 +1,6 @@
-import { Ghost } from "./entitiies/ghost.js";
-import { PacMan } from "./entitiies/pacman.js";
-import { spriteManager } from "./spriteManager.js";
+import Ghost from "./entitiies/ghost.js";
+import PacMan from "./entitiies/pacman.js";
+import spriteManager from "./spriteManager.js";
 class GameBoard {
     constructor(director) {
         this.currentDotSpaces = [
@@ -459,4 +459,4 @@ GameBoard.board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
-export { GameBoard };
+export default GameBoard;

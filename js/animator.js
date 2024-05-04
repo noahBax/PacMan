@@ -1,6 +1,6 @@
-import { DevMode } from "./devmode.js";
-import { PacMan } from "./entitiies/pacman.js";
-import { Renderer } from "./renderer.js";
+import DevMode from "./devmode.js";
+import PacMan from "./entitiies/pacman.js";
+import Renderer from "./renderer.js";
 class Animator {
     constructor(foreground_ctx, background_ctx, spriteSheet, gameBoard) {
         this._entityList = [];
@@ -70,4 +70,4 @@ Animator.CURRENT_FRAME_NO = 0;
 Animator.ACTIVE = true;
 Animator.IN_SLOW_DOWN = false;
 Animator.slowdownSpeed = 18;
-export { Animator };
+export default Animator;

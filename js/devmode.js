@@ -1,4 +1,4 @@
-import { GameBoard } from "./gameBoard.js";
+import GameBoard from "./gameBoard.js";
 import { unpackCoords } from "./index.js";
 class DevMode {
     constructor(dev_ctx, blinky, pinky, inky, clyde, animator, spriteSheet, gameBoard) {
@@ -150,4 +150,4 @@ class DevMode {
 DevMode.GRID_CELL_CLASS = "gridCellClass";
 DevMode.TARGET_CELL_CLASS = "targetTile";
 DevMode.IN_DEV_MODE = true;
-export { DevMode };
+export default DevMode;

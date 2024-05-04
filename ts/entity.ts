@@ -1,6 +1,4 @@
-import { Controller } from "./controller.js";
-import { Ghost } from "./entitiies/ghost.js";
-import { GameBoard } from "./gameBoard.js";
+import GameBoard from "./gameBoard.js";
 import { Direction, RenderObject, animationInfo, boardCoordinate, canvasCoordinate, vector } from "./types.js";
 
 abstract class Entity {
@@ -149,4 +147,4 @@ abstract class Entity {
 	// }
 }
 
-export { Entity };
+export default Entity;
