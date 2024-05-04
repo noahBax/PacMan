@@ -37,6 +37,20 @@ export interface GridCell extends HTMLDivElement {
 	}
 }
 
+export enum GhostIDs {
+    BLINKY,// = "Blinky",
+    PINKY,// = "Pinky",
+    INKY,// = "Inky",
+    CLYDE,// = "Clyde"
+}
+
+export enum GhostNames {
+    BLINKY = "Blinky",
+    PINKY = "Pinky",
+    INKY = "Inky",
+    CLYDE = "Clyde"
+}
+
 export type spriteManagerItems = "100" |
     "200" |
     "300" |

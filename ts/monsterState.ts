@@ -1,6 +1,5 @@
 enum MonsterState {
 	IDLE_IN_PEN,
-	MOVING_TO_PEN_CENTER,
 	EXITING_PEN,
 	CHASE_MODE,
 	SCATTER_MODE,
@@ -11,9 +10,6 @@ export default MonsterState
 
 /**
  * IDLE_IN_PEN =>
- * 	MOVING_TO_PEN_CENTER
- * 
- * MOVING_TO_PEN_CENTER =>
  * 	EXITING_PEN
  * 
  * EXITING_PEN =>

@@ -1,12 +1,14 @@
+import { PACMAN } from "../director.js";
 import { GameBoard } from "../gameBoard.js";
-import { animationInfo, boardCoordinate, canvasCoordinate, Direction, moveInfo, RenderObject, vector } from "../types.js";
+import { animationInfo, boardCoordinate, canvasCoordinate, Direction, GhostIDs, GhostNames, moveInfo, RenderObject, vector } from "../types.js";
 import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
 class Pinky extends Ghost {
 	
-	PET_NAME = "Pinky";
+	protected __ghostNumber: GhostIDs.PINKY;
+	PET_NAME = GhostNames.PINKY;
 	
 	protected __startPositionForVector: canvasCoordinate = {cy: 272, cx: 216};
 	recordedBoardPosition: boardCoordinate = {by: 14, bx: 13};
@@ -25,8 +27,8 @@ class Pinky extends Ghost {
 		bx: 2
 	}
 	
-	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
-		super(pacmanRef, gameBoard);
+	constructor() {
+		super();
 	}
 	
 	__animationInfo: animationInfo = {
@@ -37,8 +39,8 @@ class Pinky extends Ghost {
 	};
 
 	getTarget(frameNo: number): boardCoordinate {
-		let coordRn = {...this.__pacmanReference.recordedBoardPosition};
-		switch (this.__pacmanReference.direction) {
+		let coordRn = {...PACMAN.recordedBoardPosition};
+		switch (PACMAN.direction) {
 			case "down":
 				if (coordRn.by < GameBoard.height - 5) {
 					coordRn.by += 4;

@@ -1,10 +1,12 @@
+import { PACMAN } from "../director.js";
 import { GameBoard } from "../gameBoard.js";
+import { GhostNames } from "../types.js";
 import { penVectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 class Inky extends Ghost {
-    constructor(pacmanRef, blinkyRef, gameBoard) {
-        super(pacmanRef, gameBoard);
-        this.PET_NAME = "Inky";
+    constructor(blinkyRef) {
+        super();
+        this.PET_NAME = GhostNames.INKY;
         this.__startPositionForVector = { cy: 272, cx: 184 };
         this.recordedBoardPosition = { by: 14, bx: 13 };
         this.direction = "down";
@@ -28,8 +30,8 @@ class Inky extends Ghost {
         this._blinkyRef = blinkyRef;
     }
     getTarget(frameNo) {
-        let offsetTile = { ...this.__pacmanReference.recordedBoardPosition };
-        switch (this.__pacmanReference.direction) {
+        let offsetTile = { ...PACMAN.recordedBoardPosition };
+        switch (PACMAN.direction) {
             case "down":
                 if (offsetTile.by < GameBoard.height - 3) {
                     offsetTile.by += 2;

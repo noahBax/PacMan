@@ -1,14 +1,14 @@
 import { Animator } from "./animator.js";
+import { PACMAN } from "./director.js";
 class Controller {
-    constructor(driving, animator) {
+    constructor(animator) {
         this.buttonPressList = [];
         this.listUpdatedFlag = false;
-        this._driving = driving;
         this._animator = animator;
         // Start listening to the keyboard
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
-        this._driving.setController(this);
+        PACMAN.setController(this);
     }
     handleKeyDown(event) {
         if (event.repeat)

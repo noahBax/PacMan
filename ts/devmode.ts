@@ -49,10 +49,9 @@ class DevMode {
 
 	private _scoreEle: HTMLSpanElement;
 
-	constructor(dev_ctx: CanvasRenderingContext2D, pacman: PacMan, blinky: Blinky, pinky: Pinky, inky: Inky, clyde: Clyde, animator: Animator, spriteSheet: HTMLImageElement | HTMLCanvasElement, gameBoard: GameBoard) {
+	constructor(dev_ctx: CanvasRenderingContext2D, blinky: Blinky, pinky: Pinky, inky: Inky, clyde: Clyde, animator: Animator, spriteSheet: HTMLImageElement | HTMLCanvasElement, gameBoard: GameBoard) {
 		this.dev_ctx = dev_ctx;
 
-		this._pacman = pacman;
 		this._blinky = blinky;
 		this._inky = inky;
 		this._pinky = pinky;

@@ -1,10 +1,12 @@
+import { PACMAN } from "../director.js";
 import { GameBoard } from "../gameBoard.js";
+import { GhostNames } from "../types.js";
 import { penVectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 class Clyde extends Ghost {
-    constructor(pacmanRef, gameBoard) {
-        super(pacmanRef, gameBoard);
-        this.PET_NAME = "Clyde";
+    constructor() {
+        super();
+        this.PET_NAME = GhostNames.CLYDE;
         this.__startPositionForVector = { cy: 272, cx: 248 };
         this.recordedBoardPosition = { by: 14, bx: 13 };
         this.direction = "down";
@@ -27,11 +29,11 @@ class Clyde extends Ghost {
         };
     }
     getTarget(frameNo) {
-        const pacmanPos = this.__pacmanReference.recordedBoardPosition;
+        const pacmanPos = PACMAN.recordedBoardPosition;
         const distanceToPacman = (this.recordedBoardPosition.bx - pacmanPos.bx) ** 2 + (this.recordedBoardPosition.by - pacmanPos.by) ** 2;
         if (distanceToPacman < 64)
             return this.scatterTarget;
-        let pos = { ...this.__pacmanReference.recordedBoardPosition };
+        let pos = { ...PACMAN.recordedBoardPosition };
         if (pos.bx < 0)
             pos.bx = 0;
         else if (pos.bx >= GameBoard.width)

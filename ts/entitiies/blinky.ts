@@ -1,13 +1,16 @@
+import { PACMAN } from "../director.js";
 import { GameBoard } from "../gameBoard.js";
 import MonsterState from "../monsterState.js";
-import { animationInfo, boardCoordinate, canvasCoordinate, Direction, moveInfo, RenderObject, vector } from "../types.js";
+import { animationInfo, boardCoordinate, canvasCoordinate, Direction, GhostIDs, GhostNames, moveInfo, RenderObject, vector } from "../types.js";
 import { vectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
 class Blinky extends Ghost {
+
+	protected __ghostNumber: GhostIDs.BLINKY;
 	
-	PET_NAME = "Blinky";
+	PET_NAME = GhostNames.BLINKY;
 	
 	protected __startPositionForVector: canvasCoordinate = {cy: 16*14, cx: 13*16}
 	recordedBoardPosition: boardCoordinate = {by: 14, bx: 13};
@@ -26,9 +29,9 @@ class Blinky extends Ghost {
 		bx: 25
 	}
 	
-	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
-		super(pacmanRef, gameBoard);
-		this.monsterPenState = MonsterState.CHASE_MODE;
+	constructor() {
+		super();
+		this.__state = MonsterState.CHASE_MODE;
 	}
 	
 	protected __animationInfo: animationInfo = {
@@ -39,7 +42,7 @@ class Blinky extends Ghost {
 	};
 	
 	getTarget(frameNo: number) {
-		let pos = {...this.__pacmanReference.recordedBoardPosition};
+		let pos = {...PACMAN.recordedBoardPosition};
 		if (pos.bx < 0) pos.bx = 0;
 		else if (pos.bx >= GameBoard.width) pos.bx = GameBoard.width - 1;
 

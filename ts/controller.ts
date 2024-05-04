@@ -1,9 +1,9 @@
 import { Animator } from "./animator.js";
+import { PACMAN } from "./director.js";
 import { PacMan } from "./entitiies/pacman.js";
 import { Direction } from "./types.js";
 
 class Controller {
-	private _driving: PacMan;
 
 	private _animator: Animator;
 
@@ -12,15 +12,14 @@ class Controller {
 	listUpdatedFlag = false;
 
 
-	constructor(driving: PacMan, animator: Animator) {
-		this._driving = driving;
+	constructor(animator: Animator) {
 		this._animator = animator;
 
 		// Start listening to the keyboard
 		window.addEventListener('keydown', this.handleKeyDown.bind(this));
 		window.addEventListener('keyup', this.handleKeyUp.bind(this));
 
-		this._driving.setController(this);
+		PACMAN.setController(this);
 	}
 
 	private handleKeyDown(event: KeyboardEvent) {

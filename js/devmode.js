@@ -1,7 +1,7 @@
 import { GameBoard } from "./gameBoard.js";
 import { unpackCoords } from "./index.js";
 class DevMode {
-    constructor(dev_ctx, pacman, blinky, pinky, inky, clyde, animator, spriteSheet, gameBoard) {
+    constructor(dev_ctx, blinky, pinky, inky, clyde, animator, spriteSheet, gameBoard) {
         this.frameRateBuffer = [0, 0, 0, 0, 0, 0, 0];
         this.frbIndex = 0;
         this.lastTimeOfFrame = 0;
@@ -13,7 +13,6 @@ class DevMode {
         this._targetTileCollection = [];
         this._tilesRendered = false;
         this.dev_ctx = dev_ctx;
-        this._pacman = pacman;
         this._blinky = blinky;
         this._inky = inky;
         this._pinky = pinky;

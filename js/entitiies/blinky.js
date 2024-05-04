@@ -1,10 +1,13 @@
+import { PACMAN } from "../director.js";
 import { GameBoard } from "../gameBoard.js";
+import MonsterState from "../monsterState.js";
+import { GhostNames } from "../types.js";
 import { vectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 class Blinky extends Ghost {
-    constructor(pacmanRef, gameBoard) {
-        super(pacmanRef, gameBoard);
-        this.PET_NAME = "Blinky";
+    constructor() {
+        super();
+        this.PET_NAME = GhostNames.BLINKY;
         this.__startPositionForVector = { cy: 16 * 14, cx: 13 * 16 };
         this.recordedBoardPosition = { by: 14, bx: 13 };
         this.direction = "left";
@@ -25,10 +28,10 @@ class Blinky extends Ghost {
             right: "blinkyRight",
             up: "blinkyUp"
         };
-        this.monsterPenState = 2;
+        this.__state = MonsterState.CHASE_MODE;
     }
     getTarget(frameNo) {
-        let pos = { ...this.__pacmanReference.recordedBoardPosition };
+        let pos = { ...PACMAN.recordedBoardPosition };
         if (pos.bx < 0)
             pos.bx = 0;
         else if (pos.bx >= GameBoard.width)

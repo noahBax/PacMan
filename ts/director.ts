@@ -9,9 +9,14 @@ import { Pinky } from "./entitiies/pinky.js";
 import { PowerPellet } from "./entitiies/powerPellet.js";
 import { GameBoard } from "./gameBoard.js";
 
+export var PACMAN: PacMan;
+export var GAME_BOARD: GameBoard;
+
+window.GameBoard = GameBoard;
+window.Animator = Animator;
+
 class Director {
 
-	private _gameBoard: GameBoard;
 	private _animator: Animator;
 	private _controller: Controller;
 	
@@ -19,7 +24,6 @@ class Director {
 	private _ghostsEatenInEvent = 0;
 	private _ghostsEatenInLevel = 0;
 
-	private _pacmanRef: PacMan;
 	private _ghostRefs: [Blinky, Pinky, Inky, Clyde];
 	// In order: top left, top right, bottom left, bottom right
 	private _energizers: [PowerPellet, PowerPellet, PowerPellet, PowerPellet];
@@ -35,30 +39,28 @@ class Director {
 		const devCanvas = document.getElementById("devBox") as HTMLCanvasElement;
 
 		const spriteSheet = document.getElementById("spriteSheet") as HTMLImageElement;
-		this._gameBoard = new GameBoard(this);
-		this._animator = new Animator(foregroundCanvas.getContext("2d"), backgroundCanvas.getContext("2d", { alpha: false }), spriteSheet, this._gameBoard);
+		GAME_BOARD = new GameBoard(this);
+		this._animator = new Animator(foregroundCanvas.getContext("2d"), backgroundCanvas.getContext("2d", { alpha: false }), spriteSheet, GAME_BOARD);
 		console.log(this._animator);
 
-		this._pacmanRef = new PacMan();
-		this._animator.registerEntity(this._pacmanRef);
-		window.pacman = this._pacmanRef
+		PACMAN = new PacMan();
+		this._animator.registerEntity(PACMAN);
+		window.pacman = PACMAN
 
 		this._createGhosts();
 		
-		window.gameBoard = this._gameBoard;
-		window.GameBoard = GameBoard;
+		window.gameBoard = GAME_BOARD;
 
 		window.animator = this._animator;
-		window.Animator = Animator;
 
 		
-		const devMode = new DevMode(devCanvas.getContext("2d"), this._pacmanRef, ...this._ghostRefs, this._animator, spriteSheet, this._gameBoard);
+		const devMode = new DevMode(devCanvas.getContext("2d"), ...this._ghostRefs, this._animator, spriteSheet, GAME_BOARD);
 		devCanvas.style.display = "none";
 		window.developer = devMode;
 		devMode.renderGridTiles();
 		devCanvas.style.display = "block";
 
-		this._controller = new Controller(this._pacmanRef, this._animator);
+		this._controller = new Controller(this._animator);
 		window.controller = this._controller;
 
 		// Pause the game when the page loses focus
@@ -72,22 +74,22 @@ class Director {
 
 	private _createGhosts() {
 		console.log("Init-ing blinky");
-		const blinky = new Blinky(this._pacmanRef, this._gameBoard);
+		const blinky = new Blinky();
 		this._animator.registerEntity(blinky)
 		window.blinky = blinky
 
 		console.log("Init-ing inky");
-		const inky = new Inky(this._pacmanRef, blinky, this._gameBoard);
+		const inky = new Inky(blinky);
 		this._animator.registerEntity(inky)
 		window.inky = inky;
 
 		console.log("Init-ing pinky");
-		const pinky = new Pinky(this._pacmanRef, this._gameBoard);
+		const pinky = new Pinky();
 		this._animator.registerEntity(pinky);
 		window.pinky = pinky
 
 		console.log("Init-ing clyde");
-		const clyde = new Clyde(this._pacmanRef, this._gameBoard);
+		const clyde = new Clyde();
 		this._animator.registerEntity(clyde);
 		window.clyde = clyde
 

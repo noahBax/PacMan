@@ -2,24 +2,27 @@ import { Entity } from "../entity.js";
 import { GameBoard } from "../gameBoard.js";
 import { unpackCoords } from "../index.js";
 import { spriteManager } from "../spriteManager.js";
-import { Direction, GridCell, RenderObject, boardCoordinate, canvasCoordinate, moveInfo, vector } from "../types.js";
+import { Direction, GhostIDs, GhostNames, GridCell, RenderObject, boardCoordinate, canvasCoordinate, moveInfo, spriteManagerItems, vector } from "../types.js";
 import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
 import { PacMan } from "./pacman.js";
 import MonsterState from "../monsterState.js";
+import IdleController from "./idleController.js";
+import ExitPenController from "./exitPenController.js";
+import { ghostsExiting } from "../monsterPen.js";
 
 abstract class Ghost extends Entity {
 
 	// Items that do not update
-	abstract readonly PET_NAME: string;
-	private GAME_BOARD: GameBoard;
+	abstract readonly PET_NAME: GhostNames;
 	protected readonly __ABSOLUTE_START_POS: canvasCoordinate;
-	protected __pacmanReference: PacMan;
+
 
 	// Items that update singly or paired.
-	protected __state: ("chase" | "scatter" | "frightened" | "eyes") = "chase"
+	protected __state: MonsterState = MonsterState.IDLE_IN_PEN;
+	private _savedFrightState = MonsterState.IDLE_IN_PEN;
 	private _frightTimer = 0;
 	private _frightStart = 0;
-	
+
 	
 	// Items that are updated manually
 	abstract recordedBoardPosition: boardCoordinate;
@@ -30,15 +33,19 @@ abstract class Ghost extends Entity {
 	private _moveProcessed = true;
 
 	abstract scatterTarget: boardCoordinate;
+
+	protected __idleController: IdleController;
+	protected __exitPenController: ExitPenController;
+
+	protected abstract __ghostNumber: GhostIDs;
 	
 
-	monsterPenState: MonsterState = MonsterState.IDLE_IN_PEN;
-	
 
-	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
-		super()
-		this.__pacmanReference = pacmanRef;
-		this.GAME_BOARD = gameBoard;
+	constructor() {
+		super();
+
+		this.__idleController = new IdleController();
+		this.__exitPenController = new ExitPenController();
 	}
 
 	setCanvasCoords(frameNo: number, newCoords: canvasCoordinate, roundToBoard=false, updateLatentInformation=false, shouldUpdateTarget=false) {
@@ -46,7 +53,7 @@ abstract class Ghost extends Entity {
 		this._moveProcessed = true;
 
 		// Do this before assigning previous
-		if (updateLatentInformation) this.__latentMoveInformation = this._askTargetLogic();//, this.getBoardCoordinatesCentered(frameNo));
+		if (updateLatentInformation) this.__latentMoveInformation = this._getTargetMove();
 		
 		// this.previousBoardLocation = this.getBoardCoordinatesCentered(frameNo);		
 		
@@ -65,9 +72,9 @@ abstract class Ghost extends Entity {
 		// ToDo: Do turn-around on mode switch
 
 		// Update frightened timer
-		if (this.__state == "frightened") {
+		if (this.__state == MonsterState.FRIGHTENED) {
 			if (frameNo - this._frightStart >= this._frightTimer) {
-				this.__state = "chase";
+				this.__state = this._savedFrightState;
 				this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
 			}
 		}
@@ -82,84 +89,123 @@ abstract class Ghost extends Entity {
 		// Get the cell our center is in
 		let currentBoardPos = this.getBoardCoordinatesCentered(frameNo);
 		
+		const haveMoved = currentBoardPos.bx === this.__latentMoveInformation.coord.bx && currentBoardPos.by === this.__latentMoveInformation.coord.by;
+		const canApplyLatentMove = (
+			!haveMoved &&
+			!this._moveProcessed &&
+			currentBoardPos.bx === this.__latentMoveInformation.baseCoordinate.bx &&
+			currentBoardPos.by === this.__latentMoveInformation.baseCoordinate.by
+		);
 
-		// this.logDebugInformation(currentBoardPos, currentCanvasPos);
-
-		switch(this.monsterPenState) {
+		
+		switch(this.__state) {
 			case MonsterState.IDLE_IN_PEN: // In the pen and wandering. We can literally only go up or down
 
-				// Oscillate around the y = 17 mark
-				if (this.direction == "up" && currentBoardPos.by < 17) {
+				if (ghostsExiting.indexOf(this.__ghostNumber) != -1)
+					this.__state = MonsterState.EXITING_PEN;
+					// Finish so we don't stand still
+
+				const shouldUpdateIdle = this.__idleController.updateDirection(currentBoardPos.by);
+				if (shouldUpdateIdle) {
 					this.updateCanvasCoords(frameNo);
-					this.setVelocityVector(penVectorFromDirection["down"], "down", frameNo);
-				} else if (this.direction == "down" && currentBoardPos.by > 17) {
-					this.updateCanvasCoords(frameNo);
-					this.setVelocityVector(penVectorFromDirection["up"], "up", frameNo);
+					this.setVelocityVector(penVectorFromDirection[this.__idleController.direction], this.__idleController.direction, frameNo);	
 				}
+
 				break;
 
-			case 1: // Move to the center of the pen then move up
+			case MonsterState.EXITING_PEN: // Move to the center of the pen then move up
 
-				// Bit of an oddly specific scenario actually. We're moving
-				// towards the middle of two blocks
-				if (this.direction == "left" && currentBoardPos.bx < 14 || this.direction == "right" && currentBoardPos.bx > 13) {
-					// Snap to the center and start moving up
-					this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: currentCanvasPos.cy});
-					this.setVelocityVector(penVectorFromDirection["up"], "up", frameNo);
-				} else if (this.direction == "up" && currentCanvasPos.cy == 14) {
-					this.setVelocityVector(vectorFromDirection["left"], "left", frameNo)
-					this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: 13 * 16});
+				const shouldUpdateExit = this.__exitPenController.updateDirection(currentBoardPos);
 
-					// We can appropriately transition to state 2
-					this.monsterPenState = 2;
+				if (shouldUpdateExit) {
+					if (this.__exitPenController.stage == 2) {
+						this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: currentCanvasPos.cy});
+					} else {
+						this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: 13 * 16});
+						this.__state = MonsterState.CHASE_MODE;
+					}
+					this.setVelocityVector(this.__exitPenController.vector, this.__exitPenController.direction, frameNo)
 				}
+
 				break;
 
-			case 2:
+			case MonsterState.CHASE_MODE:
+
 				// Check if we have moved
-				if (currentBoardPos.bx === this.__latentMoveInformation.coord.bx && currentBoardPos.by === this.__latentMoveInformation.coord.by) {
-					// console.group(`	%cWe have moved from ${unpackCoords(this.recordedBoardPosition)} to ${unpackCoords(currentBoardPos)}`, 'color: #FFA500');
-		
+				if (haveMoved) {
+
 					// Calculate the new target coord
 					this.targetCoord = this.getTarget(frameNo);
-					// console.log(`	%cUpdated target location is ${unpackCoords(this.targetCoord)}`, 'color: #FFA500');
 		
 					// Update latent information before assigning previous
-					this.__latentMoveInformation = this._askTargetLogic();
+					this.__latentMoveInformation = this._getTargetMove();
 		
 					// Now we need to wait until we can actually apply the latent information
 					this._moveProcessed = false;
 					
 					// Now update previous
 					this.recordedBoardPosition = currentBoardPos;
+
+				} else if (canApplyLatentMove) {
+					
+					if (!this.__checkIfAcrossCenter(currentCanvasPos))
+						break;
+					
+					// We are across the center
+					
+					this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
+					this.setCanvasCoords(frameNo, currentCanvasPos, true, false);
+					
+					this._moveProcessed = true;
+	
+					// Update canvas coords
+					currentCanvasPos = this.getCanvasCoords(frameNo);
+	
+					// ToDo: Ideally I want to have the Ghost's eyes facing in
+					// the direction they want to turn before it is decided. So
+					// I may have things start looking at the latent direction
+				}
+				
+				break;
+							
+			case MonsterState.FRIGHTENED:
+				
+				if (haveMoved) {
+					// Update latent information before assigning previous
+					this.__latentMoveInformation = this._getRandomMove();
+					
+					// Now we need to wait until we can actually apply the latent information
+					this._moveProcessed = false;
+					
+					// Now update previous
+					this.recordedBoardPosition = currentBoardPos;
+					
+				} else if (canApplyLatentMove) {
+
+					if (!this.__checkIfAcrossCenter(currentCanvasPos))
+						break;
+
+					this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
+					this.setCanvasCoords(frameNo, currentCanvasPos, true, false);
+					
+					this._moveProcessed = true;
+	
+					// Update canvas coords
+					currentCanvasPos = this.getCanvasCoords(frameNo);
 		
-					// console.log(`	New latent move information is`, this.__latentMoveInformation);
-		
-					console.groupEnd();
-				} else if (!this._moveProcessed && currentBoardPos.bx === this.__latentMoveInformation.baseCoordinate.bx && currentBoardPos.by === this.__latentMoveInformation.baseCoordinate.by) {
-		
-					if (this.__checkIfAcrossCenter(currentCanvasPos)) {
-						// console.group("	%cWe can apply the latent move", 'color: #00ff00');
-						
-						// console.log(`	%cUnchanged direction is %c${this.direction}`, 'color: #00ff00;', 'color: #FFD700;')
-						this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
-						// console.log(`	%cAdjusted direction is %c${this.direction}`, 'color: #00ff00;', 'color: #ffd700;');
-						this.setCanvasCoords(frameNo, currentCanvasPos, true, false);
-						
-						this._moveProcessed = true;
-		
-						// Update canvas coords
-						currentCanvasPos = this.getCanvasCoords(frameNo);
-		
-		
-						// ToDo: Ideally I want to have the Ghost's eyes facing in the direction they want to turn before it is decided. So I may have things start looking at the latent direction
-						console.groupEnd();
-					}
+					// ToDo: Ideally I want to have the Ghost's eyes facing in
+					// the direction they want to turn before it is decided. So
+					// I may have things start looking at the latent direction
 				}
 				break;
 
+			case MonsterState.SCATTER_MODE:
+				// ToDo: Not implemented yet
+				break;
+			case MonsterState.EYES_TO_PEN:
+				// ToDo: Not implemented yet
+				break;
 		}
-		
 		
 		/**
 		 * Return coordinates with respect to canvas
@@ -172,58 +218,52 @@ abstract class Ghost extends Entity {
 		}
 	}
 
-	private _askTargetLogic(): moveInfo | undefined {
-
+	private _getRandomMove(): moveInfo {
+		
 		const legalMoves = GameBoard.getLegalMoves(this.__latentMoveInformation.coord, this.direction, true);
-		// console.log("	Legal moves around it are", legalMoves);
 
-		if (this.__state === "frightened") {
+		let alternatives: Direction[] = ["right", "down", "left", "up"];
+		let preferredDir: Direction = alternatives[Math.floor(Math.random() * 4)];
 
-			// Generate a random number to decide which direction we try first 
-			let alternatives: Direction[] = ["right", "down", "left", "up"];
-			let preferredDir: Direction = alternatives[Math.floor(Math.random() * 4)];
-			legalMoves.sort( (a, b) => {
-				return alternatives.indexOf(a.direction) - alternatives.indexOf(b.direction);
-			});
+		legalMoves.sort( (a, b) => {
+			return alternatives.indexOf(a.direction) - alternatives.indexOf(b.direction);
+		});
 
-			// console.log("	Preferred random direction is", preferredDir);
-
-			// If that first direction doesn't work out, order of preference is up, left, down, right
-			// We work backwards up that list so that if we find the preferred direction we can take that way first 
-			let ret: moveInfo;
-			// console.log(legalMoves);
-			for (let i = 0; i < legalMoves.length; i++) {
-				if ((legalMoves[i].coord.bx === this.recordedBoardPosition.bx && legalMoves[i].coord.by === this.recordedBoardPosition.by)) continue;
-				ret = legalMoves[i];
-				if (ret.direction === preferredDir) return ret;
-			}
-
-			return ret;
-			
-		} else {
-			// Literally an implementation of greedy best first search
-			let bestDistance = Infinity;
-			let bestMove: moveInfo;
-			legalMoves.forEach(move => {
-				// console.log("	looking at possible move", move);
-	
-				// Check to see if this is the square being ocupied
-				if (!(move.coord.bx === this.recordedBoardPosition.bx && move.coord.by === this.recordedBoardPosition.by)) {
-	
-					// console.log("	Not our previous yay");
-					const distance = (this.targetCoord.bx - move.coord.bx)**2 + (this.targetCoord.by - move.coord.by)**2;
-					if (distance < bestDistance) {
-						bestDistance = distance;
-						bestMove = move;
-					}
-				}
-			});
-	
-			// console.log("	Best move toward target is", bestMove);
-			return bestMove;
+		// If that first direction doesn't work out, order of preference is up, left, down, right
+		// We work backwards up that list so that if we find the preferred direction we can take that way first 
+		let ret: moveInfo;
+		// console.log(legalMoves);
+		for (let i = 0; i < legalMoves.length; i++) {
+			if ((legalMoves[i].coord.bx === this.recordedBoardPosition.bx && legalMoves[i].coord.by === this.recordedBoardPosition.by)) continue;
+			ret = legalMoves[i];
+			if (ret.direction === preferredDir) return ret;
 		}
 
+		return ret;
 	}
+
+	private _getTargetMove(): moveInfo {
+
+		const legalMoves = GameBoard.getLegalMoves(this.__latentMoveInformation.coord, this.direction, true);
+
+		let bestDistance = Infinity;
+		let bestMove: moveInfo;
+		legalMoves.forEach(move => {
+
+			// Check to see if this is the square being occupied
+			if (!(move.coord.bx === this.recordedBoardPosition.bx && move.coord.by === this.recordedBoardPosition.by)) {
+
+				const distance = (this.targetCoord.bx - move.coord.bx)**2 + (this.targetCoord.by - move.coord.by)**2;
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					bestMove = move;
+				}
+			}
+		});
+
+		return bestMove;
+	}
+
 
 	/**
 	 * Get the target tile, where the ghost is trying to get to.
@@ -236,35 +276,43 @@ abstract class Ghost extends Entity {
 	 * @param timestamp Start time
 	 */
 	scareMe(timer: number, timestamp: number) {
-		this.__state = "frightened";
+		this.__state = MonsterState.FRIGHTENED;
 		this._frightStart = timestamp;
 		this._frightTimer = timer;
 	}
 
 	private _imageDeterminer(frameNo: number): canvasCoordinate {
-		if (this.__state === "frightened") {
-			const frightProgression = frameNo - this._frightStart;
 
-			const indexName = (this._frightTimer - frightProgression <= 2000) ? "ghostSkeptical" : "ghostFrightened";
-			const animLength = spriteManager[indexName].length;
-			const frameNumber = Math.floor(frightProgression / Entity.FRAMES_PER_IMAGE) % animLength
+		const progression = frameNo - this.__startFrame;
+		let indexName: spriteManagerItems
+		let animLength: number;
+		let frameNumber: number;
+		
+		switch (this.__state) {
+			case MonsterState.FRIGHTENED:
+				const frightProgression = frameNo - this._frightStart;
 
-			
-			return spriteManager[indexName][frameNumber];
-		} else if (this.__state === "eyes") {
-			const progression = frameNo - this.__startFrame;
+				indexName = (this._frightTimer - frightProgression <= 2000) ? "ghostSkeptical" : "ghostFrightened";
+				animLength = spriteManager[indexName].length;
+				frameNumber = Math.floor(frightProgression / Entity.FRAMES_PER_IMAGE) % animLength
 
-			const indexName = "eyes";
-			const animLength = spriteManager[indexName].length;
-			const frameNumber = Math.floor(progression / Entity.FRAMES_PER_IMAGE) % animLength
-		} else {
-			const progression = frameNo - this.__startFrame;
+				return spriteManager[indexName][frameNumber];
+				
+			case MonsterState.EYES_TO_PEN:
 
-			const indexName = this.__animationInfo[this.__latentMoveInformation.direction];
-			const animLength = spriteManager[indexName].length;
-			const frameNumber = Math.floor(progression / Entity.FRAMES_PER_IMAGE) % animLength;
+				indexName = "eyes";
+				animLength = spriteManager[indexName].length;
+				frameNumber = Math.floor(progression / Entity.FRAMES_PER_IMAGE) % animLength
 
-			return spriteManager[indexName][frameNumber];
+				break;
+
+			default:
+
+				indexName = this.__animationInfo[this.__latentMoveInformation.direction];
+				animLength = spriteManager[indexName].length;
+				frameNumber = Math.floor(progression / Entity.FRAMES_PER_IMAGE) % animLength;
+
+				return spriteManager[indexName][frameNumber];
 		}
 	}
 

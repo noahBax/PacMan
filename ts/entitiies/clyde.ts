@@ -1,12 +1,15 @@
+import { PACMAN } from "../director.js";
 import { GameBoard } from "../gameBoard.js";
-import { animationInfo, boardCoordinate, canvasCoordinate, Direction, moveInfo, RenderObject, vector } from "../types.js";
+import { animationInfo, boardCoordinate, canvasCoordinate, Direction, GhostIDs, GhostNames, moveInfo, RenderObject, vector } from "../types.js";
 import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
 import { Ghost } from "./ghost.js";
 import { PacMan } from "./pacman.js";
 
 class Clyde extends Ghost {
+
+	protected __ghostNumber: GhostIDs.CLYDE;
 	
-	PET_NAME = "Clyde";
+	PET_NAME = GhostNames.CLYDE;
 	
 	protected __startPositionForVector: canvasCoordinate = {cy: 272, cx: 248};
 	recordedBoardPosition: boardCoordinate = {by: 14, bx: 13};
@@ -25,8 +28,8 @@ class Clyde extends Ghost {
 		bx: 0
 	}
 	
-	constructor(pacmanRef: PacMan, gameBoard: GameBoard) {
-		super(pacmanRef, gameBoard);
+	constructor() {
+		super();
 	}
 	
 	protected __animationInfo: animationInfo = {
@@ -37,13 +40,13 @@ class Clyde extends Ghost {
 	};
 
 	getTarget(frameNo: number): boardCoordinate {
-		const pacmanPos = this.__pacmanReference.recordedBoardPosition
+		const pacmanPos = PACMAN.recordedBoardPosition
 		const distanceToPacman = (this.recordedBoardPosition.bx - pacmanPos.bx)**2 + (this.recordedBoardPosition.by - pacmanPos.by)**2;
 		
 		if (distanceToPacman < 64) return this.scatterTarget;
 
 		
-		let pos = {...this.__pacmanReference.recordedBoardPosition};
+		let pos = {...PACMAN.recordedBoardPosition};
 		if (pos.bx < 0) pos.bx = 0;
 		else if (pos.bx >= GameBoard.width) pos.bx = GameBoard.width - 1;
 
