@@ -6,7 +6,7 @@ import Ghost from "./ghost.js";
 
 class Clyde extends Ghost {
 
-	protected __ghostNumber: GhostIDs.CLYDE;
+	protected __ghostNumber = GhostIDs.CLYDE;
 	
 	PET_NAME = GhostNames.CLYDE;
 	

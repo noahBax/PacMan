@@ -7,12 +7,14 @@ import Inky from "./entitiies/inky.js";
 import PacMan from "./entitiies/pacman.js";
 import Pinky from "./entitiies/pinky.js";
 import GameBoard from "./gameBoard.js";
+import MonsterPen from "./monsterPen.js";
 export var PACMAN;
 export var GAME_BOARD;
+export var MONSTER_PEN;
 window.GameBoard = GameBoard;
 window.Animator = Animator;
 class Director {
-    constructor() {
+    constructor(timeStamp) {
         this._levelNumber = 1;
         this._ghostsEatenInEvent = 0;
         this._ghostsEatenInLevel = 0;
@@ -27,6 +29,8 @@ class Director {
         this._animator.registerEntity(PACMAN);
         window.pacman = PACMAN;
         this._createGhosts();
+        MONSTER_PEN = new MonsterPen(timeStamp);
+        window.monsterPen = MONSTER_PEN;
         window.gameBoard = GAME_BOARD;
         window.animator = this._animator;
         const devMode = new DevMode(devCanvas.getContext("2d"), ...this._ghostRefs, this._animator, spriteSheet, GAME_BOARD);

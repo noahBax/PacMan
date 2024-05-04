@@ -1,3 +1,4 @@
+import DevMode from "./devmode.js";
 import LOG_FLAG from "./logTools.js";
 import { GhostIDs } from "./types.js";
 
@@ -10,14 +11,17 @@ export const ghostsExiting: GhostIDs[] = [];
 
 class MonsterPen {
 
-	private _penOccupants: GhostIDs[] = [];
-
-	releasingGhost: GhostIDs | false = false;
+	// These are the starting occupants
+	private _penOccupants: GhostIDs[] = [GhostIDs.PINKY, GhostIDs.INKY, GhostIDs.CLYDE];
 
 	private _inkyCounter = 0;
 	private _clydeCounter = 0;
 
 	private _timeLastEaten = 0;
+
+	constructor(timeStamp: number) {
+		this._timeLastEaten = timeStamp;
+	}
 
 	evictOccupants(timeStamp: number) {
 
@@ -48,7 +52,7 @@ class MonsterPen {
 			}
 		}
 		
-		if (this._timeLastEaten > 4000) {
+		if (timeStamp - this._timeLastEaten > 4000) {
 
 			// Evict in order of priority
 			this._penOccupants.sort( (b, c) => c - b);
@@ -57,6 +61,10 @@ class MonsterPen {
 			ghostsExiting.push(evictMe);
 			this._timeLastEaten = timeStamp;
 			
+		}
+
+		if (DevMode.IN_DEV_MODE) {
+			window.developer.updatePenInfo(this._penOccupants);
 		}
 		
 	}

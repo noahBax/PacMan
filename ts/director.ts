@@ -8,9 +8,11 @@ import PacMan from "./entitiies/pacman.js";
 import Pinky from "./entitiies/pinky.js";
 import PowerPellet from "./entitiies/powerPellet.js";
 import GameBoard from "./gameBoard.js";
+import MonsterPen from "./monsterPen.js";
 
 export var PACMAN: PacMan;
 export var GAME_BOARD: GameBoard;
+export var MONSTER_PEN: MonsterPen;
 
 window.GameBoard = GameBoard;
 window.Animator = Animator;
@@ -32,7 +34,7 @@ class Director {
 	private static readonly _FRIGHT_TIMES: number[] = [6,5,4,3,2,5,2,2,1,5,2,1,1,3,1,1,1,1,1,1,1]; 
 
 	
-	constructor() {
+	constructor(timeStamp: number) {
 
 		const foregroundCanvas = document.getElementById("renderBox") as HTMLCanvasElement;
 		const backgroundCanvas = document.getElementById("backdrop") as HTMLCanvasElement;
@@ -48,6 +50,9 @@ class Director {
 		window.pacman = PACMAN
 
 		this._createGhosts();
+
+		MONSTER_PEN = new MonsterPen(timeStamp);
+		window.monsterPen = MONSTER_PEN;
 		
 		window.gameBoard = GAME_BOARD;
 

@@ -1,11 +1,12 @@
 import { PACMAN } from "../director.js";
 import GameBoard from "../gameBoard.js";
-import { GhostNames } from "../types.js";
+import { GhostIDs, GhostNames } from "../types.js";
 import { penVectorFromDirection } from "../utilities.js";
 import Ghost from "./ghost.js";
 class Clyde extends Ghost {
     constructor() {
         super();
+        this.__ghostNumber = GhostIDs.CLYDE;
         this.PET_NAME = GhostNames.CLYDE;
         this.__startPositionForVector = { cy: 272, cx: 248 };
         this.recordedBoardPosition = { by: 14, bx: 13 };

@@ -1,8 +1,10 @@
 import Director from "./director.js";
+import LOG_FLAG from "./logTools.js";
 // Link to source
 // https://pacman.holenet.info/#LvlSpecs
-function main() {
-    const director = new Director();
+function main(event) {
+    console.log(LOG_FLAG.INDEX, `Game initialized at ${event.timeStamp}`);
+    const director = new Director(event.timeStamp);
     window.director = director;
     window.Director = Director;
     director.startGame();

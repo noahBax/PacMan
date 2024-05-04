@@ -7,7 +7,7 @@ import Ghost from "./ghost.js";
 
 class Blinky extends Ghost {
 
-	protected __ghostNumber: GhostIDs.BLINKY;
+	protected __ghostNumber = GhostIDs.BLINKY;
 	
 	PET_NAME = GhostNames.BLINKY;
 	

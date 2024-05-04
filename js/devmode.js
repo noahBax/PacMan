@@ -1,5 +1,6 @@
 import GameBoard from "./gameBoard.js";
 import { unpackCoords } from "./index.js";
+import { ghostsExiting } from "./monsterPen.js";
 class DevMode {
     constructor(dev_ctx, blinky, pinky, inky, clyde, animator, spriteSheet, gameBoard) {
         this.frameRateBuffer = [0, 0, 0, 0, 0, 0, 0];
@@ -123,6 +124,10 @@ class DevMode {
             e = this._ghosts[i].targetCoord;
             document.getElementById(this._panelTargetIDs[i]).textContent = unpackCoords(e);
         }
+    }
+    updatePenInfo(penOccupants) {
+        document.getElementById("occupants").textContent = `${penOccupants}`;
+        document.getElementById("evicting").textContent = `${ghostsExiting}`;
     }
     /**
      * Paint onto the developer canvas

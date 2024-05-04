@@ -9,12 +9,17 @@ import GameBoard from "./gameBoard.js";
 import Animator from "./animator.js";
 import DevMode from "./devmode.js";
 import Controller from "./controller.js";
+import LOG_FLAG from "./logTools.js";
+import MonsterPen from "./monsterPen.js";
 
 // Link to source
 // https://pacman.holenet.info/#LvlSpecs
 
-function main() {
-	const director = new Director();
+function main(event: Event) {
+
+	console.log(LOG_FLAG.INDEX, `Game initialized at ${event.timeStamp}`)
+	
+	const director = new Director(event.timeStamp);
 	window.director = director;
 	window.Director = Director;
 
@@ -30,19 +35,20 @@ function unpackCoords(coord: canvasCoordinate | boardCoordinate) {
 
 declare global {
     interface Window {
-		pacman: PacMan,
-		blinky: Blinky,
-		inky: Inky,
-		pinky: Pinky
-		clyde: Clyde,
-		GameBoard: typeof GameBoard,
-		gameBoard: GameBoard
-		animator: Animator
-		Animator: typeof Animator
-		developer: DevMode
-		controller: Controller
-		director: Director
-		Director: typeof Director
+		pacman: 	PacMan,
+		blinky: 	Blinky,
+		inky: 		Inky,
+		pinky: 		Pinky
+		clyde: 		Clyde,
+		GameBoard: 	typeof GameBoard,
+		gameBoard: 	GameBoard,
+		animator: 	Animator,
+		Animator: 	typeof Animator,
+		developer: 	DevMode,
+		controller: Controller,
+		director: 	Director,
+		Director: 	typeof Director,
+		monsterPen: MonsterPen,
 	}
 }
 

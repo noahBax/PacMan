@@ -1,4 +1,4 @@
-import Director from "./director.js";
+import Director, { MONSTER_PEN } from "./director.js";
 import Blinky from "./entitiies/blinky.js";
 import Clyde from "./entitiies/clyde.js";
 import Ghost from "./entitiies/ghost.js";
@@ -388,6 +388,7 @@ class GameBoard {
 				{ cy: boardCoord.by * 16, cx: boardCoord.bx * 16},
 				{ y: 16, x: 16 }
 			);
+			MONSTER_PEN.dotEaten(timestamp);
 		} else if (this.currentDotSpaces[boardCoord.by][boardCoord.bx] === 2) {
 			GameBoard.PACMAN_SCORE += 50;
 			this.currentDotSpaces[boardCoord.by][boardCoord.bx] = 0;

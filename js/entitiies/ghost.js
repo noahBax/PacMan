@@ -56,6 +56,11 @@ class Ghost extends Entity {
             !this._moveProcessed &&
             currentBoardPos.bx === this.__latentMoveInformation.baseCoordinate.bx &&
             currentBoardPos.by === this.__latentMoveInformation.baseCoordinate.by);
+        console.log(ghostsExiting, this.__ghostNumber);
+        if (ghostsExiting.indexOf(this.__ghostNumber) != -1) {
+            console.log('existtes');
+            this.__exitPenController.startExitingPen(currentBoardPos);
+        }
         switch (this.__state) {
             case MonsterState.IDLE_IN_PEN: // In the pen and wandering. We can literally only go up or down
                 if (ghostsExiting.indexOf(this.__ghostNumber) != -1)
@@ -70,6 +75,7 @@ class Ghost extends Entity {
             case MonsterState.EXITING_PEN: // Move to the center of the pen then move up
                 const shouldUpdateExit = this.__exitPenController.updateDirection(currentBoardPos);
                 if (shouldUpdateExit) {
+                    console.log(shouldUpdateExit);
                     if (this.__exitPenController.stage == 2) {
                         this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: currentCanvasPos.cy });
                     }

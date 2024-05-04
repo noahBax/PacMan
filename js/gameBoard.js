@@ -1,3 +1,4 @@
+import { MONSTER_PEN } from "./director.js";
 import Ghost from "./entitiies/ghost.js";
 import PacMan from "./entitiies/pacman.js";
 import spriteManager from "./spriteManager.js";
@@ -219,6 +220,7 @@ class GameBoard {
             GameBoard.PACMAN_SCORE += 10;
             this.currentDotSpaces[boardCoord.by][boardCoord.bx] = 0;
             this.renderer.clearBackgroundSpot({ cy: boardCoord.by * 16, cx: boardCoord.bx * 16 }, { y: 16, x: 16 });
+            MONSTER_PEN.dotEaten(timestamp);
         }
         else if (this.currentDotSpaces[boardCoord.by][boardCoord.bx] === 2) {
             GameBoard.PACMAN_SCORE += 50;

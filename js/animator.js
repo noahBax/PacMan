@@ -1,4 +1,5 @@
 import DevMode from "./devmode.js";
+import { MONSTER_PEN } from "./director.js";
 import PacMan from "./entitiies/pacman.js";
 import Renderer from "./renderer.js";
 class Animator {
@@ -40,6 +41,7 @@ class Animator {
         Animator.CURRENT_FRAME_NO++;
         this._prevFrameTime = timestamp;
         timestamp -= this._pauseTime;
+        MONSTER_PEN.evictOccupants(timestamp);
         // * Draw maze at the beginning
         if (!this._mazeFinishedDrawing)
             this._mazeFinishedDrawing = this._gameBoard.drawMaze(5600); //Animator.CURRENT_FRAME_NO);

@@ -65,7 +65,7 @@
 		}
 		#dev_display p {
 			margin: 0px;
-			padding: 0px;
+			/* padding: 0px; */
 			font-family: monospace;
 		}
 		#dev_controlPanel {
@@ -77,7 +77,7 @@
 			min-width: 50px;
 			min-height: 50px;
 		}
-		#cellInfoSection {
+		.padMe {
 			padding-left: 10px;
 		}
 		.targetTileCover {
@@ -107,20 +107,25 @@
 		<p>Score: <span id="devGameScore"></span></p>
 		<p>Cell Info:</p>
 		<div id="cellInfoSection">
-			<p id="tileLocation">
+			<p id="tileLocation" class="padMe">
 				Selected Location: None
 			</p>
 		</div>
+
 		<p>Ghost locations:</p>
-		<p style="color: orangered">Blinky: <span id="blinkyLoc"></span></p>
-		<p style="color: cyan">Inky: <span id="inkyLoc"></span></p>
-		<p style="color: pink">Pinky: <span id="pinkyLoc"></span></p>
-		<p style="color: orange">Clyde: <span id="clydeLoc"></span></p>
+		<p class="padMe" style="color: orangered">Blinky: <span id="blinkyLoc"></span></p>
+		<p class="padMe" style="color: cyan">Inky: <span id="inkyLoc"></span></p>
+		<p class="padMe" style="color: pink">Pinky: <span id="pinkyLoc"></span></p>
+		<p class="padMe" style="color: orange">Clyde: <span id="clydeLoc"></span></p>
 		<p>Target locations:</p>
-		<p style="color: orangered">Blinky: <span id="blinkyTarget"></span></p>
-		<p style="color: cyan">Inky: <span id="inkyTarget"></span></p>
-		<p style="color: pink">Pinky: <span id="pinkyTarget"></span></p>
-		<p style="color: orange">Clyde: <span id="clydeTarget"></span></p>
+		<p class="padMe" style="color: orangered">Blinky: <span id="blinkyTarget"></span></p>
+		<p class="padMe" style="color: cyan">Inky: <span id="inkyTarget"></span></p>
+		<p class="padMe" style="color: pink">Pinky: <span id="pinkyTarget"></span></p>
+		<p class="padMe" style="color: orange">Clyde: <span id="clydeTarget"></span></p>
+
+		<p>Monster pen</p>
+		<p class="padMe">Occupants: <span id="occupants"></span></p>
+		<p class="padMe">Evicting: <span id="evicting"></span></p>
 	</div>
 	<div id="dev_controlPanel">
 

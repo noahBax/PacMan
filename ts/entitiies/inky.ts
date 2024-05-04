@@ -1,5 +1,6 @@
 import { PACMAN } from "../director.js";
 import GameBoard from "../gameBoard.js";
+import { ghostsExiting } from "../monsterPen.js";
 import { animationInfo, boardCoordinate, canvasCoordinate, Direction, GhostIDs, GhostNames, moveInfo, RenderObject, vector } from "../types.js";
 import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
 import Blinky from "./blinky.js";
@@ -7,7 +8,7 @@ import Ghost from "./ghost.js";
 
 class Inky extends Ghost {
 	
-	protected __ghostNumber: GhostIDs.INKY;
+	protected __ghostNumber = GhostIDs.INKY;
 	PET_NAME = GhostNames.INKY;
 	
 	protected __startPositionForVector: canvasCoordinate = {cy: 272, cx: 184};

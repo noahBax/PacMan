@@ -1,4 +1,5 @@
 import Animator from "./animator.js";
+import { MONSTER_PEN } from "./director.js";
 import Blinky from "./entitiies/blinky.js";
 import Clyde from "./entitiies/clyde.js";
 import Ghost from "./entitiies/ghost.js";
@@ -7,7 +8,8 @@ import PacMan from "./entitiies/pacman.js";
 import Pinky from "./entitiies/pinky.js";
 import GameBoard from "./gameBoard.js";
 import { unpackCoords } from "./index.js";
-import { GridCell, RenderObject } from "./types.js";
+import { ghostsExiting } from "./monsterPen.js";
+import { GhostIDs, GridCell, RenderObject } from "./types.js";
 
 class DevMode {
 
@@ -195,6 +197,11 @@ class DevMode {
 			e = this._ghosts[i].targetCoord;
 			document.getElementById(this._panelTargetIDs[i]).textContent = unpackCoords(e);
 		}
+	}
+
+	updatePenInfo(penOccupants: GhostIDs[]) {
+		document.getElementById("occupants").textContent = `${penOccupants}`;
+		document.getElementById("evicting").textContent = `${ghostsExiting}`;
 	}
 
 	/**

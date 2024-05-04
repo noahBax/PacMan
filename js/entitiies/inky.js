@@ -1,11 +1,12 @@
 import { PACMAN } from "../director.js";
 import GameBoard from "../gameBoard.js";
-import { GhostNames } from "../types.js";
+import { GhostIDs, GhostNames } from "../types.js";
 import { penVectorFromDirection } from "../utilities.js";
 import Ghost from "./ghost.js";
 class Inky extends Ghost {
     constructor(blinkyRef) {
         super();
+        this.__ghostNumber = GhostIDs.INKY;
         this.PET_NAME = GhostNames.INKY;
         this.__startPositionForVector = { cy: 272, cx: 184 };
         this.recordedBoardPosition = { by: 14, bx: 13 };

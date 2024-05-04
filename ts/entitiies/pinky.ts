@@ -6,7 +6,7 @@ import Ghost from "./ghost.js";
 
 class Pinky extends Ghost {
 	
-	protected __ghostNumber: GhostIDs.PINKY;
+	protected __ghostNumber = GhostIDs.PINKY;
 	PET_NAME = GhostNames.PINKY;
 	
 	protected __startPositionForVector: canvasCoordinate = {cy: 272, cx: 216};
