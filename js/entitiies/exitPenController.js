@@ -10,16 +10,16 @@ class ExitPenController {
         this.direction = "up";
         this.vector = { x: 0, y: 0 };
     }
-    updateDirection(boardPosition) {
+    updateDirection(boardPosition, canvasPosition) {
         if (this.stage == 1 &&
             (this.direction == "left" && boardPosition.bx < 14 ||
-                this.direction == "right" && boardPosition.bx < 13)) {
+                this.direction == "right" && boardPosition.bx > 13)) {
             this.vector = penVectorFromDirection["up"];
             this.direction = "up";
             this.stage = 2;
             return true;
         }
-        if (this.stage == 2 && this.direction == "up" && boardPosition.by == 14) {
+        if (this.stage == 2 && this.direction == "up" && canvasPosition.cy <= 14 * 16) {
             this.vector = vectorFromDirection["left"];
             this.direction = "left";
             this.stage = 0;
@@ -30,12 +30,17 @@ class ExitPenController {
     startExitingPen(boardPosition) {
         this.stage = 1;
         if (boardPosition.bx < 14) {
+            this.direction = "right";
+            this.vector = penVectorFromDirection["right"];
+        }
+        else if (boardPosition.bx > 14) {
             this.direction = "left";
             this.vector = penVectorFromDirection["left"];
         }
         else {
-            this.direction = "right";
-            this.vector = penVectorFromDirection["right"];
+            this.vector = penVectorFromDirection["up"];
+            this.direction = "up";
+            this.stage = 2;
         }
     }
 }

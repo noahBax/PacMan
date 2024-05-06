@@ -56,16 +56,15 @@ class Ghost extends Entity {
             !this._moveProcessed &&
             currentBoardPos.bx === this.__latentMoveInformation.baseCoordinate.bx &&
             currentBoardPos.by === this.__latentMoveInformation.baseCoordinate.by);
-        console.log(ghostsExiting, this.__ghostNumber);
-        if (ghostsExiting.indexOf(this.__ghostNumber) != -1) {
-            console.log('existtes');
-            this.__exitPenController.startExitingPen(currentBoardPos);
-        }
         switch (this.__state) {
             case MonsterState.IDLE_IN_PEN: // In the pen and wandering. We can literally only go up or down
-                if (ghostsExiting.indexOf(this.__ghostNumber) != -1)
+                if (ghostsExiting.indexOf(this.__ghostNumber) != -1) {
                     this.__state = MonsterState.EXITING_PEN;
-                // Finish so we don't stand still
+                    this.__exitPenController.startExitingPen(currentBoardPos);
+                    this.updateCanvasCoords(frameNo);
+                    this.setVelocityVector(this.__exitPenController.vector, this.__exitPenController.direction, frameNo);
+                    break;
+                }
                 const shouldUpdateIdle = this.__idleController.updateDirection(currentBoardPos.by);
                 if (shouldUpdateIdle) {
                     this.updateCanvasCoords(frameNo);
@@ -73,17 +72,37 @@ class Ghost extends Entity {
                 }
                 break;
             case MonsterState.EXITING_PEN: // Move to the center of the pen then move up
-                const shouldUpdateExit = this.__exitPenController.updateDirection(currentBoardPos);
+                const shouldUpdateExit = this.__exitPenController.updateDirection(currentBoardPos, currentCanvasPos);
                 if (shouldUpdateExit) {
-                    console.log(shouldUpdateExit);
-                    if (this.__exitPenController.stage == 2) {
-                        this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: currentCanvasPos.cy });
+                    if (this.__exitPenController.stage == 0) {
+                        this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: 14 * 16 });
+                        this.__state = MonsterState.CHASE_MODE;
+                        // Calculate the new target coord
+                        this.targetCoord = this.getTarget(frameNo);
+                        // Update latent information before assigning previous
+                        if (this.targetCoord.bx > currentBoardPos.bx) {
+                            this.__latentMoveInformation = {
+                                baseCoordinate: { bx: 13, by: 14 },
+                                coord: { bx: 14, by: 14 },
+                                direction: "right"
+                            };
+                            this.setVelocityVector(vectorFromDirection['right'], 'right', frameNo);
+                        }
+                        else {
+                            this.__latentMoveInformation = {
+                                baseCoordinate: { bx: 13, by: 14 },
+                                coord: { bx: 12, by: 14 },
+                                direction: "left"
+                            };
+                            this.setVelocityVector(vectorFromDirection['left'], 'left', frameNo);
+                        }
+                        this._moveProcessed = true;
+                        this.recordedBoardPosition = currentBoardPos;
                     }
                     else {
-                        this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: 13 * 16 });
-                        this.__state = MonsterState.CHASE_MODE;
+                        this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: currentCanvasPos.cy });
+                        this.setVelocityVector(this.__exitPenController.vector, this.__exitPenController.direction, frameNo);
                     }
-                    this.setVelocityVector(this.__exitPenController.vector, this.__exitPenController.direction, frameNo);
                 }
                 break;
             case MonsterState.CHASE_MODE:
@@ -193,6 +212,7 @@ class Ghost extends Entity {
      * @param timestamp Start time
      */
     scareMe(timer, timestamp) {
+        this._savedFrightState = this.__state;
         this.__state = MonsterState.FRIGHTENED;
         this._frightStart = timestamp;
         this._frightTimer = timer;
