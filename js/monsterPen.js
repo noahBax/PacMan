@@ -18,7 +18,7 @@ class MonsterPen {
     evictOccupants(timeStamp) {
         if (this._penOccupants.length == 0)
             return;
-        for (let i = this._penOccupants.length - 1; i != 0; i--) {
+        for (let i = this._penOccupants.length - 1; i > -1; i--) {
             switch (this._penOccupants[i]) {
                 case GhostIDs.BLINKY:
                 case GhostIDs.PINKY:
