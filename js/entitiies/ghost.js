@@ -7,14 +7,19 @@ import MonsterState from "../monsterState.js";
 import IdleController from "./idleController.js";
 import ExitPenController from "./exitPenController.js";
 import { ghostsExiting } from "../monsterPen.js";
+import { MONSTER_PEN } from "../director.js";
 class Ghost extends Entity {
     constructor() {
         super();
         // Items that update singly or paired.
         this.__state = MonsterState.IDLE_IN_PEN;
-        this._savedFrightState = MonsterState.IDLE_IN_PEN;
+        this._savedFrightState = MonsterState.CHASE_MODE;
         this._frightTimer = 0;
         this._frightStart = 0;
+        // Needed because the ghosts can both be in the pen and be frightened at the
+        // same time. So when they exit the pen they should be frightened but in the
+        // pen they still need the frightened animation
+        this._isActuallyFrightened = false;
         this._moveProcessed = true;
         this.__idleController = new IdleController();
         this.__exitPenController = new ExitPenController();
@@ -37,10 +42,14 @@ class Ghost extends Entity {
     updateFrame(frameNo) {
         // ToDo: Do turn-around on mode switch
         // Update frightened timer
-        if (this.__state == MonsterState.FRIGHTENED) {
+        // if (this.__state == MonsterState.FRIGHTENED) {
+        if (this._isActuallyFrightened) {
             if (frameNo - this._frightStart >= this._frightTimer) {
+                if (this.__state != MonsterState.IDLE_IN_PEN && this.__state != MonsterState.EXITING_PEN) {
+                    this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
+                }
                 this.__state = this._savedFrightState;
-                this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
+                this._isActuallyFrightened = false;
             }
         }
         /**
@@ -98,6 +107,7 @@ class Ghost extends Entity {
                         }
                         this._moveProcessed = true;
                         this.recordedBoardPosition = currentBoardPos;
+                        MONSTER_PEN.signalExited(this.__ghostNumber);
                     }
                     else {
                         this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: currentCanvasPos.cy });
@@ -213,22 +223,26 @@ class Ghost extends Entity {
      */
     scareMe(timer, timestamp) {
         this._savedFrightState = this.__state;
-        this.__state = MonsterState.FRIGHTENED;
+        if (this.__state != MonsterState.IDLE_IN_PEN && this.__state != MonsterState.EXITING_PEN) {
+            this.__state = MonsterState.FRIGHTENED;
+        }
         this._frightStart = timestamp;
         this._frightTimer = timer;
+        this._isActuallyFrightened = true;
     }
     _imageDeterminer(frameNo) {
         const progression = frameNo - this.__startFrame;
         let indexName;
         let animLength;
         let frameNumber;
+        if (this._isActuallyFrightened) {
+            const frightProgression = frameNo - this._frightStart;
+            indexName = (this._frightTimer - frightProgression <= 2000) ? "ghostSkeptical" : "ghostFrightened";
+            animLength = spriteManager[indexName].length;
+            frameNumber = Math.floor(frightProgression / Entity.FRAMES_PER_IMAGE) % animLength;
+            return spriteManager[indexName][frameNumber];
+        }
         switch (this.__state) {
-            case MonsterState.FRIGHTENED:
-                const frightProgression = frameNo - this._frightStart;
-                indexName = (this._frightTimer - frightProgression <= 2000) ? "ghostSkeptical" : "ghostFrightened";
-                animLength = spriteManager[indexName].length;
-                frameNumber = Math.floor(frightProgression / Entity.FRAMES_PER_IMAGE) % animLength;
-                return spriteManager[indexName][frameNumber];
             case MonsterState.EYES_TO_PEN:
                 indexName = "eyes";
                 animLength = spriteManager[indexName].length;

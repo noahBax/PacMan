@@ -77,7 +77,7 @@ class MonsterPen {
 			return false;
 		}
 
-		this._penOccupants.splice(ghostIndex, 1);
+		ghostsExiting.splice(ghostIndex, 1);
 	}
 
 	dotEaten(timeStamp: number) {

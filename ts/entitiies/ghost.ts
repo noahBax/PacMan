@@ -8,19 +8,26 @@ import MonsterState from "../monsterState.js";
 import IdleController from "./idleController.js";
 import ExitPenController from "./exitPenController.js";
 import { ghostsExiting } from "../monsterPen.js";
+import { MONSTER_PEN } from "../director.js";
 
 abstract class Ghost extends Entity {
 
 	// Items that do not update
 	abstract readonly PET_NAME: GhostNames;
 	protected readonly __ABSOLUTE_START_POS: canvasCoordinate;
+	protected abstract __ghostNumber: GhostIDs;
 
 
 	// Items that update singly or paired.
 	protected __state: MonsterState = MonsterState.IDLE_IN_PEN;
-	private _savedFrightState = MonsterState.IDLE_IN_PEN;
+	private _savedFrightState = MonsterState.CHASE_MODE;
 	private _frightTimer = 0;
 	private _frightStart = 0;
+
+	// Needed because the ghosts can both be in the pen and be frightened at the
+	// same time. So when they exit the pen they should be frightened but in the
+	// pen they still need the frightened animation
+	private _isActuallyFrightened = false;
 
 	
 	// Items that are updated manually
@@ -36,7 +43,6 @@ abstract class Ghost extends Entity {
 	protected __idleController: IdleController;
 	protected __exitPenController: ExitPenController;
 
-	protected abstract __ghostNumber: GhostIDs;
 	
 
 	constructor() {
@@ -70,10 +76,14 @@ abstract class Ghost extends Entity {
 		// ToDo: Do turn-around on mode switch
 
 		// Update frightened timer
-		if (this.__state == MonsterState.FRIGHTENED) {
+		// if (this.__state == MonsterState.FRIGHTENED) {
+		if (this._isActuallyFrightened) {
 			if (frameNo - this._frightStart >= this._frightTimer) {
+				if (this.__state != MonsterState.IDLE_IN_PEN && this.__state != MonsterState.EXITING_PEN) {
+					this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
+				}
 				this.__state = this._savedFrightState;
-				this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
+				this._isActuallyFrightened = false;
 			}
 		}
 
@@ -145,8 +155,9 @@ abstract class Ghost extends Entity {
 						}
 			
 						this._moveProcessed = true;
-						
 						this.recordedBoardPosition = currentBoardPos;
+						
+						MONSTER_PEN.signalExited(this.__ghostNumber);
 
 					} else {
 						this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: currentCanvasPos.cy});
@@ -304,9 +315,12 @@ abstract class Ghost extends Entity {
 	 */
 	scareMe(timer: number, timestamp: number) {
 		this._savedFrightState = this.__state;
-		this.__state = MonsterState.FRIGHTENED;
+		if (this.__state != MonsterState.IDLE_IN_PEN && this.__state != MonsterState.EXITING_PEN) {
+			this.__state = MonsterState.FRIGHTENED;
+		}
 		this._frightStart = timestamp;
 		this._frightTimer = timer;
+		this._isActuallyFrightened = true;
 	}
 
 	private _imageDeterminer(frameNo: number): canvasCoordinate {
@@ -315,17 +329,18 @@ abstract class Ghost extends Entity {
 		let indexName: spriteManagerItems
 		let animLength: number;
 		let frameNumber: number;
+
+		if (this._isActuallyFrightened) {
+			const frightProgression = frameNo - this._frightStart;
+	
+			indexName = (this._frightTimer - frightProgression <= 2000) ? "ghostSkeptical" : "ghostFrightened";
+			animLength = spriteManager[indexName].length;
+			frameNumber = Math.floor(frightProgression / Entity.FRAMES_PER_IMAGE) % animLength
+	
+			return spriteManager[indexName][frameNumber];
+		}
 		
 		switch (this.__state) {
-			case MonsterState.FRIGHTENED:
-				const frightProgression = frameNo - this._frightStart;
-
-				indexName = (this._frightTimer - frightProgression <= 2000) ? "ghostSkeptical" : "ghostFrightened";
-				animLength = spriteManager[indexName].length;
-				frameNumber = Math.floor(frightProgression / Entity.FRAMES_PER_IMAGE) % animLength
-
-				return spriteManager[indexName][frameNumber];
-				
 			case MonsterState.EYES_TO_PEN:
 
 				indexName = "eyes";

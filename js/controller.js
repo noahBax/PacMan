@@ -36,7 +36,7 @@ class Controller {
                 break;
             case "Escape":
                 Animator.ACTIVE = !Animator.ACTIVE;
-                this._animator.startAnimating();
+            // this._animator.startAnimating();
         }
     }
     handleKeyUp(event) {

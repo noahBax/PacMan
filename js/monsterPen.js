@@ -58,7 +58,7 @@ class MonsterPen {
             console.log(LOG_FLAG.MONSTER_PEN, `Ghost ${ghost} tried to exited the pen when it wasn't in the queue`);
             return false;
         }
-        this._penOccupants.splice(ghostIndex, 1);
+        ghostsExiting.splice(ghostIndex, 1);
     }
     dotEaten(timeStamp) {
         this._timeLastEaten = timeStamp;
