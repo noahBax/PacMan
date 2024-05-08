@@ -1,9 +1,7 @@
 enum MonsterState {
-	IDLE_IN_PEN,
-	EXITING_PEN,
+	IN_PEN,
 	CHASE_MODE,
 	SCATTER_MODE,
-	FRIGHTENED,
 	EYES_TO_PEN
 }
 export default MonsterState

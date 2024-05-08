@@ -1,11 +1,9 @@
 var MonsterState;
 (function (MonsterState) {
-    MonsterState[MonsterState["IDLE_IN_PEN"] = 0] = "IDLE_IN_PEN";
-    MonsterState[MonsterState["EXITING_PEN"] = 1] = "EXITING_PEN";
-    MonsterState[MonsterState["CHASE_MODE"] = 2] = "CHASE_MODE";
-    MonsterState[MonsterState["SCATTER_MODE"] = 3] = "SCATTER_MODE";
-    MonsterState[MonsterState["FRIGHTENED"] = 4] = "FRIGHTENED";
-    MonsterState[MonsterState["EYES_TO_PEN"] = 5] = "EYES_TO_PEN";
+    MonsterState[MonsterState["IN_PEN"] = 0] = "IN_PEN";
+    MonsterState[MonsterState["CHASE_MODE"] = 1] = "CHASE_MODE";
+    MonsterState[MonsterState["SCATTER_MODE"] = 2] = "SCATTER_MODE";
+    MonsterState[MonsterState["EYES_TO_PEN"] = 3] = "EYES_TO_PEN";
 })(MonsterState || (MonsterState = {}));
 export default MonsterState;
 /**

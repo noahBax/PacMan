@@ -4,24 +4,21 @@ import { unpackCoords } from "../index.js";
 import spriteManager from "../spriteManager.js";
 import { penVectorFromDirection, vectorFromDirection } from "../utilities.js";
 import MonsterState from "../monsterState.js";
-import IdleController from "./idleController.js";
-import ExitPenController from "./exitPenController.js";
+import ExitPenController, { LAST_FLAG } from "./exitPenController.js";
 import { ghostsExiting } from "../monsterPen.js";
 import { MONSTER_PEN } from "../director.js";
 class Ghost extends Entity {
     constructor() {
         super();
         // Items that update singly or paired.
-        this.__state = MonsterState.IDLE_IN_PEN;
-        this._savedFrightState = MonsterState.CHASE_MODE;
+        this.__state = MonsterState.IN_PEN;
         this._frightTimer = 0;
         this._frightStart = 0;
         // Needed because the ghosts can both be in the pen and be frightened at the
         // same time. So when they exit the pen they should be frightened but in the
         // pen they still need the frightened animation
-        this._isActuallyFrightened = false;
+        this._isFrightened = false;
         this._moveProcessed = true;
-        this.__idleController = new IdleController();
         this.__exitPenController = new ExitPenController();
     }
     setCanvasCoords(frameNo, newCoords, roundToBoard = false, updateLatentInformation = false, shouldUpdateTarget = false) {
@@ -42,15 +39,11 @@ class Ghost extends Entity {
     updateFrame(frameNo) {
         // ToDo: Do turn-around on mode switch
         // Update frightened timer
-        // if (this.__state == MonsterState.FRIGHTENED) {
-        if (this._isActuallyFrightened) {
-            if (frameNo - this._frightStart >= this._frightTimer) {
-                if (this.__state != MonsterState.IDLE_IN_PEN && this.__state != MonsterState.EXITING_PEN) {
-                    this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
-                }
-                this.__state = this._savedFrightState;
-                this._isActuallyFrightened = false;
+        if (this._isFrightened && frameNo - this._frightStart >= this._frightTimer) {
+            if (this.__state != MonsterState.IN_PEN) {
+                this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
             }
+            this._isFrightened = false;
         }
         /**
          * Do a purgatory check here to teleport us to the correct side
@@ -65,111 +58,13 @@ class Ghost extends Entity {
             !this._moveProcessed &&
             currentBoardPos.bx === this.__latentMoveInformation.baseCoordinate.bx &&
             currentBoardPos.by === this.__latentMoveInformation.baseCoordinate.by);
-        switch (this.__state) {
-            case MonsterState.IDLE_IN_PEN: // In the pen and wandering. We can literally only go up or down
-                if (ghostsExiting.indexOf(this.__ghostNumber) != -1) {
-                    this.__state = MonsterState.EXITING_PEN;
-                    this.__exitPenController.startExitingPen(currentBoardPos);
-                    this.updateCanvasCoords(frameNo);
-                    this.setVelocityVector(this.__exitPenController.vector, this.__exitPenController.direction, frameNo);
-                    break;
-                }
-                const shouldUpdateIdle = this.__idleController.updateDirection(currentBoardPos.by);
-                if (shouldUpdateIdle) {
-                    this.updateCanvasCoords(frameNo);
-                    this.setVelocityVector(penVectorFromDirection[this.__idleController.direction], this.__idleController.direction, frameNo);
-                }
-                break;
-            case MonsterState.EXITING_PEN: // Move to the center of the pen then move up
-                const shouldUpdateExit = this.__exitPenController.updateDirection(currentBoardPos, currentCanvasPos);
-                if (shouldUpdateExit) {
-                    if (this.__exitPenController.stage == 0) {
-                        this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: 14 * 16 });
-                        this.__state = MonsterState.CHASE_MODE;
-                        // Calculate the new target coord
-                        this.targetCoord = this.getTarget(frameNo);
-                        // Update latent information before assigning previous
-                        if (this.targetCoord.bx > currentBoardPos.bx) {
-                            this.__latentMoveInformation = {
-                                baseCoordinate: { bx: 13, by: 14 },
-                                coord: { bx: 14, by: 14 },
-                                direction: "right"
-                            };
-                            this.setVelocityVector(vectorFromDirection['right'], 'right', frameNo);
-                        }
-                        else {
-                            this.__latentMoveInformation = {
-                                baseCoordinate: { bx: 13, by: 14 },
-                                coord: { bx: 12, by: 14 },
-                                direction: "left"
-                            };
-                            this.setVelocityVector(vectorFromDirection['left'], 'left', frameNo);
-                        }
-                        this._moveProcessed = true;
-                        this.recordedBoardPosition = currentBoardPos;
-                        MONSTER_PEN.signalExited(this.__ghostNumber);
-                    }
-                    else {
-                        this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: currentCanvasPos.cy });
-                        this.setVelocityVector(this.__exitPenController.vector, this.__exitPenController.direction, frameNo);
-                    }
-                }
-                break;
-            case MonsterState.CHASE_MODE:
-                // Check if we have moved
-                if (haveMoved) {
-                    // Calculate the new target coord
-                    this.targetCoord = this.getTarget(frameNo);
-                    // Update latent information before assigning previous
-                    this.__latentMoveInformation = this._getTargetMove();
-                    // Now we need to wait until we can actually apply the latent information
-                    this._moveProcessed = false;
-                    // Now update previous
-                    this.recordedBoardPosition = currentBoardPos;
-                }
-                else if (canApplyLatentMove) {
-                    if (!this.__checkIfAcrossCenter(currentCanvasPos))
-                        break;
-                    // We are across the center
-                    this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
-                    this.setCanvasCoords(frameNo, currentCanvasPos, true, false);
-                    this._moveProcessed = true;
-                    // Update canvas coords
-                    currentCanvasPos = this.getCanvasCoords(frameNo);
-                    // ToDo: Ideally I want to have the Ghost's eyes facing in
-                    // the direction they want to turn before it is decided. So
-                    // I may have things start looking at the latent direction
-                }
-                break;
-            case MonsterState.FRIGHTENED:
-                if (haveMoved) {
-                    // Update latent information before assigning previous
-                    this.__latentMoveInformation = this._getRandomMove();
-                    // Now we need to wait until we can actually apply the latent information
-                    this._moveProcessed = false;
-                    // Now update previous
-                    this.recordedBoardPosition = currentBoardPos;
-                }
-                else if (canApplyLatentMove) {
-                    if (!this.__checkIfAcrossCenter(currentCanvasPos))
-                        break;
-                    this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
-                    this.setCanvasCoords(frameNo, currentCanvasPos, true, false);
-                    this._moveProcessed = true;
-                    // Update canvas coords
-                    currentCanvasPos = this.getCanvasCoords(frameNo);
-                    // ToDo: Ideally I want to have the Ghost's eyes facing in
-                    // the direction they want to turn before it is decided. So
-                    // I may have things start looking at the latent direction
-                }
-                break;
-            case MonsterState.SCATTER_MODE:
-                // ToDo: Not implemented yet
-                break;
-            case MonsterState.EYES_TO_PEN:
-                // ToDo: Not implemented yet
-                break;
+        if (this.__state == MonsterState.IN_PEN) {
+            this._handlePenMovement(frameNo, currentBoardPos, currentCanvasPos);
         }
+        else {
+            this._handleMazeMovement(frameNo, haveMoved, canApplyLatentMove, currentBoardPos, currentCanvasPos);
+        }
+        // Yet to handle is SCATTER_MODE and EYES_TO_PEN
         /**
          * Return coordinates with respect to canvas
          * This'll always happen
@@ -222,20 +117,16 @@ class Ghost extends Entity {
      * @param timestamp Start time
      */
     scareMe(timer, timestamp) {
-        this._savedFrightState = this.__state;
-        if (this.__state != MonsterState.IDLE_IN_PEN && this.__state != MonsterState.EXITING_PEN) {
-            this.__state = MonsterState.FRIGHTENED;
-        }
         this._frightStart = timestamp;
         this._frightTimer = timer;
-        this._isActuallyFrightened = true;
+        this._isFrightened = true;
     }
     _imageDeterminer(frameNo) {
         const progression = frameNo - this.__startFrame;
         let indexName;
         let animLength;
         let frameNumber;
-        if (this._isActuallyFrightened) {
+        if (this._isFrightened) {
             const frightProgression = frameNo - this._frightStart;
             indexName = (this._frightTimer - frightProgression <= 2000) ? "ghostSkeptical" : "ghostFrightened";
             animLength = spriteManager[indexName].length;
@@ -253,6 +144,84 @@ class Ghost extends Entity {
                 animLength = spriteManager[indexName].length;
                 frameNumber = Math.floor(progression / Entity.FRAMES_PER_IMAGE) % animLength;
                 return spriteManager[indexName][frameNumber];
+        }
+    }
+    _handlePenMovement(frameNo, currentBoardPos, currentCanvasPos) {
+        if (this.__exitPenController.lastFlag < LAST_FLAG.TOWARDS_CENTER && ghostsExiting.indexOf(this.__ghostNumber) != -1) {
+            this.__exitPenController.startExitingPen(currentBoardPos);
+            this.updateCanvasCoords(frameNo);
+            this.setVelocityVector(this.__exitPenController.vector, this.__exitPenController.direction, frameNo);
+            return;
+        }
+        const shouldUpdateExit = this.__exitPenController.updateDirection(currentBoardPos, currentCanvasPos);
+        if (!shouldUpdateExit)
+            return;
+        if (this.__exitPenController.lastFlag == LAST_FLAG.EXITED_TOP) {
+            this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: 14 * 16 });
+            this.__state = MonsterState.CHASE_MODE;
+            // Calculate the new target coord
+            this.targetCoord = this.getTarget(frameNo);
+            // Update latent information before assigning previous
+            if (this.targetCoord.bx > currentBoardPos.bx) {
+                this.__latentMoveInformation = {
+                    baseCoordinate: { bx: 13, by: 14 },
+                    coord: { bx: 14, by: 14 },
+                    direction: "right"
+                };
+                this.setVelocityVector(vectorFromDirection['right'], 'right', frameNo);
+            }
+            else {
+                this.__latentMoveInformation = {
+                    baseCoordinate: { bx: 13, by: 14 },
+                    coord: { bx: 12, by: 14 },
+                    direction: "left"
+                };
+                this.setVelocityVector(vectorFromDirection['left'], 'left', frameNo);
+            }
+            this._moveProcessed = true;
+            this.recordedBoardPosition = currentBoardPos;
+            MONSTER_PEN.signalExited(this.__ghostNumber);
+            return;
+        }
+        if (this.__exitPenController.lastFlag == LAST_FLAG.HEADING_UP) {
+            this.setCanvasCoords(frameNo, { cx: 13 * 16 + 8, cy: currentCanvasPos.cy });
+            this.setVelocityVector(this.__exitPenController.vector, this.__exitPenController.direction, frameNo);
+            return;
+        }
+        // Just oscillating center
+        this.updateCanvasCoords(frameNo);
+        this.setVelocityVector(penVectorFromDirection[this.__exitPenController.direction], this.__exitPenController.direction, frameNo);
+    }
+    _handleMazeMovement(frameNo, haveMoved, canApplyLatentMove, currentBoardPos, currentCanvasPos) {
+        // Check if we have moved
+        if (haveMoved) {
+            // Update latent information before assigning previous
+            if (this._isFrightened) {
+                this.__latentMoveInformation = this._getRandomMove();
+            }
+            else {
+                this.__latentMoveInformation = this._getTargetMove();
+                // Calculate the new target coord
+                this.targetCoord = this.getTarget(frameNo);
+            }
+            // Now we need to wait until we can actually apply the latent information
+            this._moveProcessed = false;
+            // Now update previous
+            this.recordedBoardPosition = currentBoardPos;
+            return;
+        }
+        if (canApplyLatentMove) {
+            if (!this.__checkIfAcrossCenter(currentCanvasPos))
+                return;
+            // We are across the center
+            this.setVelocityVector(vectorFromDirection[this.__latentMoveInformation.direction], this.__latentMoveInformation.direction, frameNo);
+            this.setCanvasCoords(frameNo, currentCanvasPos, true, false);
+            this._moveProcessed = true;
+            // Update canvas coords
+            currentCanvasPos = this.getCanvasCoords(frameNo);
+            // ToDo: Ideally I want to have the Ghost's eyes facing in
+            // the direction they want to turn before it is decided. So
+            // I may have things start looking at the latent direction
         }
     }
     logDebugInformation(currentBoardPos, currentCanvasPos) {
