@@ -26,8 +26,6 @@ export type moveInfo = {
 	baseCoordinate: boardCoordinate
 }
 
-export type kennelLocation = "right" | "middle" | "left";
-
 export interface GridCell extends HTMLDivElement {
 	dataset: {
 		boardX: string
